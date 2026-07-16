@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 120">
-  <!-- run-log 브랜드 마크 (웹 애니메이션) — 도트가 오른쪽 위 정적 위치에서 출발해
+  <!-- rungle 브랜드 마크 (웹 애니메이션) — 도트가 오른쪽 위 정적 위치에서 출발해
        400m 트랙을 반시계(실제 트랙 방향)로 정확히 한 바퀴 돌고 제자리에 멈춘다.
        Reduce Motion: 정지. offset-path 미지원: 정적 도트 폴백.
        랜딩 히어로·로딩 인디케이터 재사용 가능 (loop가 필요하면 animation-iteration-count만 infinite로). -->

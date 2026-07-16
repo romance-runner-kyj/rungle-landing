@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 120">
-  <!-- run-log 브랜드 마크 (웹 애니메이션 v2 — 가속 랩 + 카메라 플래시)
+  <!-- rungle 브랜드 마크 (웹 애니메이션 v2 — 가속 랩 + 카메라 플래시)
        도트가 천천히 출발 → 가속(easeInQuart 근사)으로 한 바퀴 → 제자리 정지
        → 사진 플래시처럼 찰칵 (스웰 + 섬광 버스트 + 충격파 링).
        Reduce Motion: 정지. offset-path 미지원: 정적 도트 폴백. -->
