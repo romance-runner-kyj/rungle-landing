@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>run-log · 팀 코드 컨벤션 가이드 v3</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --ink:#191c23; --ink-soft:#3c4250; --muted:#6b7280; --line:#e7e9ee;
+    --bg:#f4f5f8; --card:#ffffff;
+    --amber:#FFB300; --amber-deep:#b06f00; --amber-soft:#fff6e1; --amber-line:#f2dfae;
+    --dark:#131313; --dark2:#1e1e1e;
+    --green:#0e8a4d; --green-bg:#e8f6ee; --red:#d33125; --red-bg:#fcebe9;
+    --blue:#2f5bea; --blue-bg:#eef2ff;
+    --code-bg:#12161f; --code-ink:#dbe2ee;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",Roboto,sans-serif;
+    line-height:1.74; font-size:16px; -webkit-font-smoothing:antialiased;
+    font-feature-settings:"tnum";
+  }
+  .wrap{max-width:1200px; margin:0 auto; padding:0 28px;}
+  .layout{display:grid; grid-template-columns:264px 1fr; gap:46px; align-items:start;}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    position:relative; overflow:hidden; color:#fff;
+    background:#131313;
+    padding:64px 0 54px;
+  }
+  header.hero::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(720px 340px at 82% -10%, rgba(255,179,0,.22), transparent 62%),
+      radial-gradient(520px 300px at -6% 110%, rgba(255,179,0,.10), transparent 60%);
+    pointer-events:none;
+  }
+  header.hero .wrap{position:relative;}
+  .track-pill{
+    display:inline-flex; align-items:center; gap:9px;
+    border:2px solid var(--amber); border-radius:999px; padding:7px 18px;
+    font-size:13px; letter-spacing:.16em; font-weight:800; color:var(--amber); text-transform:uppercase;
+  }
+  .track-pill .dot{width:8px; height:8px; border-radius:50%; background:var(--amber); box-shadow:0 0 12px rgba(255,179,0,.9);}
+  header.hero h1{
+    font-size:44px; line-height:1.18; margin:22px 0 12px; font-weight:800; letter-spacing:-1px;
+    background:linear-gradient(100deg,#ffffff 30%, #ffd166 75%, var(--amber) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  header.hero p.sub{font-size:17.5px; color:rgba(255,255,255,.86); margin:0 0 26px; max-width:820px;}
+  header.hero p.sub strong{color:#fff;}
+  header.hero code{background:rgba(255,179,0,.14); color:#ffd469; padding:1px 8px; border-radius:6px; font-size:15px;
+    font-family:"SF Mono",ui-monospace,Menlo,monospace;}
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .chip{
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
+    padding:7px 15px; border-radius:999px; font-size:13px; font-weight:600; color:rgba(255,255,255,.92);
+  }
+  .chip b{color:var(--amber); font-weight:800;}
+
+  /* ---------- TOC ---------- */
+  nav.toc{position:sticky; top:24px; font-size:14.5px;}
+  nav.toc .box{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px 16px; box-shadow:0 2px 10px rgba(20,22,30,.05);}
+  nav.toc h4{margin:4px 10px 12px; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+  nav.toc a{display:flex; align-items:center; gap:10px; color:var(--ink-soft); text-decoration:none; padding:7px 10px; border-radius:10px; margin:1px 0; transition:.15s;}
+  nav.toc a:hover{background:var(--amber-soft); color:var(--amber-deep);}
+  nav.toc a .n{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; border-radius:8px; font-size:12px; font-weight:800;
+    background:#f0f1f5; color:var(--ink-soft); flex:none;
+  }
+  nav.toc a:hover .n{background:var(--amber); color:#1a1403;}
+  nav.toc .gap{height:10px; border-bottom:1px dashed var(--line); margin:4px 8px 12px;}
+
+  /* ---------- Sections ---------- */
+  main{padding:48px 0 90px; min-width:0;}
+  section{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:38px 42px; margin-bottom:28px; box-shadow:0 2px 10px rgba(20,22,30,.04); scroll-margin-top:22px;
+  }
+  section > h2{font-size:26px; margin:0 0 8px; letter-spacing:-.5px; display:flex; align-items:center; gap:13px;}
+  section > h2 .sn{
+    background:linear-gradient(135deg,#1e1e1e,#3a2c08); color:var(--amber);
+    font-size:14px; min-width:34px; height:34px; padding:0 10px; border-radius:10px;
+    display:inline-flex; align-items:center; justify-content:center; font-weight:800; flex:none;
+    border:1px solid rgba(255,179,0,.35);
+  }
+  section .lead{color:var(--ink-soft); font-size:15.5px; margin:2px 0 24px;}
+  h3{font-size:19.5px; margin:32px 0 10px; letter-spacing:-.3px;}
+  h4{font-size:16px; margin:22px 0 8px; color:var(--ink-soft);}
+  p{margin:12px 0;}
+  ul,ol{margin:12px 0; padding-left:22px;}
+  li{margin:6px 0;}
+  strong{color:var(--ink); font-weight:700;}
+  a.ext{color:var(--amber-deep); text-decoration:none; border-bottom:1px solid var(--amber-line); font-weight:600;}
+  a.ext:hover{border-color:var(--amber-deep);}
+
+  /* ---------- Tables ---------- */
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:14.5px; overflow:hidden; border-radius:12px; border:1px solid var(--line);}
+  th{background:#f4f5f9; text-align:left; padding:12px 15px; font-weight:800; color:var(--ink-soft); border-bottom:1px solid var(--line); font-size:13.5px;}
+  td{padding:12px 15px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tr:nth-child(even) td{background:#fbfbfd;}
+  td code, th code, p code, li code{
+    background:#f0f1f6; color:#a12457; padding:1.5px 6px; border-radius:6px;
+    font-family:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace; font-size:12.8px;
+  }
+
+  /* ---------- Code cards ---------- */
+  .codecard{border-radius:14px; overflow:hidden; margin:16px 0; border:1px solid #232a38; box-shadow:0 3px 14px rgba(10,14,22,.16);}
+  .codebar{
+    display:flex; align-items:center; gap:7px; background:#1a2030; padding:9px 15px;
+    border-bottom:1px solid #242c3d;
+  }
+  .codebar .d{width:11px; height:11px; border-radius:50%;}
+  .codebar .d.r{background:#ff5f57;} .codebar .d.y{background:#febc2e;} .codebar .d.g{background:#28c840;}
+  .codebar .fname{margin-left:8px; font-size:12.5px; color:#93a0b8; font-family:"SF Mono",ui-monospace,Menlo,monospace;}
+  .codecard pre{margin:0; border-radius:0; border:none;}
+  pre{
+    background:var(--code-bg); color:var(--code-ink); padding:18px 22px; border-radius:14px; overflow-x:auto;
+    font-family:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace; font-size:13.2px; line-height:1.66; margin:14px 0;
+  }
+  pre code{background:none; color:inherit; padding:0; font-size:inherit;}
+  .cmt{color:#7d8ba1;} .kw{color:#c792ea;} .str{color:#c3e88d;} .fn{color:#82aaff;} .tag{color:#f78c6c;}
+
+  /* ---------- Callouts ---------- */
+  .callout{border-radius:14px; padding:17px 21px 17px 19px; margin:18px 0; border:1px solid; border-left-width:5px; font-size:15px;}
+  .callout .ct{font-weight:800; display:block; margin-bottom:5px; font-size:14.5px;}
+  .do{background:var(--green-bg); border-color:#bfe3cd; border-left-color:var(--green);} .do .ct{color:var(--green);}
+  .dont{background:var(--red-bg); border-color:#f4c7c1; border-left-color:var(--red);} .dont .ct{color:var(--red);}
+  .note{background:var(--amber-soft); border-color:var(--amber-line); border-left-color:var(--amber-deep);} .note .ct{color:var(--amber-deep);}
+  .key{background:var(--blue-bg); border-color:#c9d6fb; border-left-color:var(--blue);} .key .ct{color:var(--blue);}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0;}
+  .panel{border-radius:14px; padding:16px 19px; font-size:14.5px;}
+  .panel.g{background:var(--green-bg); border:1px solid #bfe3cd;}
+  .panel.r{background:var(--red-bg); border:1px solid #f4c7c1;}
+  .panel h5{margin:0 0 8px; font-size:14px;}
+  .panel.g h5{color:var(--green);} .panel.r h5{color:var(--red);}
+  .panel ul{margin:4px 0 0; padding-left:18px;} .panel li{margin:4px 0;}
+
+  .pill{display:inline-block; font-size:11.5px; font-weight:800; padding:2.5px 10px; border-radius:999px; vertical-align:middle; margin-left:7px;}
+  .pill.ios{background:#e7f0ff; color:#2559c9;} .pill.be{background:#eafaf1; color:#12855a;}
+  .pill.ai{background:#f3ebff; color:#7c3aed;} .pill.crit{background:#fce8e6; color:#c5221f;}
+  .pill.dec{background:#fff1cc; color:#8a5b00;}
+
+  .rec{background:var(--green-bg); color:var(--green); font-weight:800; font-size:12.5px; padding:3px 10px; border-radius:8px; white-space:nowrap; display:inline-block;}
+  .tiptitle{font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); font-weight:800; margin:28px 0 4px;}
+  hr.soft{border:none; border-top:1px solid var(--line); margin:28px 0;}
+
+  footer{background:#101319; color:#a8b1c3; padding:44px 0; font-size:14px;}
+  footer h4{color:#fff; margin:0 0 12px; font-size:15px;}
+  footer .fine{margin-top:22px; padding-top:18px; border-top:1px solid #232a38; color:#69738a; font-size:12.5px;}
+
+  .src-list{font-size:13.5px; color:var(--muted);}
+  .src-list a{color:var(--amber-deep); word-break:break-all;}
+
+  @media (max-width:940px){
+    .layout{grid-template-columns:1fr;} nav.toc{position:static; margin-bottom:8px;}
+    .grid2{grid-template-columns:1fr;} header.hero h1{font-size:32px;} section{padding:28px 22px;}
+    .wrap{padding:0 18px;}
+  }
+  @media print{
+    body{background:#fff; font-size:12px;} nav.toc{display:none;} .layout{grid-template-columns:1fr;}
+    header.hero{background:#131313 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    section{box-shadow:none; break-inside:avoid;} pre{white-space:pre-wrap;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="track-pill"><span class="dot"></span>run-log · dev standards</span>
+    <h1>팀 코드 컨벤션 가이드 v3</h1>
+    <p class="sub">개발 착수 전, 3인의 <code>CLAUDE.md</code> · 도구 세팅 · 코드 컨벤션을 통일하기 위한 문서입니다. <strong>iOS 앱(SwiftUI)과 Kotlin/Spring Boot 서버, AWS 배포</strong>를 전제로, 2026년 7월 기준 Claude Code 공식 문서와 최신 실무 조사에 근거해 작성했습니다.</p>
+    <div class="meta-row">
+      <span class="chip">📱 <b>iOS</b> SwiftUI · iOS 17+</span>
+      <span class="chip">🖥️ <b>Server</b> Kotlin · Spring Boot</span>
+      <span class="chip">☁️ <b>Deploy</b> AWS</span>
+      <span class="chip">🤖 <b>AI</b> 베스트컷 선별 · Claude Code 협업</span>
+      <span class="chip">👥 동호 · 지형 · 해찬</span>
+      <span class="chip">📅 2026-07-02</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="layout">
+
+  <nav class="toc">
+    <div class="box">
+      <h4>목차</h4>
+      <a href="#exec"><span class="n">★</span>요약 — 한 장으로</a>
+      <div class="gap"></div>
+      <a href="#s0"><span class="n">0</span>핵심 원칙 3계층</a>
+      <a href="#s1"><span class="n">1</span>프로젝트 컨텍스트</a>
+      <a href="#s2"><span class="n">2</span>CLAUDE.md 작동 원리</a>
+      <a href="#s3"><span class="n">3</span>팀 통일 세팅</a>
+      <div class="gap"></div>
+      <a href="#s4"><span class="n">4</span>iOS 컨벤션</a>
+      <a href="#s5"><span class="n">5</span>서버 컨벤션</a>
+      <a href="#s6"><span class="n">6</span>API 계약 컨벤션</a>
+      <a href="#s7"><span class="n">7</span>런로그 특화 규칙</a>
+      <div class="gap"></div>
+      <a href="#s8"><span class="n">8</span>붙여넣기 템플릿</a>
+      <a href="#s9"><span class="n">9</span>팀 결정 지점 10</a>
+      <a href="#s10"><span class="n">10</span>도입 체크리스트</a>
+      <a href="#src"><span class="n">·</span>출처</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- EXEC -->
+    <section id="exec">
+      <h2><span class="sn">★</span>요약 — 한 장으로 보기</h2>
+      <p class="lead">시간이 없다면 이 섹션만. 회의에서는 <a class="ext" href="#s9">9번(결정 지점)</a>만 논의하면 됩니다.</p>
+
+      <div class="callout key">
+        <span class="ct">이 문서의 한 문장</span>
+        스타일은 <strong>린터·포매터</strong>가, 매번 반드시 일어나야 할 일은 <strong>Hook</strong>이, 우리 프로젝트만의 판단은 <strong>짧은 CLAUDE.md</strong>가 맡는다. 그리고 iOS와 서버 사이의 모든 약속은 <strong>API 계약 컨벤션</strong> 한 곳에 못 박는다. 이 전부를 git에 커밋해서 <strong>세 명이 clone 즉시 같은 환경</strong>을 갖는다.
+      </div>
+
+      <table>
+        <tr><th style="width:30%">질문</th><th>답</th></tr>
+        <tr><td>CLAUDE.md에 <strong>꼭 적는</strong> 것</td><td>빌드/테스트/린트 <strong>실행 명령어</strong>, <strong>절대 금지 레드라인</strong>(미디어·개인정보 취급), 아키텍처·도메인 용어, 언어 기본값과 <strong>다른</strong> 스타일, Git·PR 규칙, 비자명한 함정</td></tr>
+        <tr><td><strong>안 적는</strong> 것</td><td>"수정 전 파일 읽기 · 주변 스타일 따르기 · 불필요한 주석 금지 · SQL injection 회피 · over-engineering 금지" — 전부 Claude 기본 동작. 코드를 읽으면 알 수 있는 것도 제외</td></tr>
+        <tr><td>길이</td><td>공식 상한 <strong>200줄</strong>, 커뮤니티 실측 최적 <strong>60~150줄</strong>. 루트는 얇게, 스택별 규칙은 <code>ios/</code>·<code>backend/</code>의 CLAUDE.md로 분리(해당 폴더 작업 시에만 로드)</td></tr>
+        <tr><td>스타일 세부(들여쓰기·줄길이·import)</td><td>CLAUDE.md ✗ → <strong>SwiftFormat·SwiftLint / ktlint·detekt 설정 + Hook·CI</strong>가 자동 강제</td></tr>
+        <tr><td>매번 반드시 일어나야 할 일</td><td>CLAUDE.md는 "권고"(user message로 주입) → <strong>Hook은 결정론적 보장</strong>. 공식 원문: "hooks are deterministic and guarantee the action happens"</td></tr>
+        <tr><td>iOS ↔ 서버 계약</td><td>JSON 케이싱·날짜 포맷·단위 표기·에러 형식·업로드 플로우를 <a class="ext" href="#s6">6번</a>에서 통일 — 3인 팀이 실제로 가장 많이 부딪히는 지점</td></tr>
+        <tr><td>세 명의 세팅 통일</td><td><code>CLAUDE.md</code> + <code>.claude/settings.json</code>(권한·Hook) + <code>.claude/rules/</code> + 린터 설정 <strong>전부 커밋</strong>. 개인 취향은 <code>CLAUDE.local.md</code>·<code>settings.local.json</code>으로 격리</td></tr>
+      </table>
+
+      <p style="margin-top:18px;">👉 붙여넣기 템플릿은 <a class="ext" href="#s8">8번</a>, 팀이 골라야 할 10가지는 <a class="ext" href="#s9">9번</a>.</p>
+    </section>
+
+    <!-- S0 -->
+    <section id="s0">
+      <h2><span class="sn">0</span>핵심 원칙 — 규칙이 사는 곳 3계층</h2>
+      <p class="lead">컨벤션 내용보다 먼저, <strong>각 규칙이 어디에 살지</strong>부터 정합니다. AI가 코드 대부분을 쓰는 팀에서 이 결정이 가장 큰 레버리지입니다.</p>
+
+      <table>
+        <tr><th style="width:26%">계층</th><th style="width:37%">담는 것</th><th>강제력</th></tr>
+        <tr><td><strong>① 도구 (법)</strong><br>SwiftFormat·SwiftLint / ktlint·detekt / 컴파일러 / 테스트</td><td>들여쓰기, 줄 길이, import 정렬, force-unwrap 금지, 복잡도 한도</td><td><strong>결정론적.</strong> "Agents write the code; linters write the law." (Factory.ai) — AI는 CI 린트 에러를 무시하지 못합니다. 산문 규칙은 제안, 린트는 법</td></tr>
+        <tr><td><strong>② Hook (보증)</strong><br><code>.claude/settings.json</code></td><td>편집 직후 자동 포맷(PostToolUse), 완료 전 게이트(Stop)</td><td><strong>결정론적.</strong> CLAUDE.md와 달리 실행이 보장됨. 커밋하면 3인 + 에이전트 전원에게 동일 적용</td></tr>
+        <tr><td><strong>③ CLAUDE.md (안내)</strong><br>+ <code>.claude/rules/</code></td><td>명령어, 아키텍처, 도메인 용어, 레드라인, 함정 — <em>자동 강제가 불가능하고 코드에서 추론도 불가능한 것만</em></td><td><strong>권고.</strong> system prompt가 아니라 user message로 주입 → 준수 보장 없음. 그래서 짧아야 함</td></tr>
+      </table>
+
+      <div class="callout note">
+        <span class="ct">⚠️ 왜 짧아야 하나 — 공식 경고 원문</span>
+        <em>"Bloated CLAUDE.md files cause Claude to ignore your actual instructions!"</em> — CLAUDE.md는 매 세션 통째로 로드되고, 길수록 준수율이 떨어집니다. 각 줄의 리트머스 테스트: <strong>"이 줄을 지우면 Claude가 실수하게 되는가?"</strong> 아니라면 지웁니다. 커뮤니티 실측으로는 60줄 미만이 최적, 150~200개 지시가 프론티어 모델의 신뢰 상한.
+      </div>
+
+      <div class="callout key">
+        <span class="ct">💡 네 번째 축 — 검증 루프</span>
+        Anthropic 1순위 조언: <em>"Give Claude a way to verify its work."</em> 빌드·테스트·린트라는 pass/fail 신호가 있으면 Claude가 스스로 루프를 닫습니다. 없으면 사람이 검증 루프가 됩니다. → 모든 CLAUDE.md 최상단은 <strong>실행 명령어</strong>입니다.
+      </div>
+    </section>
+
+    <!-- S1 -->
+    <section id="s1">
+      <h2><span class="sn">1</span>프로젝트 컨텍스트 — 컨벤션의 뼈대가 되는 사실들</h2>
+      <p class="lead">컨벤션은 진공에서 만들지 않습니다. 제품·디자인·아키텍처가 이미 결정해 둔 것들이 규칙의 근거가 됩니다.</p>
+
+      <h3>1-1. 시스템 구성</h3>
+      <table>
+        <tr><th style="width:22%">구성요소</th><th>역할</th></tr>
+        <tr><td><strong>iOS 앱</strong> (SwiftUI, iOS 17+)</td><td>HealthKit 세션 가져오기 · 세션 시간창의 사진/영상 수집(PhotoKit) · 오버레이 · 릴스 에디터 · 인스타 공유</td></tr>
+        <tr><td><strong>Kotlin/Spring 서버</strong></td><td><strong>핵심 비즈니스 로직: AI 베스트컷 선별</strong> — 업로드된 미디어를 품질 기준(선명도·초점·노출 등)으로 평가·랭킹. RAG 도입 여부는 미정(<a class="ext" href="#s9">결정 ⑥</a>)</td></tr>
+        <tr><td><strong>AWS</strong></td><td>서버 배포 + 미디어 저장(S3). 배포 형태는 미정(<a class="ext" href="#s9">결정 ⑤</a>)</td></tr>
+      </table>
+      <div class="callout note">
+        <span class="ct">⚠️ 문서 정합 주의</span>
+        PRD v2.1에는 아키텍처가 "온디바이스" 중심으로 서술되어 있으나, <strong>서버(Kotlin/Spring + AWS) 도입이 팀 결정으로 확정</strong>되었습니다. 이 가이드는 서버 전제로 작성되었으며, <strong>PRD의 아키텍처 절 개정이 필요</strong>합니다(체크리스트 반영). API 상세 명세는 별도 문서로 확정 예정.
+      </div>
+
+      <h3>1-2. 컨벤션에 영향을 주는 확정 사실</h3>
+      <table>
+        <tr><th style="width:34%">사실 (출처)</th><th>컨벤션에 미치는 영향</th></tr>
+        <tr><td><strong>핵심 플로우</strong>: 러닝 세션 시간창(-30분~+2시간)의 사진·영상 수집 → 서버 업로드 → AI 품질 평가·랭킹 → 베스트컷 후보 제시</td><td>업로드 파이프라인·비동기 작업(job) 패턴·미디어 취급 레드라인이 1급 컨벤션이 됨 → <a class="ext" href="#s6">6</a>·<a class="ext" href="#s7">7</a></td></tr>
+        <tr><td><strong>iOS 17+ / iPhone 12 기준선</strong> (PRD NFR)</td><td><code>@Observable</code>·SwiftData·Swift Testing을 조건 없이 기본값으로</td></tr>
+        <tr><td><strong>도메인 엔티티</strong>: RunSession, MediaAsset, CandidateScore, OverlayStyle, ReelTemplate, Draft, ExportRecord (PRD)</td><td>iOS·서버·API·DB가 <strong>같은 용어</strong>를 씀 — 에이전트와 사람 모두의 grep 가능성이 극적으로 상승</td></tr>
+        <tr><td><strong>릴스 템플릿은 코드가 아니라 데이터 정의</strong> (PRD — 트렌드 수명 대응)</td><td>템플릿 JSON 스키마 컨벤션 필요 → <a class="ext" href="#s7">7-3</a></td></tr>
+        <tr><td><strong>퍼널 로깅 Must(FR-090)</strong>, 이벤트명 예시 <code>reel_template_selected</code> (디자인 문서)</td><td>분석 이벤트 네이밍을 첫날 확정 — 나중에 바꾸면 지표 연속성이 깨짐 → <a class="ext" href="#s7">7-2</a></td></tr>
+        <tr><td><strong>디자인 토큰 점 표기 확정</strong>: <code>{colors.primary}</code>=Chrono Amber, <code>{spacing.sm}</code>… (<code>design.md</code>가 정본)</td><td>Swift DesignSystem 네임스페이스와 1:1 매핑, hex/px 하드코딩 금지 → <a class="ext" href="#s7">7-1</a></td></tr>
+        <tr><td><strong>티켓 단위 2~4시간</strong> (멘토 조언)</td><td>PR도 같은 입도 — 작고 단일 목적. 에이전트 산출물을 리뷰 가능하게 만드는 전제</td></tr>
+        <tr><td><strong>접근성 NFR</strong>: 44pt 터치 타깃, Dynamic Type, Reduce Motion, 대비 4.5:1</td><td>린터가 못 잡는 영역 → PR 리뷰 체크 항목</td></tr>
+      </table>
+
+      <div class="callout do">
+        <span class="ct">✅ 시니어의 한 마디</span>
+        3인 팀에서 컨벤션 문서가 실패하는 가장 흔한 이유는 "일반론"이기 때문입니다. 위 표처럼 <strong>우리 제품이 이미 내린 결정을 규칙으로 번역</strong>하면 규칙마다 "왜?"가 자동으로 따라옵니다. 에이전트는 암묵지가 없으므로 이 why가 특히 중요합니다.
+      </div>
+    </section>
+
+    <!-- S2 -->
+    <section id="s2">
+      <h2><span class="sn">2</span>CLAUDE.md 작동 원리 (2026-07 기준)</h2>
+      <p class="lead">규칙을 어디에 둘지 정하려면 로딩·우선순위·최신 기능을 알아야 합니다.</p>
+
+      <h3>2-1. 로딩과 우선순위</h3>
+      <ul>
+        <li>CLAUDE.md는 <strong>매 세션 시작 시 전부</strong>(길이 무관) 로드되며, <strong>system prompt가 아니라 그 뒤의 user message로 주입</strong>됩니다 → 준수는 권고. 반드시 일어나야 하는 일은 Hook으로.</li>
+        <li>실효 우선순위: 시스템 프롬프트(내장 기본 동작) → CLAUDE.md(권고) → 실시간 채팅 지시. 채팅 지시가 CLAUDE.md를 이깁니다.</li>
+        <li>파일 계층은 <strong>덮어쓰기가 아니라 이어붙임</strong>(concatenate). 좁은 범위가 나중에 로드되어 충돌 시 우선.</li>
+        <li><strong>하위 디렉토리의 CLAUDE.md는 그 디렉토리 파일을 읽을 때 on-demand 로드</strong> — 우리처럼 <code>ios/</code>·<code>backend/</code>를 나누는 모노레포에 정확히 맞는 메커니즘. 서버 작업 중 Swift 규칙이 컨텍스트를 차지하지 않습니다.</li>
+        <li><code>&lt;!-- --&gt;</code> HTML 주석은 주입 전 제거 → 사람용 메모를 토큰 비용 없이 남길 수 있음.</li>
+        <li><code>@path/to/file</code> import 지원(최대 4 hops). 단 <strong>import해도 컨텍스트 절약은 안 됩니다</strong> — 시작 시 전부 로드. 절약이 목적이면 아래 2-3.</li>
+      </ul>
+
+      <h3>2-2. 파일 계층 — 우리 팀 기준</h3>
+      <table>
+        <tr><th>파일</th><th>공유</th><th>용도</th></tr>
+        <tr><td><code>./CLAUDE.md</code> <strong>(★ 팀 정본)</strong></td><td>git 커밋</td><td>레포 공통 규칙(레드라인·용어·Git). 얇게 유지</td></tr>
+        <tr><td><code>./ios/CLAUDE.md</code> · <code>./backend/CLAUDE.md</code></td><td>git 커밋</td><td>스택별 규칙 — 해당 폴더 작업 시에만 로드</td></tr>
+        <tr><td><code>./.claude/rules/*.md</code></td><td>git 커밋</td><td><code>paths:</code> frontmatter로 경로 스코프 지정 시 매칭 파일 작업에만 로드</td></tr>
+        <tr><td><code>./CLAUDE.local.md</code></td><td>개인 (<code>.gitignore</code> 직접 추가)</td><td>개인 실험 · 개인 장비 설정. 팀 규칙과 <strong>충돌 금지</strong></td></tr>
+        <tr><td><code>~/.claude/CLAUDE.md</code></td><td>개인 · 모든 프로젝트</td><td>순수 개인 취향만. <strong>run-log 프로젝트 규칙 넣기 금지</strong> ← 통일의 핵심</td></tr>
+      </table>
+
+      <div class="callout dont">
+        <span class="ct">🚫 "각자 CLAUDE.md 통일"의 진짜 의미</span>
+        세 명이 같은 내용을 각자 복사해 갖는 게 아닙니다. <strong>프로젝트 규칙은 커밋된 CLAUDE.md 한 곳에만 존재</strong>하고, 개인 파일에는 프로젝트 규칙을 두지 않는 것입니다. 개인 파일에 "탭 들여쓰기" 같은 게 남아 있으면 팀 규칙과 모순되고, 규칙이 모순되면 Claude는 <strong>임의로 하나를 골라</strong> 따릅니다. 각자 개인 파일을 정리하는 절차를 <a class="ext" href="#s8">템플릿 E</a>로 만들어 뒀습니다.
+      </div>
+
+      <h3>2-3. <code>.claude/rules/</code> — path-scoped rules</h3>
+      <p>YAML frontmatter로 <code>paths:</code> glob을 지정하면 <strong>그 경로의 파일을 만질 때만</strong> 규칙이 로드됩니다. 평소 토큰 비용 0. "CLAUDE.md는 짧게, 세부는 rules로"를 가능하게 하는 도구입니다. 예시는 <a class="ext" href="#s8">템플릿 D</a>.</p>
+
+      <h3>2-4. 유지 규칙 — Two-Strikes Rule</h3>
+      <ul>
+        <li>규칙 추가 시점(공식): 같은 실수 <strong>2회째</strong> / 리뷰가 "Claude가 알았어야 할 것"을 잡았을 때 / 지난 세션 교정을 또 칠 때. 1회면 아직 추가하지 않습니다.</li>
+        <li>규칙이 있는데 계속 어긴다 → 파일이 너무 길다는 신호 → 가지치기하거나 Hook/린트로 승격.</li>
+        <li>정말 중요한 몇 줄엔 <code>IMPORTANT</code>/<code>YOU MUST</code> — 단 전부 강조하면 아무것도 강조 안 됨. "be careful" 같은 약한 표현 대신 강한 명령형.</li>
+        <li>월 1회, 코드처럼 리뷰·리팩터링. 변경은 반드시 PR로 — 규칙도 코드입니다.</li>
+      </ul>
+    </section>
+
+    <!-- S3 -->
+    <section id="s3">
+      <h2><span class="sn">3</span>팀 통일 세팅 — 레포에 커밋하는 것 vs 개인</h2>
+      <p class="lead">이 섹션이 통일 작업의 실체입니다. 아래를 커밋하면 <strong>clone 즉시 세 명이 동일한 Claude 환경</strong>을 갖습니다.</p>
+
+      <table>
+        <tr><th style="width:46%">git 커밋 (팀 공유)</th><th>로컬 (개인)</th></tr>
+        <tr><td><code>CLAUDE.md</code> + <code>ios/CLAUDE.md</code> + <code>backend/CLAUDE.md</code></td><td><code>CLAUDE.local.md</code> — 개인 메모 (gitignore 직접 추가)</td></tr>
+        <tr><td><code>.claude/settings.json</code> — <strong>권한 allowlist + Hook</strong></td><td><code>.claude/settings.local.json</code> — 개인 오버라이드 (<strong>자동 gitignore</strong>)</td></tr>
+        <tr><td><code>.claude/rules/*.md</code> — 주제·경로별 규칙</td><td><code>~/.claude/settings.json</code> — 개인 전역 선호</td></tr>
+        <tr><td><code>.claude/skills/</code>, <code>.claude/agents/</code> — 공용 슬래시 커맨드·서브에이전트 (생기면)</td><td>API 키 등 시크릿 일체</td></tr>
+        <tr><td><code>.swiftformat</code>, <code>.swiftlint.yml</code>, ktlint·detekt Gradle 설정 — 스타일의 법전</td><td>—</td></tr>
+        <tr><td><code>.mcp.json</code> — 프로젝트 MCP 서버 (쓰게 되면)</td><td>개인 MCP는 <code>~/.claude.json</code></td></tr>
+      </table>
+
+      <h3>3-1. <code>.claude/settings.json</code>에 들어가는 두 가지</h3>
+      <p><strong>① 권한 allowlist</strong> — 세 명이 매번 같은 프롬프트에 "허용"을 누르는 낭비를 없애고, 위험 명령(push·rm 등)은 여전히 게이트에 남깁니다. <strong>② Hook</strong> — Swift·Kotlin 파일 편집 직후 포매터 자동 실행. 실제 JSON은 <a class="ext" href="#s8">템플릿 C</a>.</p>
+
+      <h3>3-2. 무엇이 Hook 감이고 무엇이 CLAUDE.md 감인가</h3>
+      <table>
+        <tr><th>요구</th><th>둘 곳</th></tr>
+        <tr><td>Swift/Kotlin 파일 저장 시 항상 포맷</td><td>PostToolUse Hook (결정론)</td></tr>
+        <tr><td>"완료" 선언 전 린트·테스트 통과</td><td>1차: CLAUDE.md 규칙 → 안 지켜지면 Stop Hook으로 승격</td></tr>
+        <tr><td>프레임워크는 프로토콜 뒤에 래핑 / 엔티티는 컨트롤러 밖으로 안 나감</td><td>CLAUDE.md + 리뷰 (탐지 가능한 것은 detekt/SwiftLint 커스텀 규칙 검토)</td></tr>
+        <tr><td>커밋 전 시크릿 검사</td><td>git pre-commit hook — Claude 밖에서도 보장 (서버 레포는 AWS 키 사고가 실존 위험)</td></tr>
+      </table>
+
+      <div class="callout note">
+        <span class="ct">⚠️ 순서 조언</span>
+        첫 주엔 Hook을 <strong>PostToolUse 포매터 하나만</strong> 거세요. Stop Hook 게이트(테스트 실패 시 완료 차단)는 강력하지만, 초기에 빌드가 자주 깨지는 시기엔 되레 발목을 잡습니다. 파이프라인이 안정된 뒤에 추가하는 걸 권합니다.
+      </div>
+    </section>
+
+    <!-- S4 -->
+    <section id="s4">
+      <h2><span class="sn">4</span>iOS 컨벤션 <span class="pill ios">Swift · SwiftUI</span></h2>
+      <p class="lead">iOS 17+ 전제의 단일 규칙. 도구가 강제할 수 있는 것은 도구 설정으로 밀어내고, 여기엔 판단이 필요한 것만 남깁니다.</p>
+
+      <h3>4-1. 네이밍 <span class="pill ai">AI가 가장 크게 반응</span></h3>
+      <ul>
+        <li>타입/프로토콜 <code>UpperCamelCase</code>, 그 외 <code>lowerCamelCase</code>. Swift는 상수에도 SCREAMING_CASE를 쓰지 않음 → <code>let maxPaceThreshold = 12.0</code></li>
+        <li>Boolean은 단언으로: <code>isUploading</code>, <code>hasGPSFix</code>, <code>canShare</code></li>
+        <li><strong>단위를 이름에</strong>: <code>distanceMeters</code>, <code>durationSec</code> — API 계약(<a class="ext" href="#s6">6번</a>)과 동일 표기</li>
+        <li>사용 지점의 명확성 &gt; 간결성. 인자 라벨로 문장처럼: <code>match(media: assets, to: session)</code></li>
+        <li>파일 1개 = public 타입 1개, 파일명 = 타입명. 도메인 타입은 합의된 용어만: <code>RunSession</code>, <code>MediaAsset</code>, <code>CandidateScore</code>, <code>ReelTemplate</code>, <code>Draft</code>…</li>
+      </ul>
+
+      <h3>4-2. 포매팅 — 전부 도구로 <span class="pill crit">CLAUDE.md에 적지 말 것</span></h3>
+      <p>SwiftFormat(자동 포맷) + SwiftLint(관례·스멜). 설정 파일을 커밋하고 Hook·CI에 연결하면 이 카테고리의 논쟁은 소멸합니다. 4 스페이스·줄 120자·import 정렬 같은 값 자체는 <code>.swiftformat</code>·<code>.swiftlint.yml</code>에만 존재합니다.</p>
+      <div class="callout dont"><span class="ct">🚫 error로 처리 (크래시 주범)</span><code>force_unwrapping</code> · <code>force_cast</code> · <code>force_try</code> — 프로덕션 코드에서 <code>!</code>·<code>as!</code>·<code>try!</code> 금지. 테스트 코드는 예외 허용.</div>
+
+      <h3>4-3. 아키텍처 — MVVM + 프레임워크 격리</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">ios/RunLog/ 폴더 구조</span></div>
+<pre><code>RunLog/
+├── App/                  <span class="cmt">엔트리, 루트 네비게이션, DI 조립</span>
+├── Features/             <span class="cmt">기능별 폴더 — View + ViewModel colocate</span>
+│   ├── SessionList/  ├── BestCut/  ├── Overlay/
+│   ├── ReelDraft/    ├── Editor/   ├── Share/   └── Onboarding/
+├── Domain/               <span class="cmt">도메인 모델(순수 struct) — import SwiftUI 금지</span>
+├── Services/             <span class="cmt">경계 래퍼: HealthKitService, MediaLibraryService,</span>
+│                         <span class="cmt">RunLogAPIClient(서버), MediaUploader, AnalyticsClient …</span>
+│                         <span class="cmt">전부 프로토콜 + 구현 쌍</span>
+├── DesignSystem/         <span class="cmt">토큰(Color·Font·Spacing·Radius) + 공용 컴포넌트</span>
+└── Resources/
+    ├── ReelTemplates/    <span class="cmt">템플릿 JSON (코드 아님!)</span>
+    └── Overlays/         <span class="cmt">오버레이 카탈로그</span></code></pre></div>
+      <ul>
+        <li><strong>의존 방향:</strong> Features → Services/Domain → (Apple 프레임워크·네트워크). Domain은 아무것도 모름. View/ViewModel에서 <code>import HealthKit</code>이나 <code>URLSession</code> 직접 호출이 보이면 리뷰 반려.</li>
+        <li>서버 통신도 같은 원칙 — <code>RunLogAPIClient</code> 프로토콜 하나로 격리. mock 주입으로 서버 없이 UI 개발·테스트 가능.</li>
+        <li>왜: 테스트 가능성 + <strong>에이전트 fan-out 안전성</strong> — 폴더 경계가 명확하면 서브에이전트에게 기능 하나씩 맡겨도 충돌이 없습니다.</li>
+      </ul>
+
+      <h3>4-4. SwiftUI 상태 관리 — <code>@Observable</code>이 기본</h3>
+      <div class="callout key">
+        <span class="ct">한 줄 규칙</span>
+        모델/VM은 <strong><code>@Observable</code> 매크로</strong>. 생성하는 뷰는 <code>@State</code>, 전달받는 뷰는 일반 프로퍼티(양방향 필요 시 <code>@Bindable</code>). <strong><code>ObservableObject</code>/<code>@Published</code>/<code>@StateObject</code>는 신규 코드에서 금지</strong> — 옛 예제 복붙으로 섞여 들어오는 걸 막는 규칙입니다.
+      </div>
+<pre><code><span class="tag">@Observable</span> <span class="tag">@MainActor</span>
+<span class="kw">final class</span> <span class="fn">BestCutViewModel</span> {
+    <span class="kw">private(set) var</span> candidates: [CandidateScore] = []
+    <span class="kw">private(set) var</span> isAnalyzing = <span class="kw">false</span>
+
+    <span class="kw">private let</span> apiClient: RunLogAPIClientProtocol   <span class="cmt">// 프로토콜 주입</span>
+
+    <span class="kw">init</span>(apiClient: RunLogAPIClientProtocol) { <span class="kw">self</span>.apiClient = apiClient }
+}
+
+<span class="kw">struct</span> <span class="fn">BestCutView</span>: <span class="fn">View</span> {
+    <span class="tag">@State</span> <span class="kw">private var</span> viewModel: BestCutViewModel   <span class="cmt">// 이 뷰가 생성·소유</span>
+    <span class="kw">var</span> body: <span class="kw">some</span> View { ... }
+}</code></pre>
+      <ul>
+        <li><code>body</code>는 선언만 — 50~70줄 넘으면 별도 <code>View</code> struct로 추출(<code>@ViewBuilder</code> 프로퍼티 말고)</li>
+        <li>비동기 로딩은 <code>init</code>이 아니라 <code>.task { await viewModel.load() }</code> — 뷰가 사라지면 자동 취소</li>
+        <li>순수 표시용 화면엔 VM을 강제하지 않음 — 로직/서비스 호출이 있는 화면만 VM</li>
+      </ul>
+
+      <h3>4-5. 동시성</h3>
+      <ul>
+        <li>신규 코드는 <code>async/await</code>만. completion handler 스타일 API(PhotoKit 일부 등)는 Services 래퍼 안에서 <code>withCheckedThrowingContinuation</code>으로 변환해 가둠</li>
+        <li>UI 상태를 갱신하는 ViewModel은 클래스 전체 <code>@MainActor</code></li>
+        <li>미디어 수집·업로드는 구조적 동시성(<code>TaskGroup</code>)으로 병렬화 — 단 업로드 동시성 한도(예: 3)를 상수로 명시</li>
+        <li>Swift 6 strict concurrency는 <a class="ext" href="#s9">결정 ⑨</a></li>
+      </ul>
+
+      <h3>4-6. 에러 처리 <span class="pill ai">AI 최대 위험 지점</span></h3>
+      <div class="callout dont">
+        <span class="ct">🚫 절대 금지</span>
+        빈 <code>catch {}</code> · 버리기용 <code>try?</code> · "로그 찍고 계속". 에이전트는 코드를 "돌아가게" 하려고 에러를 조용히 삼키는 경향이 가장 강합니다. 처리하거나 전파하고, <strong>증상이 아니라 근본 원인</strong>을 고칩니다.
+      </div>
+      <ul>
+        <li>도메인별 타입 에러: <code>enum UploadError: Error</code>, <code>enum SelectionError: Error</code> — 사용자에게 보여줄 메시지와 분리</li>
+        <li>권한 거부(HealthKit·사진)와 <strong>오프라인은 에러가 아니라 정상 상태</strong> — 안내 UI·재시도 큐로 연결, 크래시·무한 스피너 금지</li>
+        <li>서버 에러는 API 계약(<a class="ext" href="#s6">6-4</a>)의 <code>errorCode</code>로 분기 — HTTP 상태코드 매직넘버 분기 금지</li>
+      </ul>
+
+      <h3>4-7. 테스트</h3>
+      <ul>
+        <li><strong>Swift Testing</strong>(<code>@Test</code>, <code>#expect</code>) — 한글 테스트명 지원: <code>@Test("세션 시간창 밖의 미디어는 후보에서 제외된다")</code></li>
+        <li>대상 우선순위: 시간창 매칭·업로드 재시도·오버레이 데이터 바인딩 등 <strong>Domain/Services의 순수 로직</strong>. 100% 커버리지 강박 금지</li>
+        <li>유닛 테스트에서 실제 프레임워크·네트워크 호출 금지 — Services가 프로토콜이므로 mock 주입</li>
+        <li><strong>테스트를 통과시키려고 테스트를 삭제·약화 금지.</strong> 버그 수정 전 실패하는 테스트 먼저</li>
+      </ul>
+    </section>
+
+    <!-- S5 -->
+    <section id="s5">
+      <h2><span class="sn">5</span>서버 컨벤션 <span class="pill be">Kotlin · Spring Boot</span></h2>
+      <p class="lead">레이어드 아키텍처 + AI 선별 파이프라인. ROI 높은 규칙만 강제합니다.</p>
+
+      <h3>5-1. 네이밍 &amp; Kotlin 관용구</h3>
+      <ul>
+        <li>패키지 전부 소문자(<code>com.runlog.selection</code>), 상수는 <code>SCREAMING_SNAKE_CASE</code>(<code>const val MAX_UPLOAD_MB = 100</code>)</li>
+        <li><strong><code>val</code> 우선, <code>var</code>는 재할당할 때만.</strong> 시그니처엔 불변 컬렉션(<code>List&lt;T&gt;</code>)</li>
+        <li>DTO/값 객체는 <strong><code>data class</code></strong>. <strong>널 안전:</strong> <code>!!</code> 금지, <code>?.</code>·<code>?:</code>·스마트 캐스트 사용</li>
+        <li>레이어 접미사 강제: <code>*Controller</code> · <code>*Service</code> · <code>*Repository</code> · <code>*Request/*Response</code>(DTO) · <code>*Entity</code></li>
+        <li>스코프 함수는 용도대로: <code>apply</code>(설정) / <code>also</code>(부수효과) / <code>let</code>(변환·널가드) / <code>run·with</code>(블록 실행)</li>
+      </ul>
+
+      <h3>5-2. 패키지 / 레이어 구조</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">backend/src/main/kotlin/com/runlog/</span></div>
+<pre><code>com.runlog
+├── config/        <span class="cmt">Spring @Configuration, 보안, S3/AWS 클라이언트 빈</span>
+├── controller/    <span class="cmt">@RestController — HTTP만. 검증(@Valid) 후 서비스 위임</span>
+├── service/       <span class="cmt">비즈니스 로직 — DTO 반환 (엔티티 반환 금지)</span>
+├── selection/     <span class="cmt">★ AI 베스트컷 선별 파이프라인 (핵심 도메인 — 아래 5-5)</span>
+├── repository/    <span class="cmt">Spring Data 리포지토리</span>
+├── domain/        <span class="cmt">JPA 엔티티(*Entity) + 도메인 객체</span>
+├── dto/           <span class="cmt">요청/응답 DTO (data class)</span>
+├── exception/     <span class="cmt">커스텀 예외 + @RestControllerAdvice</span>
+└── mapper/        <span class="cmt">Entity ↔ DTO 매핑 (확장 함수)</span></code></pre></div>
+      <ul>
+        <li><strong>의존성은 아래로만:</strong> controller → service → repository. 역방향·건너뛰기 금지</li>
+        <li>생성자 주입만 — <strong>필드 <code>@Autowired</code> 금지</strong>. Kotlin에선 생성자 <code>val</code>로 자연스럽고, 불변·테스트 용이·빈 누락 즉시 실패</li>
+        <li><code>@Transactional</code>은 서비스 메서드에. <code>kotlin-spring</code>(all-open)·<code>kotlin-jpa</code>(no-arg) 플러그인 필수</li>
+        <li>설정값은 <code>@Value</code> 산발 대신 <strong><code>@ConfigurationProperties</code></strong>(타입 안전). AI 선별 임계값·시간창 같은 도메인 상수도 여기로</li>
+      </ul>
+
+      <h3>5-3. DTO vs Entity — 단단한 경계</h3>
+      <div class="callout key"><span class="ct">업계 표준 규칙</span><strong>서비스는 DTO를 반환하고, JPA 엔티티는 절대 컨트롤러/응답으로 넘어가지 않습니다.</strong> 엔티티는 <code>*Entity</code> 접미사 → 컨트롤러 시그니처에 새면 즉시 눈에 띔. 지연로딩 직렬화 폭발·DB 스키마 누출·민감 필드 노출 방지.</div>
+<pre><code><span class="tag">@Entity</span> <span class="tag">@Table</span>(name = <span class="str">"run_sessions"</span>)
+<span class="kw">class</span> <span class="fn">RunSessionEntity</span>(
+    <span class="tag">@Id</span> <span class="tag">@GeneratedValue</span> <span class="kw">val</span> id: Long = 0,
+    <span class="kw">val</span> deviceId: String,
+    <span class="kw">val</span> distanceMeters: Int,
+    <span class="kw">val</span> startedAt: Instant,
+)
+
+<span class="kw">data class</span> <span class="fn">RunSessionResponse</span>(<span class="kw">val</span> id: Long, <span class="kw">val</span> distanceMeters: Int, <span class="kw">val</span> startedAt: Instant)
+
+<span class="kw">fun</span> RunSessionEntity.<span class="fn">toResponse</span>() =
+    RunSessionResponse(id = id, distanceMeters = distanceMeters, startedAt = startedAt)</code></pre>
+
+      <h3>5-4. 에러 처리 — 단일 전역 핸들러</h3>
+      <p><strong>RFC 9457 <code>ProblemDetail</code></strong>(Spring Boot 3 내장) + 단일 <code>@RestControllerAdvice</code>. 모든 에러가 같은 형태로 나가야 iOS가 디코더 하나로 처리합니다. <strong>실패에 200 반환 금지.</strong></p>
+<pre><code><span class="kw">class</span> <span class="fn">MediaNotFoundException</span>(id: Long) : RuntimeException(<span class="str">"Media $id not found"</span>)
+
+<span class="tag">@RestControllerAdvice</span>
+<span class="kw">class</span> <span class="fn">GlobalExceptionHandler</span> : ResponseEntityExceptionHandler() {
+    <span class="tag">@ExceptionHandler</span>(MediaNotFoundException::<span class="kw">class</span>)
+    <span class="kw">fun</span> <span class="fn">handleNotFound</span>(ex: MediaNotFoundException): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.message ?: <span class="str">"Not found"</span>).apply {
+            title = <span class="str">"Media not found"</span>
+            setProperty(<span class="str">"errorCode"</span>, <span class="str">"MEDIA_NOT_FOUND"</span>)
+        }
+}</code></pre>
+
+      <h3>5-5. AI 선별 파이프라인 규칙 <span class="pill ai">핵심 도메인</span></h3>
+      <ul>
+        <li><strong>선별 로직과 웹 레이어 완전 분리</strong> — <code>selection/</code> 패키지는 Spring Web을 모르고, 입력(미디어 참조 목록)과 출력(<code>CandidateScore</code> 목록)만 가진 순수 파이프라인. 모델/라이브러리 교체·RAG 도입이 와도 이 경계는 불변</li>
+        <li><strong>재현성:</strong> 모든 <code>CandidateScore</code>에 <code>modelVersion</code>(또는 파이프라인 버전) 저장 — "왜 이 사진이 1등이었지?"에 답할 수 있어야 함. 프롬프트/임계값 변경도 버전으로 취급</li>
+        <li>품질 기준(선명도·초점·노출·눈감음)의 임계값은 코드 산발 금지 — <code>@ConfigurationProperties</code> 한 곳</li>
+        <li><strong>선별은 비동기 작업(job)</strong> — 동기 HTTP 응답으로 처리하지 않음(미디어 수십 장 × AI 평가는 타임아웃 영역). job 패턴은 <a class="ext" href="#s6">6-5</a></li>
+        <li>외부 AI API를 쓰게 되면(예: 멀티모달 모델) 호출부는 반드시 인터페이스 뒤에 — 재시도·타임아웃·비용 로깅을 래퍼가 소유</li>
+      </ul>
+
+      <h3>5-6. 린트 — ktlint + detekt</h3>
+      <ul>
+        <li>ktlint: <code>ktlint_official</code> 스타일, <code>ktlintFormat</code>으로 자동 수정 — 스타일 논쟁 제로</li>
+        <li>detekt: 복잡도·긴 메서드·매직 넘버·<strong>예외 삼킴(EmptyCatchBlock 등)</strong> 탐지</li>
+        <li>둘 다 버전 고정(3대 머신 드리프트 방지). 도구를 중간 도입하게 되면 baseline으로 기존 이슈 동결</li>
+        <li>CI 게이트: <code>./gradlew ktlintCheck detekt test</code></li>
+      </ul>
+    </section>
+
+    <!-- S6 -->
+    <section id="s6">
+      <h2><span class="sn">6</span>API 계약 컨벤션 — iOS와 서버의 약속</h2>
+      <p class="lead">상세 API 명세는 별도로 확정하더라도, <strong>명세가 따라야 할 규칙</strong>은 지금 정합니다. 3인 팀이 실제로 가장 많이 부딪히는 지점이고, 에이전트가 양쪽 코드를 쓸 때 이 규칙이 곧 프롬프트가 됩니다.</p>
+
+      <h3>6-1. URL · 리소스</h3>
+      <ul>
+        <li>베이스: <code>/api/v1/…</code> — 처음부터 버전 프리픽스 (앱은 강제 업데이트가 안 되므로 서버가 구버전을 감당해야 함)</li>
+        <li>리소스는 <strong>복수형 kebab-case</strong>: <code>/api/v1/run-sessions/{id}/media-assets</code></li>
+        <li>동사는 URL에 넣지 않음 — 행위가 필요하면 하위 리소스로: <code>POST /run-sessions/{id}/selection-jobs</code></li>
+      </ul>
+
+      <h3>6-2. JSON 필드</h3>
+      <ul>
+        <li>케이싱은 <a class="ext" href="#s9">결정 ②</a> — 권장은 <strong>camelCase</strong>(Kotlin data class·Swift Codable 기본값과 일치 → 양쪽 매핑 코드 0줄)</li>
+        <li><strong>단위를 필드명에</strong>: <code>distanceMeters</code>, <code>durationSec</code>, <code>avgPaceSecPerKm</code> — 단위 애매함이 버그가 되는 걸 이름이 차단</li>
+        <li>날짜·시간은 <strong>ISO 8601 UTC</strong>(<code>2026-07-02T08:00:00Z</code>), 필드명은 <code>~At</code> 접미사: <code>startedAt</code>, <code>capturedAt</code>, <code>uploadedAt</code>. 타임존 변환은 클라이언트 표시 계층의 책임</li>
+        <li>enum 값은 <strong>SCREAMING_SNAKE_CASE 문자열</strong>(<code>"PROCESSING"</code>) — 숫자 코드 금지. 서버는 모르는 enum 값이 와도 깨지지 않게, 클라이언트는 <code>unknown</code> 케이스 필수</li>
+        <li>도메인 용어는 엔티티 표기 그대로: <code>runSession</code>, <code>mediaAsset</code>, <code>candidateScore</code> — iOS 코드·서버 코드·API가 한 언어</li>
+      </ul>
+
+      <h3>6-3. 페이지네이션 · 공통 규칙</h3>
+      <ul>
+        <li>목록 응답은 처음부터 봉투로: <code>{ "items": […], "nextCursor": "…" }</code> — 배열을 직접 반환하면 나중에 필드 추가가 불가능</li>
+        <li>null 필드는 생략하지 않고 <code>null</code>로 명시(iOS 옵셔널 디코딩 일관성) — 단수 결측 지표(GPS 없는 세션 등)는 명세에 nullable 명시</li>
+      </ul>
+
+      <h3>6-4. 에러 계약</h3>
+      <ul>
+        <li>모든 에러는 <strong>ProblemDetail(RFC 9457) + <code>errorCode</code></strong> 확장 필드: <code>RUN_NOT_FOUND</code>, <code>MEDIA_TOO_LARGE</code>, <code>SELECTION_FAILED</code>…</li>
+        <li>iOS는 <code>errorCode</code>로 분기하고 <code>detail</code>은 로깅용 — 화면 문구는 클라이언트가 소유</li>
+        <li><code>errorCode</code> 목록은 서버 레포의 단일 enum이 정본, 변경 시 API 명세 문서와 함께 PR</li>
+      </ul>
+
+      <h3>6-5. 미디어 업로드 · 비동기 작업 패턴 <span class="pill crit">핵심 플로우</span></h3>
+      <div class="callout key">
+        <span class="ct">권장 플로우 — presigned URL + job</span>
+        원본이 서버 프로세스를 통과하지 않게 합니다. ① <code>POST /media-assets</code>(메타데이터) → 서버가 <strong>S3 presigned URL</strong> 발급 → ② 클라이언트가 S3로 직접 <code>PUT</code> → ③ <code>POST /run-sessions/{id}/selection-jobs</code>로 선별 요청 → ④ <code>GET /selection-jobs/{id}</code> 폴링(<code>status: QUEUED | PROCESSING | COMPLETED | FAILED</code>) → ⑤ 완료 시 <code>candidateScores</code> 수신.
+      </div>
+      <ul>
+        <li>오래 걸리는 작업(AI 선별·영상 처리)은 전부 <code>*-jobs</code> 리소스 패턴 — 동기 응답에 30초짜리 작업 넣지 않기</li>
+        <li>업로드는 <strong>재개 가능해야 함</strong>: 클라이언트는 실패 항목만 재시도, 서버는 <code>phAssetId</code>+체크섬 기준 멱등 처리(중복 업로드 무해)</li>
+        <li>영상은 원본 대신 <strong>선별용 저해상 프록시 업로드를 기본</strong>으로 검토(비용·속도) — <a class="ext" href="#s9">결정 ④</a>와 연결</li>
+      </ul>
+
+      <h3>6-6. 명세의 정본</h3>
+      <ul>
+        <li>서버에 <strong>springdoc-openapi</strong>를 붙여 OpenAPI 스펙 자동 생성, 스냅샷(<code>openapi.yaml</code>)을 레포에 커밋 — API 변경이 diff로 보이고, 에이전트가 iOS 클라이언트 코드를 쓸 때 이 파일을 읽으면 됨</li>
+        <li>계약 변경은 <strong>서버 PR에 스펙 diff 포함 + iOS 담당 리뷰 필수</strong> — 3인 팀의 계약 위원회는 PR 리뷰 그 자체</li>
+      </ul>
+    </section>
+
+    <!-- S7 -->
+    <section id="s7">
+      <h2><span class="sn">7</span>런로그 특화 규칙 — 이 프로젝트에만 있는 것들</h2>
+      <p class="lead">일반 컨벤션으로 커버되지 않는, 제품이 만들어낸 우리만의 규칙 4가지. CLAUDE.md 고가치 항목입니다.</p>
+
+      <h3>7-1. 디자인 토큰 1:1 매핑 — hex/px 하드코딩 금지</h3>
+      <p>디자인 문서의 점 표기 토큰(<code>{colors.primary}</code>, <code>{spacing.sm}</code>, <code>{rounded.full}</code>)을 Swift 네임스페이스로 그대로 옮깁니다. 이름이 같아야 디자인 문서 ↔ 코드 ↔ 에이전트 대화가 한 언어가 됩니다.</p>
+<pre><code><span class="kw">enum</span> <span class="fn">DS</span> {
+    <span class="kw">enum</span> <span class="fn">Colors</span> {
+        <span class="kw">static let</span> primary = Color(hex: <span class="str">0xFFB300</span>)   <span class="cmt">// {colors.primary} Chrono Amber</span>
+        <span class="kw">static let</span> canvas = Color(hex: <span class="str">0x131313</span>)    <span class="cmt">// {colors.canvas}</span>
+    }
+    <span class="kw">enum</span> <span class="fn">Spacing</span> { <span class="kw">static let</span> sm: CGFloat = <span class="str">16</span>; <span class="kw">static let</span> md: CGFloat = <span class="str">24</span> }
+    <span class="kw">enum</span> <span class="fn">Rounded</span> { <span class="kw">static let</span> md: CGFloat = <span class="str">12</span>; <span class="kw">static let</span> full: CGFloat = <span class="str">999</span> }
+}</code></pre>
+      <ul>
+        <li>뷰 코드에 hex 리터럴·매직 px가 보이면 반려. 단일 액센트 원칙(앰버는 주 CTA·선택·상위 3 랭크에만, 화면당 3개 이하)은 린터가 못 잡으므로 PR 리뷰 체크 항목</li>
+        <li>수치 충돌 시 <strong><code>design.md</code>가 정본</strong>. 기록 수치엔 <code>{typography.metric-*}</code>(Barlow Condensed 600 + tabular figures)만</li>
+      </ul>
+
+      <h3>7-2. 분석 이벤트 네이밍 — 첫날 못 박아야 하는 이유</h3>
+      <p>퍼널 지표(재사용률·TT-Share·후보 채택률)가 베타의 성패 판정 기준입니다. 이벤트명을 나중에 바꾸면 지표 연속성이 끊깁니다.</p>
+      <ul>
+        <li>이벤트명 <strong>snake_case</strong>, <code>&lt;대상&gt;_&lt;동사past&gt;</code>: <code>reel_template_selected</code>(디자인 문서 기정의), <code>bestcut_candidate_adopted</code>, <code>draft_exported</code>. 파라미터 키도 snake_case</li>
+        <li><strong>문자열 리터럴 산발 금지</strong> — 모든 이벤트는 <code>AnalyticsEvent</code> 카탈로그(enum) 한 곳에서만 정의. grep 한 번으로 전체 목록이 나와야 함</li>
+        <li>SDK 미정이므로 <strong><code>AnalyticsClient</code> 프로토콜 뒤에 래핑</strong> — SDK 결정이 코드 전체에 스며들지 않게. 오프라인 큐+배치 발송은 래퍼의 책임</li>
+        <li>이벤트 발화를 눈으로 검증할 <strong>디버그 뷰</strong>를 초기부터 포함 (관측성 요구)</li>
+      </ul>
+
+      <h3>7-3. 릴스 템플릿 = 데이터 — 코드에 타이밍 하드코딩 금지</h3>
+      <ul>
+        <li>템플릿(<code>templateId</code>, <code>slotCount</code>, 타이밍)은 <code>Resources/ReelTemplates/*.json</code>에만 존재. 컴포지션 엔진은 데이터를 <strong>해석</strong>할 뿐 특정 템플릿을 알지 못함 — 트렌드 대응이 "코드 수정"이 아니라 "데이터 추가"여야 함</li>
+        <li><code>templateId</code>는 kebab-case+버전(<code>photo-dump-v1</code>), 타이밍은 ms 정수, 스키마 검증 테스트 1개가 모든 JSON을 순회</li>
+        <li>릴스 템플릿(편집 프리셋)과 오버레이 스타일(기록 그래픽)은 <strong>별개 개념</strong> — 이름·필드 섞지 않기</li>
+      </ul>
+
+      <h3>7-4. 미디어 · 개인정보 취급 레드라인 <span class="pill crit">CRITICAL — CLAUDE.md 최상단</span></h3>
+      <p>사용자의 사진·영상·건강 데이터를 서버에 올리는 서비스입니다. 신뢰가 곧 제품이고, 아래 규칙은 어떤 세션에서도 예외가 없습니다.</p>
+      <div class="callout dont">
+        <span class="ct">🚫 절대 금지</span>
+        <ul style="margin:6px 0 0;">
+          <li>미디어 업로드·저장은 <strong>베스트컷 선별 목적에 한정</strong>. 목적 외 사용(학습 데이터 축적, 제3자 전송) 코드 금지</li>
+          <li>얼굴 <strong>생성·변형·보정</strong> 금지 — 인식·품질 평가만 허용 (제품 핵심 원칙)</li>
+          <li>사진·영상 <strong>내용</strong>, GPS 좌표, 건강 수치 원본을 <strong>서버 로그·분석 이벤트에 남기지 않음</strong> — 로그에는 ID·크기·상태만</li>
+          <li>S3 버킷 공개 설정 금지, presigned URL 만료는 짧게. AWS 키·시크릿 커밋 금지(pre-commit 검사)</li>
+          <li>HealthKit 데이터의 광고 목적 사용 금지 (Apple 정책 — 리젝 사유)</li>
+        </ul>
+      </div>
+      <ul>
+        <li>원본 <strong>보존 기간</strong>(선별 완료 후 즉시 삭제 vs N일 보관)은 <a class="ext" href="#s9">결정 ⑦</a> — 코드보다 먼저 정해야 하는 정책</li>
+        <li>전송은 항상 HTTPS, 저장은 S3 SSE 암호화 기본. 사용자 삭제 요청 시 원본+파생물(스코어·썸네일) 일괄 삭제 가능한 구조로 설계</li>
+      </ul>
+    </section>
+
+    <!-- S8 -->
+    <section id="s8">
+      <h2><span class="sn">8</span>붙여넣기 템플릿</h2>
+      <p class="lead">그대로 복사해 시작하고 <code>TODO</code>만 프로젝트 생성 후 채우세요. HTML 주석(<code>&lt;!-- --&gt;</code>)은 Claude에게 주입되지 않으므로 사람용 메모로 안심하고 남겨도 됩니다. 모노레포 기준(<a class="ext" href="#s9">결정 ①</a>)입니다.</p>
+
+      <h3>템플릿 A — 루트 <code>CLAUDE.md</code> (공통, ~30줄)</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">CLAUDE.md</span></div>
+<pre><code><span class="cmt"># run-log — 러닝 기록 → AI 베스트컷 → 릴스. iOS 앱 + Kotlin/Spring 서버(AWS)</span>
+
+<span class="cmt">## 레포 구조</span>
+- ios/ (SwiftUI, iOS 17+) · backend/ (Kotlin, Spring Boot 3) · docs/
+- 각 폴더의 CLAUDE.md에 스택별 규칙이 있다. API 계약 규칙은 docs/api-conventions.md 참고.
+
+<span class="cmt">## 절대 금지 (IMPORTANT)</span>
+- 미디어(사진·영상)는 베스트컷 선별 목적으로만 업로드·저장한다. 목적 외 사용 코드 금지.
+- 얼굴 생성·변형·보정 금지 (인식·품질 평가만 허용).
+- 사진 내용·GPS 좌표·건강 수치 원본을 로그·분석 이벤트에 남기지 마라. ID·크기·상태만.
+- AWS 키·시크릿 커밋 금지. 에러 삼키기 금지(빈 catch, 버리는 try? 금지).
+- 테스트를 통과시키려고 테스트를 삭제·약화하지 마라. 요청 없이 push/커밋 금지.
+
+<span class="cmt">## 도메인 용어 (이 표기 그대로 — iOS·서버·API 공통)</span>
+- RunSession, MediaAsset, CandidateScore, OverlayStyle, ReelTemplate, Draft, ExportRecord
+- 단위는 이름에: distanceMeters, durationSec. 시각 필드는 ~At + ISO 8601 UTC.
+
+<span class="cmt">## Git</span>
+- Conventional Commits: type(scope): 명령형 설명. scope는 기능/패키지명.
+- 브랜치 feat|fix/&lt;area&gt;-&lt;desc&gt;-&lt;author&gt;. PR은 2~4시간 티켓 입도, 단일 목적.
+- main은 squash-merge, 머지 전 1인 리뷰. API 계약 변경 PR은 상대 스택 담당 리뷰 필수.
+
+<span class="cmt">## 작업 방식</span>
+- 끝났다고 말하기 전에 해당 스택의 빌드·테스트·린트를 실행하고 출력을 보여라.
+- 작업 범위 밖 리팩터·의존성 추가·파일 이동은 먼저 제안하고 승인받아라.
+- 멀티파일·불명확한 작업은 plan mode로 계획부터.</code></pre></div>
+
+      <h3>템플릿 B-1 — <code>ios/CLAUDE.md</code> (~30줄)</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">ios/CLAUDE.md</span></div>
+<pre><code><span class="cmt"># run-log iOS (SwiftUI, iOS 17+)</span>
+
+<span class="cmt">## 명령어</span>
+- 빌드: xcodebuild build -scheme RunLog -destination 'platform=iOS Simulator,name=iPhone 16'  &lt;!-- TODO: scheme 확정 --&gt;
+- 테스트: xcodebuild test -scheme RunLog … / 단일 우선: -only-testing:RunLogTests/&lt;타입명&gt;
+- 포맷+린트: swiftformat . &amp;&amp; swiftlint --strict
+
+<span class="cmt">## 아키텍처</span>
+- MVVM. 상태는 @Observable (ObservableObject/@StateObject는 신규 코드 금지).
+- Apple 프레임워크(HealthKit/PhotoKit/AVFoundation)와 서버 통신(RunLogAPIClient)은
+  Services/의 프로토콜 뒤에만. View/ViewModel에서 직접 import·URLSession 금지.
+- 폴더: Features/&lt;기능&gt;/(View+VM), Domain/(순수 모델), Services/, DesignSystem/, Resources/.
+- 릴스 템플릿·오버레이 카탈로그는 Resources/의 JSON 데이터. 타이밍·슬롯 하드코딩 금지.
+
+<span class="cmt">## 스타일 (기본값과 다른 것만 — 포매팅은 SwiftFormat/SwiftLint가 강제)</span>
+- 색·폰트·간격·radius는 DS 토큰만 (DS.Colors.primary 등, 디자인 문서 {colors.*}와 1:1).
+  hex/px 하드코딩 금지. 수치 충돌 시 design.md가 정본.
+- Boolean은 is/has/can. 파일 1개 = public 타입 1개 = 파일명.
+- 프로덕션 코드에서 ! / try! / as! 금지.
+
+<span class="cmt">## 분석 이벤트</span>
+- snake_case, &lt;대상&gt;_&lt;동사past&gt; (예: reel_template_selected).
+- AnalyticsEvent 카탈로그에서만 정의. SDK 직접 호출 금지 — AnalyticsClient 경유.
+
+<span class="cmt">## 테스트</span>
+- Swift Testing (@Test, #expect). 테스트 이름은 한글 행동 문장.
+- 유닛 테스트에서 실제 프레임워크·네트워크 호출 금지 — mock 주입.</code></pre></div>
+
+      <h3>템플릿 B-2 — <code>backend/CLAUDE.md</code> (~30줄)</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">backend/CLAUDE.md</span></div>
+<pre><code><span class="cmt"># run-log 서버 (Kotlin, Spring Boot 3, AWS)</span>
+
+<span class="cmt">## 명령어</span>
+- 빌드: ./gradlew build / 테스트: ./gradlew test (단일: --tests '&lt;클래스명&gt;')
+- 린트: ./gradlew ktlintCheck detekt / 자동수정: ./gradlew ktlintFormat
+- 로컬 실행: ./gradlew bootRun  &lt;!-- TODO: 로컬 DB·S3(LocalStack 등) 세팅 확정 후 갱신 --&gt;
+
+<span class="cmt">## 아키텍처</span>
+- 레이어드: controller → service → repository. 역방향·건너뛰기 금지. 생성자 주입만.
+- 서비스는 DTO 반환. JPA 엔티티(*Entity)는 절대 컨트롤러/응답으로 내보내지 마라.
+- AI 선별 파이프라인은 selection/ 패키지 — Spring Web을 모르는 순수 로직.
+  결과(CandidateScore)에 modelVersion을 반드시 기록. 임계값은 @ConfigurationProperties.
+- 오래 걸리는 작업(선별·영상 처리)은 동기 응답 금지 — *-jobs 리소스 + 상태 폴링.
+
+<span class="cmt">## API (docs/api-conventions.md가 정본)</span>
+- /api/v1, 리소스 복수형 kebab-case. JSON은 camelCase, 시각은 ISO 8601 UTC(~At).
+- 에러는 ProblemDetail + errorCode. 실패에 200 반환 금지.
+- 계약 변경 시 openapi.yaml 스냅샷 갱신 + iOS 담당 리뷰.
+
+<span class="cmt">## 스타일 (기본값과 다른 것만 — 포매팅은 ktlint가 강제)</span>
+- val 우선, !! 금지. DTO는 data class + *Request/*Response 접미사.
+- 상수 SCREAMING_SNAKE_CASE. 패키지 com.runlog.*.
+
+<span class="cmt">## 테스트</span>
+- 서비스·selection/ 순수 로직 위주. 이름은 백틱 행동 문장: `returns 404 when media missing`.
+- 리포지토리 통합 테스트 외에는 실제 DB·S3 호출 금지 — mock/테스트 컨테이너.</code></pre></div>
+
+      <h3>템플릿 C — <code>.claude/settings.json</code> (권한 + Hook)</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">.claude/settings.json</span></div>
+<pre><code>{
+  <span class="str">"permissions"</span>: {
+    <span class="str">"allow"</span>: [
+      <span class="str">"Bash(swiftformat:*)"</span>, <span class="str">"Bash(swiftlint:*)"</span>, <span class="str">"Bash(xcodebuild:*)"</span>,
+      <span class="str">"Bash(./gradlew:*)"</span>,
+      <span class="str">"Bash(git status:*)"</span>, <span class="str">"Bash(git diff:*)"</span>, <span class="str">"Bash(git log:*)"</span>
+    ]
+  },
+  <span class="str">"hooks"</span>: {
+    <span class="str">"PostToolUse"</span>: [
+      {
+        <span class="str">"matcher"</span>: <span class="str">"Edit|Write"</span>,
+        <span class="str">"hooks"</span>: [
+          {
+            <span class="str">"type"</span>: <span class="str">"command"</span>,
+            <span class="str">"command"</span>: <span class="str">"jq -r '.tool_input.file_path' | grep '\\.swift$' | xargs swiftformat --quiet || true"</span>
+          },
+          {
+            <span class="str">"type"</span>: <span class="str">"command"</span>,
+            <span class="str">"command"</span>: <span class="str">"jq -r '.tool_input.file_path' | grep -E '\\.kts?$' | xargs ktlint -F --log-level=error || true"</span>
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre></div>
+      <p class="src-list">Swift/Kotlin 파일을 편집할 때마다 해당 포매터가 자동 실행됩니다. <code>jq</code> 필요. push·commit·rm·aws 등은 allowlist에 없으므로 여전히 승인 게이트를 거칩니다.</p>
+
+      <h3>템플릿 D — <code>.claude/rules/</code> path-scoped 규칙</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">.claude/rules/ (3개 파일)</span></div>
+<pre><code><span class="cmt"># .claude/rules/reel-templates.md — 템플릿 JSON 만질 때만 로드</span>
+<span class="tag">---
+paths:
+  - "ios/RunLog/Resources/ReelTemplates/**"
+  - "ios/RunLog/Resources/Overlays/**"
+---</span>
+- templateId는 kebab-case + 버전 접미사: "photo-dump-v1"
+- 타이밍 필드는 전부 ms 단위 정수, 슬롯 배열 길이는 slotCount와 일치
+- 새 템플릿 추가 시 스키마 검증 테스트 통과 필수 (자동 순회됨)
+
+<span class="cmt"># .claude/rules/analytics.md — 분석 코드 만질 때만 로드</span>
+<span class="tag">---
+paths:
+  - "ios/RunLog/Services/Analytics/**"
+---</span>
+- 새 이벤트는 AnalyticsEvent enum에 추가하고 발화 시점을 주석으로 명시
+- 파라미터에 사진 내용·좌표·건강 수치 원본 금지 — 파생 플래그·집계값만
+- 발송은 오프라인 큐 경유 — 즉시 발송 API 직접 호출 금지
+
+<span class="cmt"># .claude/rules/selection.md — AI 선별 파이프라인 만질 때만 로드</span>
+<span class="tag">---
+paths:
+  - "backend/src/main/kotlin/com/runlog/selection/**"
+---</span>
+- 이 패키지는 Spring Web import 금지 — 입력은 미디어 참조 목록, 출력은 CandidateScore 목록
+- 스코어 산출 로직 변경 시 modelVersion(파이프라인 버전)을 반드시 올려라
+- 품질 임계값 하드코딩 금지 — SelectionProperties(@ConfigurationProperties)로</code></pre></div>
+
+      <h3>템플릿 E — 개인 파일 정리 (각자 1회 수행)</h3>
+<div class="codecard"><div class="codebar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="fname">terminal</span></div>
+<pre><code><span class="cmt"># 1) 개인 전역 CLAUDE.md 점검 — 프로젝트 규칙과 충돌하는 줄 삭제</span>
+open ~/.claude/CLAUDE.md
+<span class="cmt">#    남겨도 되는 것: "답변은 한국어로" 같은 순수 개인 취향</span>
+<span class="cmt">#    지워야 하는 것: 들여쓰기·네이밍·커밋 규칙 등 run-log와 겹치는 모든 것</span>
+
+<span class="cmt"># 2) 개인 실험용 로컬 파일 (원하면) — 팀 규칙과 충돌 금지</span>
+echo <span class="str">"CLAUDE.local.md"</span> &gt;&gt; .gitignore
+touch CLAUDE.local.md
+
+<span class="cmt"># 3) 도구 설치 (3인 공통)</span>
+brew install swiftformat swiftlint ktlint jq</code></pre></div>
+      <div class="callout note">
+        <span class="ct">⚠️ 규칙이 모순되면</span>
+        Claude는 임의로 하나를 골라 따릅니다. "개인 파일에는 프로젝트 규칙을 두지 않는다"가 통일의 전부입니다. 프로젝트 규칙을 바꾸고 싶으면 개인 파일이 아니라 <strong>PR로 CLAUDE.md를 고치세요</strong> — 규칙도 코드입니다.
+      </div>
+    </section>
+
+    <!-- S9 -->
+    <section id="s9">
+      <h2><span class="sn">9</span>팀이 골라야 할 10가지 <span class="pill dec">회의 안건</span></h2>
+      <p class="lead">문서가 대신 정할 수 없는 것들입니다. 각 항목에 시니어 권장안을 표시했으니, 이견 있는 항목만 논의하면 됩니다.</p>
+
+      <table>
+        <tr><th style="width:19%">결정</th><th style="width:28%">옵션</th><th>권장과 이유</th></tr>
+        <tr>
+          <td><strong>① 레포 구조</strong></td>
+          <td>A. 모노레포 (<code>ios/</code>+<code>backend/</code>)<br>B. 레포 분리</td>
+          <td><span class="rec">A 권장</span> 3인 팀은 API 계약 변경을 <strong>한 PR</strong>에서 양쪽 같이 보는 가치가 큼. CLAUDE.md 계층(루트 공통 + 폴더별)과도 정확히 맞음. CI만 경로 필터로 분리</td>
+        </tr>
+        <tr>
+          <td><strong>② JSON 케이싱</strong></td>
+          <td>A. camelCase<br>B. snake_case</td>
+          <td><span class="rec">A 권장</span> Kotlin data class·Swift Codable 기본값과 일치 → 양쪽 매핑 설정 0줄, 에이전트 실수 여지 제거. (분석 <strong>이벤트명</strong>은 별개로 snake_case — 7-2)</td>
+        </tr>
+        <tr>
+          <td><strong>③ DB</strong></td>
+          <td>A. PostgreSQL (RDS)<br>B. MySQL (RDS)<br>C. DynamoDB</td>
+          <td><span class="rec">A 권장</span> Spring Data JPA와 무난, JSON 컬럼(템플릿·편집 액션 로그)에 유리, 팀 학습 자료 풍부. NoSQL은 쿼리 패턴이 굳은 뒤에나 고려</td>
+        </tr>
+        <tr>
+          <td><strong>④ 영상 업로드 전략</strong></td>
+          <td>A. 원본 업로드<br>B. 저해상 프록시 업로드 → 선별 후 필요분만</td>
+          <td><span class="rec">B 권장</span> 러닝 한 번에 수 GB가 될 수 있는 영상 원본은 업로드 시간·S3 비용·사용자 데이터 요금 모두 부담. 선별에는 프록시면 충분한지 스파이크로 검증 후 확정</td>
+        </tr>
+        <tr>
+          <td><strong>⑤ AWS 배포 형태</strong></td>
+          <td>A. Elastic Beanstalk / App Runner<br>B. ECS Fargate<br>C. EC2 직접</td>
+          <td><span class="rec">A 권장 (베타)</span> 3인 팀 베타는 관리 부담 최소가 정답. 트래픽·워커 분리(선별 job) 필요가 생기면 B로 이전 — Dockerfile만 유지하면 이전 비용 낮음</td>
+        </tr>
+        <tr>
+          <td><strong>⑥ RAG 도입</strong></td>
+          <td>A. 도입<br>B. 보류 — 품질 스코어링 파이프라인 먼저</td>
+          <td><span class="rec">B 권장</span> 베스트컷 선별의 본질은 이미지 품질 평가(선명도·초점·노출)로, 검색-증강(RAG)이 필요한 문제 형태가 아직 아님. 파이프라인을 인터페이스로 격리해 두면(5-5) 나중에 어떤 AI 구성이든 갈아끼울 수 있음 — 결정을 미루는 게 공짜인 구조를 먼저 만들자</td>
+        </tr>
+        <tr>
+          <td><strong>⑦ 원본 보존 기간</strong></td>
+          <td>A. 선별 완료 후 즉시 삭제<br>B. N일 보관 후 삭제<br>C. 무기한</td>
+          <td><span class="rec">A~B 권장</span> 프라이버시 신뢰가 제품 핵심 + S3 비용. 재선별 UX가 필요하면 B(예: 7일) + 자동 만료(라이프사이클 규칙). C는 권장하지 않음. <strong>정책을 코드보다 먼저</strong> 확정할 것</td>
+        </tr>
+        <tr>
+          <td><strong>⑧ 테스트 프레임워크</strong></td>
+          <td>iOS: A. Swift Testing / B. XCTest<br>서버: A. JUnit5+MockK / B. Kotest</td>
+          <td><span class="rec">양쪽 A 권장</span> iOS는 Xcode 16+ 기본·한글 테스트명. 서버는 JUnit5가 Spring Boot 기본이라 마찰 0 — Kotest는 취향 이득 대비 셋업 비용</td>
+        </tr>
+        <tr>
+          <td><strong>⑨ Swift 6 strict concurrency</strong></td>
+          <td>A. 처음부터 complete<br>B. minimal로 시작</td>
+          <td><span class="rec">A 권장</span> 신규 프로젝트가 켜기 가장 싼 시점. 미디어 병렬 처리·업로드가 코어라 데이터 레이스를 컴파일러가 잡아주는 가치가 큼</td>
+        </tr>
+        <tr>
+          <td><strong>⑩ 커밋·PR 언어</strong></td>
+          <td>A. 한국어<br>B. 영어</td>
+          <td><span class="rec">A 권장</span> 3인 전원 한국어가 리뷰 속도 최우선. type/scope는 영어 키워드(<code>feat(bestcut):</code>)라 도구 호환 문제없음. 코드 주석의 한국어 허용 여부도 함께 확정</td>
+        </tr>
+      </table>
+
+      <div class="callout key">
+        <span class="ct">💡 회의 진행 팁</span>
+        ①②③⑧⑨⑩은 권장안 그대로면 10분 안에 끝납니다. 실제 논의가 필요한 건 <strong>④(스파이크 필요) · ⑤(운영 경험) · ⑥(AI 방향) · ⑦(정책)</strong>입니다. 특히 ⑦은 개인정보 정책이라 코드가 아니라 <strong>제품 결정</strong> — PM이 확정해야 합니다. 결정되면 그 자리에서 CLAUDE.md의 TODO를 채우고 첫 커밋으로 남기세요.
+      </div>
+    </section>
+
+    <!-- S10 -->
+    <section id="s10">
+      <h2><span class="sn">10</span>도입 체크리스트</h2>
+      <p class="lead">문서를 실제 표준으로 만드는 실행 순서입니다.</p>
+
+      <div class="tiptitle">🎯 회의에서 (40분)</div>
+      <ul>
+        <li>☐ <a class="ext" href="#s9">9번 결정 지점</a> 10개 확정 — 권장안 기준으로 이견만 논의</li>
+        <li>☐ <a class="ext" href="#s8">템플릿 A·B</a>(CLAUDE.md 3종)를 함께 읽고 채택 — 3인이 각 줄에 서명하는 기분으로</li>
+        <li>☐ 미디어 보존 정책(결정 ⑦)과 이벤트 네이밍(7-2) 확정</li>
+        <li>☐ <strong>PRD 아키텍처 절 개정</strong> 담당·기한 지정 — 서버 도입을 PRD에 반영 (문서와 현실의 불일치는 에이전트를 가장 크게 혼란시키는 요인)</li>
+      </ul>
+
+      <div class="tiptitle">🛠️ 레포 생성 직후 (첫날)</div>
+      <ul>
+        <li>☐ <code>CLAUDE.md</code> 3종 + <code>.claude/settings.json</code> + <code>.claude/rules/</code> 커밋, TODO(scheme·bootRun) 채우기</li>
+        <li>☐ iOS: <code>.swiftformat</code>·<code>.swiftlint.yml</code> 커밋 — <code>force_*</code> 3종은 error</li>
+        <li>☐ 서버: ktlint(<code>ktlint_official</code>)·detekt Gradle 설정 커밋, 버전 고정</li>
+        <li>☐ 각자 <a class="ext" href="#s8">템플릿 E</a> 수행 — 개인 <code>~/.claude/CLAUDE.md</code> 정리 + <code>brew install swiftformat swiftlint ktlint jq</code></li>
+        <li>☐ git pre-commit에 시크릿 검사(gitleaks 등) — AWS 키 사고는 복구 불가</li>
+        <li>☐ 첫 PR: 폴더 뼈대 + <code>DS</code> 토큰 + <code>AnalyticsClient</code>/<code>RunLogAPIClient</code> 프로토콜 + <code>docs/api-conventions.md</code>(6번 요약) — 이후 모든 코드가 이 틀 위에 쌓임</li>
+        <li>☐ CI: iOS <code>swiftlint --strict</code>+테스트 / 서버 <code>./gradlew ktlintCheck detekt test</code>, 경로 필터로 분리</li>
+      </ul>
+
+      <div class="tiptitle">🔄 운영하며</div>
+      <ul>
+        <li>☐ <strong>Two-Strikes Rule</strong>: Claude가 같은 실수 2번째일 때만 CLAUDE.md에 한 줄 추가</li>
+        <li>☐ 규칙을 반복해서 어기면 → 파일이 길다는 신호 → 가지치기하거나 Hook/린트로 승격</li>
+        <li>☐ 월 1회 CLAUDE.md 리뷰 — 각 줄에 "지우면 실수하게 되는가?" 리트머스. 변경은 반드시 PR로</li>
+        <li>☐ API 계약 변경 PR에 <code>openapi.yaml</code> diff + 상대 스택 리뷰 확인</li>
+        <li>☐ 파이프라인 안정 후 Stop Hook 게이트 추가 검토 (3-2)</li>
+      </ul>
+
+      <div class="callout do">
+        <span class="ct">✅ 팀에 전달하는 한 문장</span>
+        "스타일은 <strong>린터</strong>가, 매번 지켜야 할 건 <strong>Hook</strong>이, 우리만의 판단은 <strong>짧은 CLAUDE.md</strong>가, iOS↔서버의 약속은 <strong>API 계약 컨벤션</strong>이 맡는다. 전부 커밋해서 clone 즉시 같은 환경 — 개인 파일엔 프로젝트 규칙을 두지 않는다."
+      </div>
+    </section>
+
+    <!-- SOURCES -->
+    <section id="src">
+      <h2><span class="sn">📚</span>출처</h2>
+      <p class="lead">2026-07-02 기준 공식 문서·실무 조사와 run-log 내부 문서에 근거합니다.</p>
+      <div class="src-list">
+        <p><strong>run-log 내부</strong></p>
+        <ul>
+          <li>run-log PRD v2.1 — <code>docs/run-log-prd-v2-overview.html</code> (정본 <code>.discovery/03-prd/PRD.md</code>) · 서버 아키텍처는 팀 결정으로 개정 예정</li>
+          <li>run-log 디자인 시스템 — <code>docs/design.html</code> (토큰 정본 <code>design.md</code>)</li>
+        </ul>
+        <p><strong>Claude Code 공식 (Anthropic)</strong></p>
+        <ul>
+          <li>Best practices — <a href="https://code.claude.com/docs/en/best-practices">code.claude.com/docs/en/best-practices</a></li>
+          <li>Memory (CLAUDE.md · rules · import) — <a href="https://code.claude.com/docs/en/memory">code.claude.com/docs/en/memory</a></li>
+          <li>Settings (계층·커밋 범위) — <a href="https://code.claude.com/docs/en/settings">code.claude.com/docs/en/settings</a></li>
+          <li>Hooks guide (PostToolUse 포매터 정본) — <a href="https://code.claude.com/docs/en/hooks-guide">code.claude.com/docs/en/hooks-guide</a></li>
+        </ul>
+        <p><strong>실무 조사 (2025–2026)</strong></p>
+        <ul>
+          <li>Using linters to direct agents — <a href="https://factory.ai/news/using-linters-to-direct-agents">factory.ai</a></li>
+          <li>Coding guidelines for AI agents (and people too) — <a href="https://stackoverflow.blog/2026/03/26/coding-guidelines-for-ai-agents-and-people-too/">Stack Overflow Blog</a></li>
+          <li>Coding Guidelines for Your AI Agents — <a href="https://blog.jetbrains.com/idea/2025/05/coding-guidelines-for-your-ai-agents/">JetBrains</a></li>
+          <li>CLAUDE.md 길이 실측 — <a href="https://redreamality.com/blog/claude-md-agents-md-deep-dive/">redreamality.com</a></li>
+          <li>The renaissance of written coding conventions — <a href="https://www.brokenrobot.xyz/blog/the-renaissance-of-written-coding-conventions/">brokenrobot.xyz</a></li>
+        </ul>
+        <p><strong>언어·프레임워크 공식</strong></p>
+        <ul>
+          <li>Swift API Design Guidelines — <a href="https://www.swift.org/documentation/api-design-guidelines/">swift.org</a> · Kotlin Coding Conventions — <a href="https://kotlinlang.org/docs/coding-conventions.html">kotlinlang.org</a></li>
+          <li>Spring Error Responses (ProblemDetail) — <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-ann-rest-exceptions.html">docs.spring.io</a></li>
+          <li>SwiftLint — <a href="https://github.com/realm/SwiftLint">github.com/realm/SwiftLint</a> · SwiftFormat — <a href="https://github.com/nicklockwood/SwiftFormat">github.com/nicklockwood/SwiftFormat</a> · ktlint — <a href="https://pinterest.github.io/ktlint/">pinterest.github.io/ktlint</a> · detekt — <a href="https://detekt.dev/">detekt.dev</a></li>
+          <li>RFC 9457 Problem Details — <a href="https://www.rfc-editor.org/rfc/rfc9457">rfc-editor.org</a> · Conventional Commits — <a href="https://www.conventionalcommits.org/en/v1.0.0/">conventionalcommits.org</a></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <h4>run-log · 팀 코드 컨벤션 가이드 v3</h4>
+    <p>작성: 정해찬 + Claude (PRD·디자인 분석 및 웹 리서치 병렬 조사) · 2026-07-02<br>
+    대상: 김동호(PM) · 유지형 · 정해찬 — 개발 착수 전 CLAUDE.md·도구 세팅·코드 컨벤션 통일용.</p>
+    <div class="fine">
+      규칙은 코드처럼 반복 개선(two-strikes → prune)을 전제로 합니다. 결정 지점 10개 확정 후 템플릿의 TODO를 채워 첫 커밋으로 남기세요. · 프린트(⌘P)로 PDF 저장 가능.
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

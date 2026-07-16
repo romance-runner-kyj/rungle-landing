@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 120">
+  <!-- run-log 브랜드 마크 (정적) — 400m 트랙 필 + 달리는 점.
+       문자 없음(서비스명 가제). 정본 기하: docs/design.html brand-pill 스펙. -->
+  <defs>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#FFB300" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <rect x="10" y="10" width="240" height="100" rx="50" fill="none" stroke="#FFB300" stroke-width="7"/>
+  <!-- 달리는 점 — 정적 위치: 오른쪽 위 (인스타 점 위치) -->
+  <circle cx="185" cy="10" r="9" fill="#FFB300" filter="url(#glow)"/>
+</svg>

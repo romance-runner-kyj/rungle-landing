@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Run-log v3 — 랜딩페이지 레퍼런스 조사 &amp; 개발 브리프</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --primary:#FFB300; --primary-pressed:#DB9900; --primary-dim:rgba(255,179,0,.16); --on-primary:#1A1403;
+    --canvas:#131313; --media-well:#0A0A0A; --elevated:#1E1E1E; --card:#242424;
+    --hairline:#2C2C2C; --hairline-soft:#222222;
+    --ink:#FFFFFF; --body:#A6A6A6; --muted:#707070;
+    --info:#64D2FF; --success:#30D158; --error:#FF453A;
+    --sp-xxs:8px; --sp-xs:12px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-xxl:64px;
+    --font-ui:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",-apple-system,system-ui,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--canvas);color:var(--body);font-family:var(--font-ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--info);text-decoration:none}
+  a:hover{text-decoration:underline}
+  strong{color:var(--ink);font-weight:600}
+  em{font-style:normal;color:var(--primary)}
+  code{font-family:var(--font-mono);font-size:12.5px;background:var(--elevated);border:1px solid var(--hairline);border-radius:4px;padding:1px 6px;color:var(--body)}
+
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(19,19,19,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--hairline)}
+  .topbar-in{max-width:1080px;margin:0 auto;padding:14px var(--sp-md);display:flex;align-items:center;gap:var(--sp-md)}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:700;font-size:15px;letter-spacing:-.2px}
+  .brand-pill{width:26px;height:15px;border:2px solid var(--primary);border-radius:999px;position:relative;flex-shrink:0}
+  .brand-pill::after{content:"";position:absolute;width:5px;height:5px;background:var(--primary);border-radius:50%;top:-3.5px;left:14px}
+  .topnav{display:flex;gap:var(--sp-sm);margin-left:auto;flex-wrap:wrap}
+  .topnav a{color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.4px}
+  .topnav a:hover{color:var(--ink);text-decoration:none}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 var(--sp-md)}
+  section{padding:var(--sp-xxl) 0;border-bottom:1px solid var(--hairline)}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--primary);text-transform:uppercase;margin-bottom:var(--sp-xs)}
+  .section-head{font-size:26px;font-weight:700;letter-spacing:-.3px;color:var(--ink);margin-bottom:var(--sp-xxs)}
+  .section-sub{max-width:720px;color:var(--body);margin-bottom:var(--sp-lg)}
+
+  .hero{padding:96px 0 var(--sp-xxl) 0;border-bottom:1px solid var(--hairline)}
+  .hero h1{font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-.8px;line-height:1.15;color:var(--ink);margin-bottom:var(--sp-sm)}
+  .hero p{max-width:680px;margin-bottom:var(--sp-md)}
+  .meta-chips{display:flex;gap:var(--sp-xxs);flex-wrap:wrap;margin-top:var(--sp-md)}
+  .meta-chip{border:1px solid var(--hairline);border-radius:999px;padding:6px 14px;font-size:12px;color:var(--body)}
+  .meta-chip b{color:var(--primary);font-weight:700}
+
+  .card{background:var(--elevated);border:1px solid var(--hairline);border-radius:14px;padding:var(--sp-md);margin-bottom:var(--sp-md)}
+  .card h3{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.2px;margin-bottom:2px}
+  .card .url{font-family:var(--font-mono);font-size:12px;margin-bottom:var(--sp-sm);display:inline-block}
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-radius:999px;padding:3px 10px;vertical-align:middle;margin-left:8px}
+  .badge.high{background:rgba(48,209,88,.14);color:var(--success)}
+  .badge.medium{background:rgba(255,179,0,.14);color:var(--primary)}
+  .badge.killed{background:rgba(255,69,58,.14);color:var(--error)}
+  .badge.cat{background:var(--primary-dim);color:var(--primary);margin-left:0;margin-bottom:var(--sp-xs)}
+
+  .kv{display:grid;grid-template-columns:130px 1fr;gap:8px var(--sp-sm);margin-top:var(--sp-sm)}
+  .kv dt{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding-top:3px}
+  .kv dd{font-size:14px;color:var(--body)}
+  .kv dd b{color:var(--ink);font-weight:600}
+  .takeaway{margin-top:var(--sp-sm);background:var(--primary-dim);border:1px solid rgba(255,179,0,.25);border-radius:10px;padding:var(--sp-xs) var(--sp-sm);font-size:14px;color:var(--ink)}
+  .takeaway::before{content:"⚡ Run-log 차용 포인트";display:block;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:4px}
+
+  .flow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .flow span{background:var(--card);border:1px solid var(--hairline);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--body);white-space:nowrap}
+  .flow span.hot{border-color:rgba(255,179,0,.5);color:var(--primary)}
+
+  ol.proposal{counter-reset:p;list-style:none;display:grid;gap:var(--sp-sm)}
+  ol.proposal>li{background:var(--elevated);border:1px solid var(--hairline);border-radius:14px;padding:var(--sp-md);position:relative;padding-left:64px}
+  ol.proposal>li::before{counter-increment:p;content:counter(p);position:absolute;left:var(--sp-md);top:var(--sp-md);width:28px;height:28px;border-radius:50%;background:var(--primary);color:var(--on-primary);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+  ol.proposal h4{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:var(--sp-sm)}
+  th{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--hairline)}
+  td{padding:10px 12px;border-bottom:1px solid var(--hairline-soft);color:var(--body);vertical-align:top}
+  td b{color:var(--ink);font-weight:600}
+
+  .warn{background:rgba(255,69,58,.08);border:1px solid rgba(255,69,58,.3);border-radius:14px;padding:var(--sp-md);margin-bottom:var(--sp-md)}
+  .warn h4{color:var(--error);font-size:15px;font-weight:700;margin-bottom:var(--sp-xxs)}
+  .note{background:rgba(100,210,255,.07);border:1px solid rgba(100,210,255,.3);border-radius:14px;padding:var(--sp-md);margin-bottom:var(--sp-md)}
+  .note h4{color:var(--info);font-size:15px;font-weight:700;margin-bottom:var(--sp-xxs)}
+
+  ul.plain{list-style:none;display:grid;gap:10px}
+  ul.plain li{padding-left:22px;position:relative}
+  ul.plain li::before{content:"—";position:absolute;left:0;color:var(--primary)}
+
+  .brief{background:var(--media-well);border:1px solid var(--hairline);border-radius:14px;padding:var(--sp-md) var(--sp-lg)}
+  .brief h3{font-size:17px;font-weight:700;color:var(--ink);margin:var(--sp-md) 0 var(--sp-xxs) 0}
+  .brief h3:first-child{margin-top:0}
+  .brief ul{margin-left:18px;display:grid;gap:6px}
+  .brief li{font-size:14px}
+  .brief p{font-size:14px;margin-bottom:var(--sp-xxs)}
+
+  footer{padding:var(--sp-xl) 0 96px 0;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-pill"></span>Run-log · v3 랜딩 리서치</div>
+    <nav class="topnav">
+      <a href="#overview">개요</a>
+      <a href="#refs">레퍼런스</a>
+      <a href="#patterns">교차 패턴</a>
+      <a href="#proposal">v3 제안</a>
+      <a href="#caveats">한계·기각</a>
+      <a href="#brief">개발 브리프</a>
+      <a href="#next">다음 세션</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="eyebrow">Landing Page Reference Research · 2026-07-02</div>
+  <h1>Run-log v3 랜딩페이지<br>레퍼런스 조사 &amp; 개발 브리프</h1>
+  <p>러닝 기록 자동 릴스/영상 편집 앱 <strong>Run-log</strong>(출시 전, waitlist 단계)의 랜딩페이지 제로베이스 리빌드를 위한 조사 결과.
+  6개 레퍼런스를 <strong>2026-07-02 라이브 페이지 기준으로 직접 검증</strong>했고, 검증 통과한 주장만 이 문서에 실었다.
+  다음 세션은 이 문서 + <code>docs/run-log-prd-v2-overview.html</code> + <code>docs/design.html</code>을 읽고 바로 개발에 들어간다.</p>
+  <div class="meta-chips">
+    <span class="meta-chip">검색 앵글 <b>5</b></span>
+    <span class="meta-chip">소스 수집 <b>23</b></span>
+    <span class="meta-chip">추출 주장 <b>95</b></span>
+    <span class="meta-chip">3인 교차검증 <b>25</b></span>
+    <span class="meta-chip">검증 통과 <b>18</b></span>
+    <span class="meta-chip">기각 <b>7</b></span>
+  </div>
+</div>
+
+<!-- ================= OVERVIEW ================= -->
+<section id="overview">
+  <div class="eyebrow">TL;DR</div>
+  <h2 class="section-head">조사 요약</h2>
+  <p class="section-sub">
+    가장 직접적인 벤치마크는 <strong>Relive</strong>다 — "활동 데이터를 애니메이션 3D 영상 스토리로 자동 변환"이라는, Run-log와 정확히 같은 가치 제안 구조를 판다.
+    AI 영상 편집 앱들(<strong>Captions, OpusClip, Submagic</strong>)은 공통적으로 <em>결과 중심 수치 헤드라인 + 제품 즉시 체험형 진입점 + 대형 소셜 프루프</em> 패턴을 쓰고,
+    <strong>Runna</strong>는 소셜 프루프 상단 집중 + 리스크 제거 CTA 문구의 교과서다.
+  </p>
+  <div class="note">
+    <h4>핵심 결론</h4>
+    검증된 6개 레퍼런스는 전부 <strong>출시 후 제품</strong>이라 이메일 수집이 없거나 보조적이다(다운로드/가입 직행).
+    따라서 Run-log v3는 <strong>출시 후 제품의 패턴(카피 톤·소셜 프루프·섹션 흐름·즉시 체험 감각)을 차용하되,
+    전환 장치만 waitlist 이메일 폼(Formspree <code>mlgkkrrv</code>)으로 치환</strong>하는 접근이 현재 근거상 가장 안전하다.
+    추천 조합: <em>Relive식 감성 섹션 흐름 + Submagic식 결과 카피("기록에서 릴스까지, 자동으로") + 단일 이메일 필드 waitlist 폼</em>.
+  </div>
+</section>
+
+<!-- ================= REFERENCES ================= -->
+<section id="refs">
+  <div class="eyebrow">Verified References</div>
+  <h2 class="section-head">레퍼런스별 분석 (6)</h2>
+  <p class="section-sub">아래 내용은 전부 라이브 HTML 직접 검증(3인 교차검증 통과)을 거친 사실이다. 확신도 배지: <span class="badge high">HIGH</span> = 3-0 만장일치 통과.</p>
+
+  <!-- Relive -->
+  <div class="card">
+    <span class="badge cat">러닝/피트니스 · 최우선 벤치마크</span>
+    <h3>Relive <span class="badge high">HIGH · 3-0 ×4</span></h3>
+    <a class="url" href="https://www.relive.com/" target="_blank">https://www.relive.com/</a>
+    <dl class="kv">
+      <dt>히어로</dt>
+      <dd>대문자 헤드라인 <b>"TRACK &amp; SHARE YOUR ACTIVITIES LIKE NOTHING ELSE"</b> + 아웃도어 라이프스타일 실사 배경(해변 러너) + 앱 화면 폰 목업. <b>서브헤드라인 없이</b> 바로 App Store/Google Play 버튼으로 직행.</dd>
+      <dt>섹션 흐름</dt>
+      <dd><div class="flow"><span class="hot">히어로</span><span class="hot">Your activity stories (핵심 가치)</span><span>소셜 프루프+후기</span><span>Track/Create/Connect 3카드</span><span class="hot">For everyone (타 트래커 호환)</span><span class="hot">Get out there (감성)</span><span>최종 CTA</span><span>푸터</span></div></dd>
+      <dt>카피 톤</dt>
+      <dd>기능 나열보다 <b>감성 스토리텔링</b> 중심 — "What's your adventure?", "Together we get out there".</dd>
+      <dt>핵심 소구</dt>
+      <dd>Create 카드: <b>"Turn your activities into beautiful stories, including animated 3D videos"</b> — Run-log의 '러닝 기록 자동 릴스' 컨셉과 정확히 같은 가치 제안 구조.</dd>
+      <dt>CTA/이메일</dt>
+      <dd>이메일 폼 <b>0개</b>. CTA는 전부 앱스토어 배지(각 4회) + 'Get the app'(4회)/'Get started'/'Create your story' — 출시 후 다운로드 직행형.</dd>
+    </dl>
+    <div class="takeaway">감성 스토리텔링 섹션 흐름 전체를 뼈대로 차용. '타 트래커 호환(For everyone)' 섹션은 Strava/Garmin/애플워치 연동 소구 섹션으로 번안. 폰 목업 안에서 완성 릴스가 재생되는 히어로 비주얼 패턴("Image of phone with video")도 차용.</div>
+  </div>
+
+  <!-- Runna -->
+  <div class="card">
+    <span class="badge cat">러닝/피트니스</span>
+    <h3>Runna <span class="badge high">HIGH · 3-0 ×3</span></h3>
+    <a class="url" href="https://www.runna.com/" target="_blank">https://www.runna.com/</a>
+    <dl class="kv">
+      <dt>신뢰 구축</dt>
+      <dd>히어로 직후 <b>앱스토어 평점(Apple 4.9★ 76,000+ / Google 4.7★ 17,000+), 언론 로고(Runner's World, Marie Claire 등), 사용자 후기</b>를 페이지 상단에 집중 배치 — 소셜 프루프 상단 집중의 교과서.</dd>
+      <dt>섹션 흐름</dt>
+      <dd><div class="flow"><span>히어로</span><span class="hot">평점</span><span class="hot">후기</span><span class="hot">언론 로고</span><span class="hot">인터랙티브 레이스 타임 계산기</span><span>기능 4카드</span><span>트레이닝 플랜</span><span>가격</span><span>커뮤니티</span><span>코치</span><span>파트너</span><span>FAQ</span><span>블로그</span><span>최종 CTA</span></div></dd>
+      <dt>CTA</dt>
+      <dd>주 CTA 'Start Your Free Trial' + 리스크 제거 문구 <b>"First week free. Cancel anytime."</b>(4회 반복) + 앱스토어 링크 + QR 코드 병기.</dd>
+      <dt>이메일</dt>
+      <dd>최하단 뉴스레터 폼("Get running tips &amp; tricks in your inbox")으로 <b>보조적으로만</b> 사용 — 페이지 유일의 이메일 캡처 요소.</dd>
+      <dt>참여 장치</dt>
+      <dd>페이지 중간의 <b>인터랙티브 도구(3단계 레이스 타임 예측기)</b>로 스크롤 참여 유도.</dd>
+    </dl>
+    <div class="takeaway">CTA 버튼에 리스크 제거 마이크로카피를 항상 병기하는 패턴 차용 → waitlist 버전으로 "출시 시 우선 초대" 류 문구. 소셜 프루프 상단 집중 원칙도 차용(출시 전이므로 정성적 표현으로 — 진실성 가드 준수).</div>
+  </div>
+
+  <!-- Captions -->
+  <div class="card">
+    <span class="badge cat">AI 영상 편집</span>
+    <h3>Captions <span class="badge high">HIGH · 3-0 / 2-1</span></h3>
+    <a class="url" href="https://captions.ai/" target="_blank">https://captions.ai/</a>
+    <dl class="kv">
+      <dt>히어로</dt>
+      <dd><b>제품 즉시 체험형 히어로의 대표 사례.</b> 이메일 폼 대신 인터랙티브 업로드 UI("Import or drag your video" + "Create my video" 버튼)와 <b>20개 이상의 편집 스타일 썸네일 그리드</b>(Bloom, Prism Pro, Paper II, Prime, Y2K 등)를 배치 — 방문 즉시 제품을 체험하게 함. 헤드라인: "AI that edits like a professional editor would."</dd>
+      <dt>CTA/이메일</dt>
+      <dd>이메일 입력 필드 <b>0개</b>. 'Edit online'(/signup 웹 가입)과 'Get the app'(/download) 이중 CTA. <i>(이중 CTA 위치 주장은 2-1 통과 — 하단 CTA 블록 위치)</i></dd>
+    </dl>
+    <div class="takeaway">스타일 썸네일 그리드 → Run-log 릴스 템플릿/스타일 갤러리 섹션으로 번안. 출시 전이므로 실제 업로드 UI 대신 "완성 릴스 데모 갤러리"로 즉시 체험 감각만 차용.</div>
+  </div>
+
+  <!-- Videoleap -->
+  <div class="card">
+    <span class="badge cat">AI 영상 편집</span>
+    <h3>Videoleap <span class="badge high">HIGH · 3-0 ×3</span></h3>
+    <a class="url" href="https://www.videoleapapp.com/" target="_blank">https://www.videoleapapp.com/</a>
+    <dl class="kv">
+      <dt>히어로</dt>
+      <dd>"Your go-to video editor to create standout content" + 직관적 편집기·템플릿·AI 도구 서브카피. 주 CTA는 앱 다운로드가 아닌 <b>'Start free trial'</b>("7 day free trial, cancel anytime" 병기).</dd>
+      <dt>섹션 흐름</dt>
+      <dd><div class="flow"><span>히어로</span><span>기능 개요</span><span>SNS 콘텐츠 제작</span><span>AI 스포트라이트</span><span>기능 24그리드</span><span>템플릿 브라우징</span><span>유스케이스 3모듈</span><span>블로그</span><span class="hot">통계 소셜 프루프 (4.6★ 790K+ 리뷰, 95M+ DL)</span><span>푸터</span></div></dd>
+      <dt>CTA 반복</dt>
+      <dd><b>'Start free trial' 버튼이 페이지 전체 8회 반복.</b> 앱스토어 배지는 푸터에만. 이메일 폼 없음.</dd>
+    </dl>
+    <div class="takeaway">단일 주 CTA를 페이지 전반에 고밀도 반복하는 패턴 차용 — Run-log는 waitlist 폼/버튼을 최소 4회 이상 반복 배치.</div>
+  </div>
+
+  <!-- OpusClip -->
+  <div class="card">
+    <span class="badge cat">AI 영상 편집</span>
+    <h3>OpusClip <span class="badge high">HIGH · 3-0 ×3</span></h3>
+    <a class="url" href="https://www.opus.pro/captions" target="_blank">https://www.opus.pro/captions</a>
+    <dl class="kv">
+      <dt>히어로</dt>
+      <dd>정량 지표를 히어로에 직접 배치 — <b>5분 대기 시간, 99% 전사 정확도, 20개 이상 언어</b>. 진입점은 이메일이 아니라 'Add captions now' + 비디오 업로드("Drop a video link") — 가입 전 업로드 유도, 보조 CTA "Sign Up - It's Free".</dd>
+      <dt>소셜 프루프</dt>
+      <dd><b>"Used by 16M+ creators and businesses"</b> + 구독자 수 병기 크리에이터 아바타(Logan Paul 23.6M, Mark Rober 65.9M 등) + 기업 로고(Visa, GitHub, NVIDIA).</dd>
+      <dt>섹션 흐름</dt>
+      <dd><div class="flow"><span>히어로(지표)</span><span class="hot">소셜 프루프</span><span>기능 3섹션 (속도/바이럴리티/커스텀)</span><span>플랫폼 로고</span><span>워크플로우</span><span>기능 그리드</span><span>FAQ 11</span><span>최종 CTA</span></div></dd>
+    </dl>
+    <div class="takeaway">'부담 제거' 문구 패턴("It's Free", "No credit card" 류) → waitlist 폼 옆 마이크로카피로 번안. 수치 지표는 PRD가 실증하는 것만 사용(허위 수치 금지 — 진실성 가드).</div>
+  </div>
+
+  <!-- Submagic -->
+  <div class="card">
+    <span class="badge cat">AI 영상 편집 · 카피 벤치마크</span>
+    <h3>Submagic <span class="badge high">HIGH · 3-0 ×3</span></h3>
+    <a class="url" href="https://www.submagic.co/" target="_blank">https://www.submagic.co/</a>
+    <dl class="kv">
+      <dt>히어로</dt>
+      <dd><b>Run-log 카피의 가장 직접적인 벤치마크.</b> 수치 기반 결과 헤드라인 <b>"Edit shorts 10x faster with AI"</b> + 원클릭 자동화 서브카피 <b>"From raw footage to viral shorts in 1 click"</b> — "러닝 기록에서 릴스까지 자동으로" 류 카피의 정확한 참조 모델.</dd>
+      <dt>섹션 흐름</dt>
+      <dd><div class="flow"><span>히어로</span><span>신뢰 배지 (Trustpilot 4.8 / G2 4.9)</span><span>브랜드 로고 캐러셀</span><span>기능 6카드</span><span class="hot">3단계 사용법 (업로드→AI 편집→발행)</span><span>사용 사례 6카드</span><span>비디오 후기</span><span>FAQ</span><span>최종 CTA (통계 병기)</span></div></dd>
+      <dt>CTA</dt>
+      <dd>이메일 게이트 없이 'Get Started Now'/'Try for free' → <code>app.submagic.co/signup</code> 직결, 4회 반복(히어로/How it works/FAQ/최하단).</dd>
+    </dl>
+    <div class="takeaway">히어로 카피 공식 차용: [입력]에서 [결과물]까지 + 자동화 강조. 3단계 사용법 섹션을 "기록 연동 → AI 편집 → 릴스 공유"로 번안해 삽입.</div>
+  </div>
+</section>
+
+<!-- ================= CROSS PATTERNS ================= -->
+<section id="patterns">
+  <div class="eyebrow">Cross-Cutting Patterns</div>
+  <h2 class="section-head">교차 패턴 4가지 + waitlist 갭</h2>
+  <table>
+    <thead><tr><th style="width:220px">패턴</th><th>내용</th><th style="width:200px">근거 레퍼런스</th></tr></thead>
+    <tbody>
+      <tr><td><b>① CTA 고밀도 반복</b></td><td>다운로드/가입/체험 직행 CTA를 페이지 전반에 반복 (4~8회)</td><td>Videoleap(8회), Submagic(4회), Relive(4회+)</td></tr>
+      <tr><td><b>② 리스크 제거 마이크로카피</b></td><td>"free trial", "cancel anytime", "No credit card required"를 CTA에 병기</td><td>Runna, Videoleap, OpusClip</td></tr>
+      <tr><td><b>③ 히어로 인접 대형 소셜 프루프</b></td><td>평점/사용자 수/크리에이터/기업 로고를 히어로 바로 아래 집중</td><td>Runna, OpusClip, Submagic</td></tr>
+      <tr><td><b>④ 결과 중심 수치 헤드라인 + 즉시 체험</b></td><td>AI 제품군 공통 — 결과·수치 헤드라인과 업로드형/갤러리형 즉시 체험 진입점</td><td>Submagic, Captions, OpusClip</td></tr>
+    </tbody>
+  </table>
+  <div class="warn" style="margin-top:var(--sp-md)">
+    <h4>⚠ waitlist 카테고리 갭 — 검증된 레퍼런스 확보 실패</h4>
+    출시 전 waitlist 우수 사례로 수집된 주장(Superhuman 'Apply' CTA·27% 전환, Robinhood 대기열 순번·추천 구조, 콜드 트래픽 8-20% 전환율 벤치마크)은
+    <strong>전량 3인 검증에서 0-3으로 기각</strong>됐다(유일 출처가 단일 블로그 2차 소스). 해당 수치·사례는 <strong>근거로 사용 금지</strong>.
+    → 결론: 출시 후 패턴을 차용하고 전환 장치만 waitlist 폼으로 치환하는 것이 현재 근거상 가장 안전. waitlist 특화 장치(대기 순번, 추천 등)를 도입하려면 별도 재조사 필요.
+  </div>
+</section>
+
+<!-- ================= PROPOSAL ================= -->
+<section id="proposal">
+  <div class="eyebrow">Run-log v3 Application</div>
+  <h2 class="section-head">v3 적용 제안 5가지</h2>
+  <p class="section-sub">검증 통과한 18개 주장에서 도출한 조합 제안. 각 요소의 원본 패턴은 전부 HIGH 확신도. (waitlist 번안 효과 자체는 검증 사례가 없어 종합 확신도 <span class="badge medium">MEDIUM</span>)</p>
+  <ol class="proposal">
+    <li>
+      <h4>히어로 — Submagic 카피 공식 × Relive 비주얼</h4>
+      결과 중심 카피("러닝 기록에서 릴스까지, 자동으로" — PRD가 허용하면 수치 결합) + 러닝 라이프스타일 실사 배경 + <strong>완성 릴스가 재생되는 폰 목업</strong>.
+      Relive처럼 서브카피를 최소화하고 CTA로 직행.
+    </li>
+    <li>
+      <h4>CTA — 단일 이메일 필드 waitlist 폼 (히어로 배치 + 4회 이상 반복)</h4>
+      Formspree <code>mlgkkrrv</code> 폼을 히어로에 배치. Runna식 리스크 제거 마이크로카피("출시 시 우선 초대" 등, PRD 기준으로 확정) + OpusClip식 부담 제거 문구 병기.
+      Videoleap/Submagic처럼 페이지 전반 4회 이상 반복(히어로 / 사용법 직후 / 감성 섹션 / 최하단).
+    </li>
+    <li>
+      <h4>섹션 흐름 — Relive 감성 뼈대 + Submagic 3단계 삽입</h4>
+      <div class="flow" style="margin-top:8px">
+        <span class="hot">히어로 + waitlist 폼</span><span>핵심 가치 "당신의 러닝 스토리"</span><span>소셜 프루프(정성적)</span><span>기능 3카드</span><span class="hot">3단계: 기록 연동 → AI 편집 → 릴스 공유</span><span>트래커 호환 (Strava/Garmin/애플워치 — PRD 확인 필요)</span><span>감성 섹션</span><span class="hot">최종 CTA + 폼</span>
+      </div>
+    </li>
+    <li>
+      <h4>소셜 프루프 — 출시 전 대체재 (진실성 가드 준수)</h4>
+      평점·사용자 수가 없으므로: 베타 테스터 후기(실존하는 것만), <strong>생성된 릴스 샘플 갤러리</strong>(Captions 스타일 썸네일 그리드 차용)를 상단 배치.
+      ⚠ 가상 대기자 수 카운터는 진실성 가드 위반 — 실제 수치가 아니면 금지.
+    </li>
+    <li>
+      <h4>즉시 체험 감각 — 데모 영상/갤러리로 번안</h4>
+      Captions/OpusClip의 인터랙티브 진입점을 출시 전 버전으로: 히어로 또는 직하단에 <strong>실제 생성 릴스 데모 자동재생</strong> 또는 템플릿 스타일 갤러리 노출.
+      실제로 만들 수 있는 결과물만 노출(존재하지 않는 기능 주장 금지).
+    </li>
+  </ol>
+</section>
+
+<!-- ================= CAVEATS ================= -->
+<section id="caveats">
+  <div class="eyebrow">Caveats &amp; Refuted Claims</div>
+  <h2 class="section-head">조사의 한계 · 기각된 주장</h2>
+  <ul class="plain">
+    <li><strong>waitlist 카테고리 공백</strong> — 조사 목표 (3)의 우수 사례는 검증 확보 실패. 관련 제안은 출시 후 패턴의 번안이며 검증된 사례 기반이 아님.</li>
+    <li><strong>Strava, Nike Run Club, CapCut 미검증</strong> — 원 조사 범위였으나 검증 통과 주장이 없어 미포함. 필요 시 재조사.</li>
+    <li><strong>비주얼 디테일(컬러·타이포·모션) 미확보</strong> — HTML 텍스트 기반 검증의 한계로 카피·구조·CTA 중심으로 정리됨. 시각 분석은 스크린샷 기반 별도 조사 필요. 단, 디자인은 어차피 <code>docs/design.html</code>(크로노 앰버 다크 시스템)이 SSOT.</li>
+    <li><strong>시점 민감성</strong> — 전부 2026-07-02 라이브 기준. 이들 사이트는 A/B 테스트가 잦아 문구·수치가 수시로 변함.</li>
+    <li><strong>미세 불일치</strong> — Runna 평점 블록은 로케일별 변형 수치 가능. OpusClip 소셜 프루프는 히어로 '직하단'이 아니라 지표 3개 이후 위치.</li>
+  </ul>
+  <h3 style="color:var(--ink);font-size:17px;font-weight:700;margin:var(--sp-lg) 0 var(--sp-xs) 0">기각된 주장 (사용 금지) <span class="badge killed">KILLED</span></h3>
+  <table>
+    <thead><tr><th>주장</th><th style="width:90px">표결</th></tr></thead>
+    <tbody>
+      <tr><td>Runna 히어로가 "Running made simple" 카피 + 폰 목업/실사 결합이라는 주장</td><td>0-3 ✗</td></tr>
+      <tr><td>Captions 히어로 서브카피 구조 · 전체 섹션 흐름(스타일 갤러리→Before/After 등) 주장</td><td>0-3 / 1-2 ✗</td></tr>
+      <tr><td>OpusClip 히어로 카피 구조("Best Captions AI - Animated Captions in 1 Click") 주장</td><td>1-2 ✗</td></tr>
+      <tr><td>Superhuman waitlist 'Apply' CTA·전환율 27% 주장</td><td>0-3 ✗</td></tr>
+      <tr><td>Robinhood 사전 출시 대기열 순번·추천 구조·10만+ 기여 주장</td><td>0-3 ✗</td></tr>
+      <tr><td>waitlist 콜드 트래픽 전환율 8-20% 벤치마크 · 필드 추가당 5-15% 감소 주장</td><td>0-3 ✗</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= BRIEF ================= -->
+<section id="brief">
+  <div class="eyebrow">Original Brief (SSOT)</div>
+  <h2 class="section-head">v3 개발 브리프 원문</h2>
+  <p class="section-sub">아래는 사용자가 작성한 v3 리빌드 브리프 전문이다. 다음 세션의 개발 지침으로 그대로 적용한다.</p>
+  <div class="brief">
+    <h3>배경</h3>
+    <p>러닝 기록 자동 릴스/영상 편집 앱 <strong>Run-log</strong>의 랜딩페이지를 처음부터 새로 만든다.
+    기존 v2는 <a href="https://runlog-landing-page.vercel.app" target="_blank">runlog-landing-page.vercel.app</a> (ko) · /en (en)에 라이브 중이지만,
+    <strong>브랜드 컬러·로고가 새로 확정되었고 PRD가 대대적으로 수정되어 기존 코드는 계승하지 않고 싹 갈아엎는다.</strong>
+    이 폴더(<code>~/Documents/randing/runlogv2</code>)가 새 프로젝트 루트. 기존 레포(<code>~/Documents/runlog-landing-page</code>)는 참고용.</p>
+
+    <h3>입력 자료 (구현 전 전부 정독 — SSOT)</h3>
+    <ul>
+      <li><strong>PRD</strong>: <code>docs/run-log-prd-v2-overview.html</code> — 서비스 정의·기능 범위의 유일한 기준</li>
+      <li><strong>디자인 시스템</strong>: <code>docs/design.html</code> — 크로노 앰버(#FFB300) 다크 시스템, Pretendard + Barlow Condensed</li>
+      <li><strong>코드 컨벤션</strong>: <code>docs/런로그-코드컨벤션-가이드-v3.html</code></li>
+      <li><strong>레퍼런스</strong>: 본 문서의 조사 결과 (레퍼런스 섹션 + v3 제안)</li>
+      <li><strong>로고</strong>: 별도 파일 없음 — <code>docs/design.html</code>의 <code>brand-pill</code> 기하 스펙(400m 트랙 필 앰버 2px 외곽선 + 트랙 위 앰버 도트)이 로고 원본. CSS/SVG로 재현하며 파비콘·OG 이미지도 이 스펙에서 파생 생성.</li>
+    </ul>
+    <p>⚠ PRD/디자인 md와 아래 "계승 사항"이 충돌하면 <strong>새 PRD/디자인이 우선</strong>. 단, 충돌 지점은 사용자에게 보고할 것.</p>
+
+    <h3>기존 v2에서 계승할 것 (운영 자산)</h3>
+    <ul>
+      <li><strong>이메일 수집</strong>: Formspree form ID <code>mlgkkrrv</code> 그대로 사용 (허니팟 + ARIA 처리 포함)</li>
+      <li><strong>다국어 구조</strong>: ko=<code>/</code>(기본), en=<code>/en</code>. Next.js route-group 2-root-layout 방식 —
+      각 루트가 자기 <code>&lt;html lang&gt;</code>을 SSR, 카피는 서버에서 dict 주입(localStorage 없음, FOUC 0). 언어 토글은 Link로 해시 보존. v2에서 검증된 구조라 재사용 권장.</li>
+      <li><strong>SEO</strong>: hreflang·canonical·sitemap·robots 세트 유지. <code>SITE_URL</code>은 env <code>NEXT_PUBLIC_SITE_URL</code>로 override 가능하게.</li>
+      <li><strong>카피 SSOT 패턴</strong>: <code>app/lib/copy.ts</code> 하나에 ko/en 동형 타입 강제.</li>
+    </ul>
+
+    <h3>진실성 가드 (새 PRD가 달리 말하지 않는 한 유지)</h3>
+    <ul>
+      <li>출시 전 제품 — 존재하지 않는 기능을 주장하지 않는다.</li>
+      <li>가상 대기자 수 같은 허위 소셜프루프 금지 — 정성적 표현만.</li>
+    </ul>
+
+    <h3>v2 기술 교훈 (같은 함정 피하기)</h3>
+    <ul>
+      <li>Tailwind v4에서 <code>py-[--space-section-y]</code> 같은 CSS 변수 arbitrary value 무효 → 명시적 유틸(<code>py-28 md:py-36</code>) 사용.</li>
+      <li>디자인 토큰은 <code>globals.css</code>의 <code>@theme</code>에 정의.</li>
+      <li><code>next/font/google</code>은 빌드 타임 다운로드라 오프라인 CI에서 깨질 수 있음 → 폰트 self-host(<code>public/fonts/</code>) 우선 고려.</li>
+      <li>OG 이미지는 ko/en 각각 생성, 인스타/카톡 미리보기까지 검증.</li>
+    </ul>
+
+    <h3>스택 &amp; 검증</h3>
+    <ul>
+      <li>Next.js (App Router) + React + Tailwind v4 + TypeScript, 패키지 매니저 <strong>pnpm</strong>.</li>
+      <li>완료 기준: <code>pnpm build &amp;&amp; pnpm lint</code> 통과 + Playwright/헤드리스 브라우저로 ko/en 양쪽 실제 렌더 확인.</li>
+    </ul>
+
+    <h3>배포</h3>
+    <ul>
+      <li>Vercel CLI 직배포: <code>npx vercel --prod --yes</code> (계정 sunishae44-6783 인증됨).</li>
+      <li>⚠ 기존 프로젝트 <code>runlog-landing-page</code>에 덮어쓸지 / 새 Vercel 프로젝트로 갈지 — <strong>미확정, 사용자에게 확인할 것</strong>.</li>
+    </ul>
+
+    <h3>진행 방식</h3>
+    <ul>
+      <li>① 입력 자료를 전부 읽고, 이해한 서비스 정의·페이지 구조(섹션 구성)·디자인 방향을 <strong>요약해서 먼저 사용자에게 확인받는다.</strong></li>
+      <li>② 승인 후 섹션 단위로 구현. 카피는 ko 먼저 확정 → en 번역.</li>
+      <li>③ PRD에 없는 내용을 지어내지 말고, 애매하면 물어볼 것.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= NEXT SESSION ================= -->
+<section id="next">
+  <div class="eyebrow">Next Session Kickoff</div>
+  <h2 class="section-head">다음 세션 시작 가이드</h2>
+  <ol class="proposal">
+    <li><h4>정독</h4><code>docs/run-log-prd-v2-overview.html</code> → <code>docs/design.html</code> → <code>docs/런로그-코드컨벤션-가이드-v3.html</code> → 본 문서 순으로 읽는다.</li>
+    <li><h4>사용자 확인 (착수 전)</h4>① Vercel 배포 대상(기존 프로젝트 덮어쓰기 vs 신규) ② 이해한 서비스 정의·섹션 구성·디자인 방향 요약 승인 ③ 폰 목업에 넣을 실제 앱 화면/릴스 데모 영상 유무(없으면 CSS 시뮬레이션으로 진행) — 이 3가지를 확인받고 시작한다.</li>
+    <li><h4>스캐폴딩</h4>pnpm + Next.js(App Router) + Tailwind v4 + TS. route-group 2-root-layout(ko/en), <code>app/lib/copy.ts</code> SSOT, 폰트 self-host.</li>
+    <li><h4>섹션 단위 구현</h4>본 문서 "v3 적용 제안"의 섹션 흐름을 기본안으로, PRD와 충돌 시 PRD 우선(충돌 보고). 카피 ko 확정 → en 번역.</li>
+    <li><h4>모션 로고 제작 (병행 작업 — 사용자 요청)</h4>brand-pill 도트가 현재 정적 위치(오른쪽 위, 인스타 점 위치)에서 출발해 트랙을 <strong>정확히 한 바퀴 돌고 제자리에 멈추는</strong> 애니메이션. 산출물 3종: ① 웹용 CSS/SVG 애니메이션(랜딩 히어로·로딩 재사용) ② <strong>투명 배경 영상</strong>(ProRes 4444 또는 HEVC 알파 — 인스타 릴스 편집 오버레이용) ③ 다크 배경 MP4(인트로/아웃트로 범퍼용). 제작 방법: 헤드리스 브라우저 프레임 캡처 → ffmpeg 인코딩. 앰버 글로우(<code>box-shadow rgba(255,179,0,.5)</code>) 유지, Reduce Motion 대응은 웹 버전에만 적용.</li>
+    <li><h4>검증 &amp; 배포</h4><code>pnpm build &amp;&amp; pnpm lint</code> + ko/en 실렌더 확인 + OG 이미지(ko/en) 검증 → 사용자 승인 후 Vercel 배포.</li>
+  </ol>
+</section>
+
+<footer>
+  Run-log v3 · 랜딩페이지 레퍼런스 조사 &amp; 개발 브리프 · 조사일 2026-07-02 · 딥리서치 하네스(에이전트 105개, 소스 23개, 주장 95→검증 25→통과 18) 기반<br>
+  검증 방법: 각 주장을 독립 검증자 3인이 라이브 페이지 대조 — 2/3 이상 반박 시 기각. 기각된 주장은 본문에서 제외하고 별도 표기.
+</footer>
+
+</div>
+</body>
+</html>

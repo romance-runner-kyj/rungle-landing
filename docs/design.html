@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>run-log — Design System (final)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Brand & Accent — 크로노 앰버 */
+    --primary:#FFB300; --primary-pressed:#DB9900; --primary-dim:rgba(255,179,0,.16); --on-primary:#1A1403;
+    /* Surface — 무채색 암실 */
+    --canvas:#131313; --media-well:#0A0A0A; --elevated:#1E1E1E; --card:#242424;
+    --paper:#FFFFFF; --paper-soft:#F4F6F7;
+    /* Hairline */
+    --hairline:#2C2C2C; --hairline-soft:#222222; --hairline-paper:#DEE2E5;
+    /* Text */
+    --ink:#FFFFFF; --body:#A6A6A6; --muted:#707070;
+    --ink-paper:#131313; --muted-paper:#5B646C;
+    /* Semantic (iOS dark) */
+    --info:#64D2FF; --success:#30D158; --error:#FF453A;
+    /* Spacing */
+    --sp-xxxs:4px; --sp-xxs:8px; --sp-xs:12px; --sp-sm:16px; --sp-md:24px; --sp-lg:32px; --sp-xl:48px; --sp-xxl:64px;
+    --font-ui:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",-apple-system,system-ui,sans-serif;
+    --font-metric:"Barlow Condensed",-apple-system,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--canvas);color:var(--body);font-family:var(--font-ui);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+  /* ---------- 타이포 토큰 ---------- */
+  .metric-hero{font-family:var(--font-metric);font-weight:600;font-size:56px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+  .metric-lg{font-family:var(--font-metric);font-weight:600;font-size:32px;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
+  .metric-sm{font-family:var(--font-metric);font-weight:600;font-size:15px;line-height:1.2;letter-spacing:.2px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .timecode{font-family:var(--font-metric);font-weight:500;font-size:12px;line-height:1.2;letter-spacing:.3px;font-variant-numeric:tabular-nums}
+  .display-lg{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.3px;color:var(--ink)}
+  .title-md{font-size:20px;font-weight:700;line-height:1.3;letter-spacing:-.2px;color:var(--ink)}
+  .title-sm{font-size:17px;font-weight:600;line-height:1.35;color:var(--ink)}
+  .body-md{font-size:15px;font-weight:400;line-height:1.5}
+  .body-sm{font-size:13px;font-weight:400;line-height:1.45}
+  .caption{font-size:12px;font-weight:400;line-height:1.4;color:var(--muted)}
+  .label{font-size:11px;font-weight:600;line-height:1.3;letter-spacing:.4px}
+  .label-up{font-size:11px;font-weight:600;line-height:1.3;letter-spacing:.8px;text-transform:uppercase}
+  .btn-type{font-size:16px;font-weight:600;line-height:1}
+
+  /* ---------- 페이지 구조 ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(19,19,19,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--hairline)}
+  .topbar-in{max-width:1080px;margin:0 auto;padding:14px var(--sp-md);display:flex;align-items:center;gap:var(--sp-md)}
+  .brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:700;font-size:15px;letter-spacing:-.2px}
+  .brand-pill{width:26px;height:15px;border:2px solid var(--primary);border-radius:999px;position:relative;flex-shrink:0}
+  .brand-pill::after{content:"";position:absolute;width:5px;height:5px;background:var(--primary);border-radius:50%;top:-3.5px;left:14px}
+  .brand-pill-lg{width:78px;height:44px;border:3px solid var(--primary);border-radius:999px;position:relative}
+  .brand-pill-lg::after{content:"";position:absolute;width:10px;height:10px;background:var(--primary);border-radius:50%;top:-6.5px;left:44px;box-shadow:0 0 12px rgba(255,179,0,.5)}
+  .topnav{display:flex;gap:var(--sp-sm);margin-left:auto;flex-wrap:wrap}
+  .topnav a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.4px}
+  .topnav a:active{color:var(--ink)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 var(--sp-md)}
+  section{padding:var(--sp-xxl) 0;border-bottom:1px solid var(--hairline)}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--primary);text-transform:uppercase;margin-bottom:var(--sp-xs)}
+  .section-head{font-size:26px;font-weight:700;letter-spacing:-.3px;color:var(--ink);margin-bottom:var(--sp-xxs)}
+  .section-sub{max-width:660px;color:var(--body);margin-bottom:var(--sp-lg)}
+  .token{font-family:var(--font-mono);font-size:11.5px;color:var(--muted)}
+  .hex{font-family:var(--font-mono);font-size:11.5px;color:var(--body)}
+
+  /* ---------- 히어로 ---------- */
+  .hero{padding:96px 0 var(--sp-xxl) 0;border-bottom:1px solid var(--hairline)}
+  .hero h1{font-size:clamp(34px,6vw,52px);font-weight:700;letter-spacing:-.8px;line-height:1.1;color:var(--ink);margin-bottom:var(--sp-sm)}
+  .hero h1 em{font-style:normal;color:var(--primary)}
+  .hero p{max-width:620px;margin-bottom:var(--sp-xl)}
+  .hero-metrics{display:flex;gap:var(--sp-xl);flex-wrap:wrap;align-items:flex-end}
+  .hero-metric .label-up{color:var(--muted);display:block;margin-top:6px}
+  .hero-meta{margin-top:var(--sp-lg);display:flex;gap:var(--sp-sm);flex-wrap:wrap}
+  .meta-chip{border:1px solid var(--hairline);border-radius:999px;padding:6px 14px;font-size:12px;color:var(--body)}
+
+  /* ---------- 컬러 ---------- */
+  .swatch-group{margin-bottom:var(--sp-lg)}
+  .swatch-group h3{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:.4px;margin-bottom:var(--sp-sm)}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--sp-xs)}
+  .swatch{background:var(--elevated);border:1px solid var(--hairline);border-radius:12px;overflow:hidden}
+  .swatch-chip{height:64px}
+  .swatch-info{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+  .swatch-name{font-size:12.5px;font-weight:600;color:var(--ink)}
+
+  /* ---------- 타이포 표본 ---------- */
+  .spec-row{display:grid;grid-template-columns:230px 1fr;gap:var(--sp-md);padding:var(--sp-sm) 0;border-bottom:1px solid var(--hairline-soft);align-items:center}
+  .spec-row:last-child{border-bottom:none}
+  .spec-meta{display:flex;flex-direction:column;gap:2px}
+  .spec-note{font-size:11.5px;color:var(--muted)}
+
+  /* ---------- 스페이싱 ---------- */
+  .ladder{display:flex;flex-direction:column;gap:var(--sp-xs)}
+  .rung{display:grid;grid-template-columns:120px 60px 1fr;align-items:center;gap:var(--sp-sm)}
+  .rung-bar{height:14px;background:var(--primary);border-radius:3px;opacity:.85}
+
+  /* ---------- 셰이프 ---------- */
+  .shape-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--sp-sm)}
+  .shape-cell{background:var(--elevated);border:1px solid var(--hairline);border-radius:12px;padding:var(--sp-sm);display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+  .shape-demo{width:100%;height:56px;background:var(--card);border:1.5px solid var(--body)}
+
+  /* ---------- 버튼 ---------- */
+  .btn{border:none;cursor:pointer;font-family:var(--font-ui);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .btn-primary{background:var(--primary);color:var(--on-primary);height:52px;padding:0 28px;border-radius:999px}
+  .btn-primary:active{background:var(--primary-pressed)}
+  .btn-outline{background:transparent;color:var(--ink);height:52px;padding:0 28px;border-radius:999px;border:1px solid var(--hairline)}
+  .btn-text{background:transparent;color:var(--body);height:44px;padding:0 12px;font-size:15px;font-weight:600}
+  .btn-destructive{background:transparent;color:var(--error);height:44px;padding:0 12px;font-size:15px;font-weight:600}
+  .demo-row{display:flex;gap:var(--sp-sm);flex-wrap:wrap;align-items:center}
+
+  /* ---------- 컴포넌트 캔버스 ---------- */
+  .comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--sp-md)}
+  .comp{background:var(--elevated);border:1px solid var(--hairline);border-radius:16px;padding:var(--sp-md);display:flex;flex-direction:column;gap:var(--sp-sm)}
+  .comp.paper{background:var(--paper)}
+  .comp-title{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .comp.paper .comp-title{color:var(--ink-paper)}
+  .comp-desc{font-size:12px;color:var(--muted);margin-top:auto}
+  .comp.paper .comp-desc{color:var(--muted-paper)}
+  .comp-stage{background:var(--media-well);border-radius:12px;padding:var(--sp-sm);display:flex;flex-direction:column;gap:var(--sp-xs);align-items:center}
+  .tag-sig{flex-shrink:0;display:inline-flex;align-items:center;height:20px;padding:0 9px;border-radius:999px;background:var(--primary);color:var(--on-primary);font-size:10px;font-weight:700;letter-spacing:.6px}
+
+  /* 사진 대체(그라디언트 플레이스홀더) */
+  .ph{position:relative;overflow:hidden;background:linear-gradient(165deg,#2b3a4e 0%,#54514c 55%,#8a6a4b 100%)}
+  .ph.n2{background:linear-gradient(200deg,#22303f 0%,#151c24 70%,#0e1216 100%)}
+  .ph.n3{background:linear-gradient(150deg,#3d4a5c,#6b5a49 70%,#a0704a)}
+  .ph.n4{background:linear-gradient(180deg,#31435a,#1b2531)}
+  .ph.n5{background:linear-gradient(140deg,#4a4038,#241f1c)}
+  .ph.n6{background:linear-gradient(170deg,#243447,#446,#2a2f3a)}
+  .ph::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 70% 10%,rgba(255,255,255,.12),transparent 55%)}
+
+  /* 세션 카드 */
+  .session-card{background:var(--card);border-radius:12px;padding:var(--sp-sm);display:flex;gap:var(--sp-xs);align-items:center}
+  .session-thumb{width:56px;height:56px;border-radius:8px;flex-shrink:0}
+  .session-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .session-metrics{display:flex;gap:10px}
+
+  /* 브라우즈 그리드 */
+  .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;overflow:hidden}
+  .gal-cell{aspect-ratio:1;position:relative}
+  .gal-tc{position:absolute;right:6px;bottom:5px;color:var(--ink);background:rgba(10,10,10,.55);padding:2px 6px;border-radius:4px}
+
+  /* 릴스 템플릿 카드 */
+  .tpl-card{position:relative;width:76px;aspect-ratio:9/16;border-radius:8px;overflow:hidden;flex-shrink:0}
+  .tpl-card.sel{outline:2px solid var(--primary);outline-offset:-2px}
+  .tpl-cuts{position:absolute;top:6px;left:6px;right:6px;display:flex;gap:2px;z-index:2}
+  .tpl-cuts i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.5)}
+  .tpl-info{position:absolute;left:6px;right:6px;bottom:6px;display:flex;flex-direction:column;gap:1px;z-index:2}
+  .tpl-info .label{color:var(--ink)}
+  .tpl-scrim{position:absolute;inset:auto 0 0 0;height:44px;background:linear-gradient(180deg,rgba(10,10,10,0),rgba(10,10,10,.7))}
+
+  /* 배지·태그 */
+  .ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(19,19,19,.78);color:var(--body);border-radius:999px;padding:4px 10px}
+  .ai-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--info)}
+  .reason-tag{display:inline-block;background:rgba(10,10,10,.7);color:var(--body);border-radius:6px;padding:3px 8px}
+  .bc-rank{position:absolute;top:8px;left:8px;background:var(--primary);color:var(--on-primary);border-radius:999px;min-width:24px;height:24px;padding:0 4px;display:flex;align-items:center;justify-content:center;z-index:2}
+  .bc-rank.rest{background:rgba(10,10,10,.8);color:var(--ink)}
+  .order-badge{position:absolute;top:5px;left:5px;background:var(--primary);color:var(--on-primary);border-radius:999px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-family:var(--font-metric);font-weight:600;font-size:12px}
+
+  /* 베스트컷 카드 — 미디어라서 0px */
+  .bestcut{position:relative;overflow:hidden;aspect-ratio:4/5}
+  .bestcut.selected{outline:2px solid var(--primary);outline-offset:-2px}
+  .bestcut.selected::before{content:"";position:absolute;inset:0;background:var(--primary-dim);z-index:1}
+  .bestcut-scrim{position:absolute;inset:auto 0 0 0;padding:10px;background:linear-gradient(180deg,rgba(10,10,10,0),rgba(10,10,10,.65));display:flex;gap:6px;flex-wrap:wrap;z-index:2}
+  .bestcut-top{position:absolute;top:8px;right:8px;z-index:2}
+
+  /* 오버레이 칩 */
+  .overlay-chip{display:inline-flex;align-items:baseline;gap:8px;background:rgba(10,10,10,.65);backdrop-filter:blur(6px);border-radius:999px;padding:9px 16px}
+  .overlay-chip .label-up{color:rgba(255,255,255,.75)}
+
+  /* 트림 바 */
+  .trim{position:relative;height:44px;border-radius:8px;overflow:hidden;background:var(--media-well);width:100%}
+  .trim-strip{position:absolute;inset:6px;display:flex;gap:2px}
+  .trim-strip div{flex:1;border-radius:2px}
+  .trim-sel{position:absolute;top:0;bottom:0;left:26%;width:44%;background:var(--primary-dim);border:2px solid var(--primary);border-radius:6px}
+  .trim-handle{position:absolute;top:50%;transform:translateY(-50%);width:6px;height:22px;border-radius:3px;background:var(--primary)}
+
+  /* 선형 진행 (analysis-progress) */
+  .lin-wrap{width:100%}
+  .lin-track{height:4px;border-radius:999px;background:var(--card);overflow:hidden}
+  .lin-fill{height:100%;border-radius:999px;background:var(--primary)}
+  .lin-label{display:flex;justify-content:space-between;font-size:13px;margin-top:8px}
+  .lin-label b{color:var(--ink);font-weight:600}
+
+  /* 트랙 루프 프로그레스 (시그니처) */
+  .track-loop{position:relative;width:132px;height:64px;border:1.5px solid var(--hairline);border-radius:999px}
+  .track-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--primary);box-shadow:0 0 12px rgba(255,179,0,.55);offset-path:path("M 34 0 L 98 0 A 32 32 0 0 1 98 64 L 34 64 A 32 32 0 0 1 34 0 Z");offset-distance:0%;animation:orbit 2.4s linear infinite}
+  @keyframes orbit{to{offset-distance:100%}}
+  .track-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+  @media (prefers-reduced-motion: reduce){
+    .track-dot{animation:none;offset-distance:35%}
+  }
+
+  /* 토스트 */
+  .toast{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:12px 16px}
+  .toast .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+  /* 공유 시트 */
+  .share-row{display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid var(--hairline)}
+  .share-row:last-child{border-bottom:none}
+  .share-ic{width:32px;height:32px;border-radius:8px;background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--body);font-size:14px;flex-shrink:0}
+  .share-row .caption{margin-left:auto}
+
+  /* 동의 시트 (Paper) */
+  .consent-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--hairline-paper)}
+  .consent-item:last-child{border-bottom:none}
+  .consent-ic{width:34px;height:34px;border-radius:8px;background:var(--paper-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+  .consent-item b{display:block;color:var(--ink-paper);font-size:14px;font-weight:600}
+  .consent-item span{font-size:12.5px;color:var(--muted-paper)}
+
+  /* 얼굴 불가침 고지 */
+  .face-guard{display:flex;gap:12px;background:var(--card);border-radius:12px;padding:14px 16px;border-left:3px solid var(--info)}
+
+  /* 경로 분기 */
+  .path-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .path-card{background:var(--card);border-radius:12px;padding:var(--sp-sm);border:1px solid var(--hairline-soft)}
+  .path-card h4{color:var(--ink);font-size:15px;font-weight:600}
+  .path-card p{font-size:12px;margin-top:4px;color:var(--muted)}
+  .path-card .label-up{color:var(--muted);margin-top:10px;display:block}
+
+  /* 폰 목업 (에디터 인시추) */
+  .phone-wrap{display:flex;gap:var(--sp-xl);flex-wrap:wrap;align-items:flex-start}
+  .phone{width:300px;background:var(--media-well);border:1px solid var(--hairline);border-radius:36px;padding:10px;flex-shrink:0}
+  .phone-screen{border-radius:28px;overflow:hidden;background:var(--media-well);display:flex;flex-direction:column;height:600px}
+  .p-top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(180deg,rgba(10,10,10,.6),rgba(10,10,10,0));position:relative;z-index:2}
+  .p-icon{width:30px;height:30px;border-radius:50%;background:rgba(10,10,10,.5);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px}
+  .p-stage{flex:1;position:relative;margin-top:-54px}
+  .p-stage .ph{position:absolute;inset:0}
+  .p-overlaychip{position:absolute;left:12px;bottom:88px}
+  .p-cta{position:absolute;left:12px;right:12px;bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);border-radius:999px}
+  .p-cta .btn{width:100%}
+  .p-scrim{position:absolute;inset:auto 0 0 0;height:150px;background:linear-gradient(180deg,rgba(10,10,10,0),rgba(10,10,10,.65))}
+  .p-film{display:flex;gap:6px;padding:10px 12px;background:var(--media-well)}
+  .p-film .f{position:relative;width:48px;height:60px;border-radius:6px;overflow:hidden;flex-shrink:0}
+  .p-film .f.sel{outline:2px solid var(--primary);outline-offset:-2px}
+  .phone-notes{max-width:420px;display:flex;flex-direction:column;gap:var(--sp-sm)}
+  .note-line{display:flex;gap:10px;align-items:baseline}
+  .note-line .n{font-family:var(--font-metric);font-weight:600;color:var(--primary);font-size:14px;flex-shrink:0;width:18px}
+
+  /* Do / Don't */
+  .dd{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md)}
+  .dd-col{background:var(--elevated);border:1px solid var(--hairline);border-radius:16px;padding:var(--sp-md)}
+  .dd-col h3{font-size:14px;font-weight:700;margin-bottom:var(--sp-sm);display:flex;align-items:center;gap:8px}
+  .dd-col.do h3{color:var(--success)}
+  .dd-col.dont h3{color:var(--error)}
+  .dd-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .dd-col li{padding-left:18px;position:relative;font-size:13.5px}
+  .dd-col.do li::before{content:"·";position:absolute;left:4px;color:var(--success);font-weight:700}
+  .dd-col.dont li::before{content:"·";position:absolute;left:4px;color:var(--error);font-weight:700}
+
+  /* 표 */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.4px;padding:10px 12px;border-bottom:1px solid var(--hairline)}
+  td{padding:12px;border-bottom:1px solid var(--hairline);color:var(--body);vertical-align:top}
+  td:first-child{color:var(--ink);font-weight:600}
+
+  footer{padding:var(--sp-xl) 0 96px 0}
+  footer .caption{max-width:660px}
+
+  :focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+
+  @media (max-width:720px){
+    .spec-row{grid-template-columns:1fr;gap:6px}
+    .dd{grid-template-columns:1fr}
+    .hero-metrics{gap:var(--sp-md)}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-pill" aria-hidden="true"></span>run-log design</div>
+    <nav class="topnav" aria-label="섹션">
+      <a href="#colors">COLORS</a><a href="#type">TYPE</a><a href="#layout">LAYOUT</a><a href="#shapes">SHAPES</a><a href="#components">COMPONENTS</a><a href="#editor">EDITOR</a><a href="#dd">DO / DON'T</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ═══════════ 히어로 ═══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">run-log iOS v1 · Design System · PRD v2.1 Approved · 2026-07-02</div>
+    <h1>사진이 주인공,<br>기록은 <em>크로노 앰버</em>로 달린다</h1>
+    <p class="body-md">run-log의 인터페이스는 사용자의 사진·영상이 주인공인 <strong style="color:var(--ink)">암실(darkroom)</strong>입니다.
+    캔버스는 무채색 근흑(<span class="hex">#131313</span>) — 편집 도구의 크롬에 색조가 있으면 셀렉·필터 판단을 왜곡하므로 어떤 캐스트도 금지합니다.
+    단 하나의 액센트는 경기장 타이밍 보드에서 가져온 <strong style="color:var(--primary)">Chrono Amber</strong>(<span class="hex">#FFB300</span>).
+    브랜드의 기하는 400m 트랙 — 로고, 주 CTA, 기록 칩, 진행 루프가 같은 트랙 필을 공유합니다.
+    기록 수치는 레이스 빕과 피니시 클록의 목소리, Barlow Condensed 탭룰러로 씁니다.</p>
+    <div class="hero-metrics">
+      <div class="hero-metric"><span class="metric-hero">8.42</span><span class="label-up">Distance · KM</span></div>
+      <div class="hero-metric"><span class="metric-hero">5'42"</span><span class="label-up">Pace</span></div>
+      <div class="hero-metric"><span class="metric-hero" style="color:var(--primary)">48:12</span><span class="label-up">Time · 하이라이트 문맥만 앰버</span></div>
+    </div>
+    <div class="hero-meta">
+      <span class="meta-chip">근거: .discovery/03-prd/PRD.md (v2.1 Approved)</span>
+      <span class="meta-chip">정본: design.md — 토큰이 다르면 md 우선</span>
+      <span class="meta-chip">독자: 개발팀</span>
+      <span class="meta-chip">다크 퍼스트 · 라이트는 신뢰 표면만</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ 컬러 ═══════════ -->
+<section id="colors">
+  <div class="wrap">
+    <div class="eyebrow">Colors</div>
+    <h2 class="section-head">컬러 토큰</h2>
+    <p class="section-sub body-md">단일 액센트 원칙. 앰버의 사용처는 주 CTA · 선택/채택 상태 · 상위 3 랭크 · 추천 브래킷 · 진행 도트 · 하이라이트 기록뿐입니다. 상태 색은 iOS 다크 시맨틱을 차용해 시스템 시트와 한 몸처럼 보입니다 — 경고에 앰버를 쓰지 않습니다.</p>
+
+    <div class="swatch-group">
+      <h3>Brand &amp; Accent</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-chip" style="background:#FFB300"></div><div class="swatch-info"><span class="swatch-name">Chrono Amber</span><span class="token">{colors.primary}</span><span class="hex">#FFB300</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#DB9900"></div><div class="swatch-info"><span class="swatch-name">Amber Pressed</span><span class="token">{colors.primary-pressed}</span><span class="hex">#DB9900</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:rgba(255,179,0,.16)"></div><div class="swatch-info"><span class="swatch-name">Amber Dim</span><span class="token">{colors.primary-dim}</span><span class="hex">rgba(255,179,0,.16)</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#1A1403"></div><div class="swatch-info"><span class="swatch-name">On Primary</span><span class="token">{colors.on-primary}</span><span class="hex">#1A1403</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group">
+      <h3>Surface — 무채색 암실</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-chip" style="background:#131313"></div><div class="swatch-info"><span class="swatch-name">Canvas · 암실</span><span class="token">{colors.canvas}</span><span class="hex">#131313</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#0A0A0A"></div><div class="swatch-info"><span class="swatch-name">Media Well</span><span class="token">{colors.media-well}</span><span class="hex">#0A0A0A</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#1E1E1E"></div><div class="swatch-info"><span class="swatch-name">Canvas Elevated</span><span class="token">{colors.canvas-elevated}</span><span class="hex">#1E1E1E</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#242424"></div><div class="swatch-info"><span class="swatch-name">Surface Card</span><span class="token">{colors.surface-card}</span><span class="hex">#242424</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FFFFFF"></div><div class="swatch-info"><span class="swatch-name">Paper — 동의 전용</span><span class="token">{colors.paper}</span><span class="hex">#FFFFFF</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#F4F6F7"></div><div class="swatch-info"><span class="swatch-name">Paper Soft</span><span class="token">{colors.paper-soft}</span><span class="hex">#F4F6F7</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group">
+      <h3>Text &amp; Hairline</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-chip" style="background:#FFFFFF"></div><div class="swatch-info"><span class="swatch-name">Ink</span><span class="token">{colors.ink}</span><span class="hex">#FFFFFF</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#A6A6A6"></div><div class="swatch-info"><span class="swatch-name">Body</span><span class="token">{colors.body}</span><span class="hex">#A6A6A6 · 7.7:1</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#707070"></div><div class="swatch-info"><span class="swatch-name">Muted — 본문 금지</span><span class="token">{colors.muted}</span><span class="hex">#707070</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#2C2C2C"></div><div class="swatch-info"><span class="swatch-name">Hairline</span><span class="token">{colors.hairline}</span><span class="hex">#2C2C2C</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.85))"></div><div class="swatch-info"><span class="swatch-name">Scrim</span><span class="token">{colors.scrim}</span><span class="hex">gradient</span></div></div>
+      </div>
+    </div>
+
+    <div class="swatch-group">
+      <h3>Semantic (iOS dark)</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-chip" style="background:#64D2FF"></div><div class="swatch-info"><span class="swatch-name">Info — AI 배지 도트</span><span class="token">{colors.semantic-info}</span><span class="hex">#64D2FF</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#30D158"></div><div class="swatch-info"><span class="swatch-name">Success</span><span class="token">{colors.semantic-success}</span><span class="hex">#30D158</span></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#FF453A"></div><div class="swatch-info"><span class="swatch-name">Error — 앰버 금지</span><span class="token">{colors.semantic-error}</span><span class="hex">#FF453A</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 타이포 ═══════════ -->
+<section id="type">
+  <div class="wrap">
+    <div class="eyebrow">Typography</div>
+    <h2 class="section-head">타이포그래피 — 2성부</h2>
+    <p class="section-sub body-md">UI는 <strong style="color:var(--ink)">Pretendard</strong> 하나로, 러닝 기록 수치만
+    <strong style="color:var(--ink)">Barlow Condensed 600 + tabular numerals</strong>로 얹습니다 — 전광판의 목소리는 기록에만 허락됩니다.
+    한글에는 uppercase가 없으므로 라벨 위계는 크기·웨이트·자간으로, 영문 지표 라벨(PACE·KM)만 uppercase + tracking.</p>
+
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.metric-hero}</span><span class="spec-note">56px · Barlow Cond 600 · tnum</span></div><span class="metric-hero">8.42 KM</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.metric-lg}</span><span class="spec-note">32px · Barlow Cond 600 · tnum</span></div><span class="metric-lg">5'42" /KM</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.metric-sm}</span><span class="spec-note">15px · Barlow Cond 600 · +0.2px</span></div><span class="metric-sm">8.42 KM · 5'42" · 48:12</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.timecode}</span><span class="spec-note">12px · Barlow Cond 500 · +0.3px</span></div><span class="timecode" style="color:var(--body)">0:14 · 00:07.2 – 00:16.8</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.display-lg}</span><span class="spec-note">28px · Pretendard 700 · -0.3px</span></div><span class="display-lg">공유 준비 완료</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.title-md}</span><span class="spec-note">20px · 700 · -0.2px</span></div><span class="title-md">베스트컷 후보</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.title-sm}</span><span class="spec-note">17px · 600</span></div><span class="title-sm">한강 새벽런 7월 2일</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.body-md}</span><span class="spec-note">15px · 400 · lh 1.5</span></div><span class="body-md">이 시간대에 찍은 사진 84장과 영상 12개를 자동으로 모았어요. 잘못 매칭된 항목은 직접 빼거나 더할 수 있어요.</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.body-sm}</span><span class="spec-note">13px · 400</span></div><span class="body-sm">건강 데이터는 기록 표시에만 사용하고 광고에 쓰지 않아요.</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.caption}</span><span class="spec-note">12px · 400</span></div><span class="caption">오전 6:12 촬영 · 반포한강공원 · 자동 저장됨</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.label}</span><span class="spec-note">11px · 600 · +0.4px</span></div><span class="label" style="color:var(--body)">AI 추천 · 구도 좋음 · 얼굴 또렷</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.label-uppercase}</span><span class="spec-note">11px · 600 · +0.8px · upper</span></div><span class="label-up" style="color:var(--body)">PACE · DISTANCE · TIME · BPM</span></div>
+    <div class="spec-row"><div class="spec-meta"><span class="token">{typography.button}</span><span class="spec-note">16px · 600</span></div><span class="btn-type" style="color:var(--ink)">인스타그램 공유</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ 레이아웃 ═══════════ -->
+<section id="layout">
+  <div class="wrap">
+    <div class="eyebrow">Layout</div>
+    <h2 class="section-head">스페이싱 래더</h2>
+    <p class="section-sub body-md">4px 기반 명명 토큰. 화면 마진은 <span class="token">{spacing.sm}</span>(16px) 고정.
+    후보 카드 그리드는 2열(8px 간격) — 얼굴 판단에는 큰 카드. 브라우즈 그리드(3열)와 미디어 스테이지는 풀블리드, 미디어 그리드 갭 2px만 래더 밖 특례.</p>
+    <div class="ladder">
+      <div class="rung"><span class="token">{spacing.xxxs}</span><span class="hex">4px</span><div class="rung-bar" style="width:4px"></div></div>
+      <div class="rung"><span class="token">{spacing.xxs}</span><span class="hex">8px</span><div class="rung-bar" style="width:8px"></div></div>
+      <div class="rung"><span class="token">{spacing.xs}</span><span class="hex">12px</span><div class="rung-bar" style="width:12px"></div></div>
+      <div class="rung"><span class="token">{spacing.sm}</span><span class="hex">16px</span><div class="rung-bar" style="width:16px"></div></div>
+      <div class="rung"><span class="token">{spacing.md}</span><span class="hex">24px</span><div class="rung-bar" style="width:24px"></div></div>
+      <div class="rung"><span class="token">{spacing.lg}</span><span class="hex">32px</span><div class="rung-bar" style="width:32px"></div></div>
+      <div class="rung"><span class="token">{spacing.xl}</span><span class="hex">48px</span><div class="rung-bar" style="width:48px"></div></div>
+      <div class="rung"><span class="token">{spacing.xxl}</span><span class="hex">64px</span><div class="rung-bar" style="width:64px"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 셰이프 ═══════════ -->
+<section id="shapes">
+  <div class="wrap">
+    <div class="eyebrow">Shapes</div>
+    <h2 class="section-head">기하 3단 — 브랜드 기하는 트랙 필</h2>
+    <p class="section-sub body-md">판단 대상인 미디어는 각지게(0px), 손이 닿는 조작 UI는 둥글게(12px),
+    브랜드와 기록의 표면은 400m 트랙의 평면형으로. 로고 · CTA · 기록 칩 · 진행 루프가 같은 기하를 공유하며 시스템을 하나로 묶습니다.</p>
+    <div class="shape-grid">
+      <div class="shape-cell"><div class="shape-demo" style="border-radius:0"></div><span class="token">{rounded.none} · 0px</span><span class="caption">베스트컷 카드 · 풀블리드 미디어 · 브라우즈 셀</span></div>
+      <div class="shape-cell"><div class="shape-demo" style="border-radius:6px"></div><span class="token">{rounded.xs} · 6px</span><span class="caption">근거 태그 · 소스 배지</span></div>
+      <div class="shape-cell"><div class="shape-demo" style="border-radius:8px"></div><span class="token">{rounded.sm} · 8px</span><span class="caption">썸네일 · 클립 · 입력</span></div>
+      <div class="shape-cell"><div class="shape-demo" style="border-radius:12px"></div><span class="token">{rounded.md} · 12px</span><span class="caption">카드 · 토스트 · 프리뷰 프레임</span></div>
+      <div class="shape-cell"><div class="shape-demo" style="border-radius:16px 16px 0 0"></div><span class="token">{rounded.lg} · 16px</span><span class="caption">바텀시트 상단 · 다이얼로그</span></div>
+      <div class="shape-cell"><div class="shape-demo" style="border-radius:999px;border-color:var(--primary)"></div><span class="token">{rounded.full} · 트랙 필</span><span class="caption">로고 · 주 CTA · 오버레이 칩 · 배지 · 진행 루프</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 컴포넌트 ═══════════ -->
+<section id="components">
+  <div class="wrap">
+    <div class="eyebrow">Components</div>
+    <h2 class="section-head">컴포넌트</h2>
+    <p class="section-sub body-md">PRD v2.1의 FR/US에 직접 연결된 실물 렌더입니다. 앰버는 화면당 3개 이하.
+    모든 자동 추천 결과에는 AI 추천 배지가 붙습니다 — 자동과 수동의 경계를 숨기지 않는 것이 얼굴 불가침(US-004 AC5)과 짝을 이루는 신뢰의 시각 언어입니다.</p>
+
+    <div class="comp-grid">
+
+      <div class="comp">
+        <span class="comp-title">brand-pill — 로고</span>
+        <div class="comp-stage" style="padding:28px">
+          <span class="brand-pill-lg" aria-hidden="true"></span>
+          <span class="title-sm" style="margin-top:10px">run-log</span>
+        </div>
+        <span class="comp-desc">400m 트랙 필 외곽선(2px 앰버) + 트랙 위 앰버 도트. 탑바·스플래시·빈 상태·앱 아이콘의 기반. 이 도트는 트랙 루프 진행의 도트와 같은 존재 — 브랜드의 "달리는 점".</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">buttons</span>
+        <div class="demo-row"><button class="btn btn-primary btn-type">인스타그램 공유</button></div>
+        <div class="demo-row">
+          <button class="btn btn-outline btn-type">갤러리 저장</button>
+          <button class="btn btn-text">건너뛰기</button>
+          <button class="btn btn-destructive">초안 삭제</button>
+        </div>
+        <span class="comp-desc">button-primary · 52pt · 트랙 필 · 화면당 1개. 프레스 {colors.primary-pressed}, hover 없음(터치 앱). 보조는 아웃라인 필, 파괴는 텍스트 — 앰버·채움 금지.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">session-card — FR-002</span>
+        <div class="session-card">
+          <div class="session-thumb ph"></div>
+          <div class="session-info">
+            <span class="caption">7월 2일 수 · 오전 6:12 · Strava</span>
+            <span class="title-sm">한강 새벽런</span>
+            <div class="session-metrics"><span class="metric-sm">8.42 KM</span><span class="metric-sm">5'42"</span><span class="metric-sm">48:12</span></div>
+          </div>
+        </div>
+        <div class="session-card">
+          <div class="session-thumb ph n4"></div>
+          <div class="session-info">
+            <span class="caption">6월 29일 일 · 오후 7:44 · NRC</span>
+            <span class="title-sm">저녁 조깅</span>
+            <div class="session-metrics"><span class="metric-sm">5.03 KM</span><span class="metric-sm">6'08"</span><span class="metric-sm">30:51</span></div>
+          </div>
+        </div>
+        <span class="comp-desc">세션 시간대 대표 미디어 썸네일 + 기록 행(metric-sm, 잉크색). 매칭 미디어 0장이면 썸네일 자리에 거리 플레이트. 기록 0건이면 빈 화면 대신 연동 안내.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">analysis-progress — FR-021</span>
+        <div class="lin-wrap">
+          <div class="lin-track"><div class="lin-fill" style="width:62%"></div></div>
+          <div class="lin-label"><span><b>사진 84장 중 52장</b> 분석 중</span><span class="timecode" style="color:var(--body)">62%</span></div>
+        </div>
+        <span class="comp-desc">셀렉 대기 P50 10초(PRD §6) — 불확정 스피너 금지, 카운트 필수. 짧은 대기는 선형, 긴 대기(초안 생성 60초·렌더 30초)는 트랙 루프.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">bestcut-card — FR-020/021</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="bestcut ph">
+            <span class="bc-rank metric-sm" style="color:var(--on-primary)">1</span>
+            <span class="bestcut-top ai-badge label"><span class="dot"></span>AI 추천</span>
+            <div class="bestcut-scrim"><span class="reason-tag label">얼굴 또렷</span><span class="reason-tag label">구도 좋음</span></div>
+          </div>
+          <div class="bestcut selected ph n3">
+            <span class="bc-rank metric-sm" style="color:var(--on-primary)">2</span>
+            <div class="bestcut-scrim"><span class="reason-tag label">빛 좋음</span></div>
+          </div>
+        </div>
+        <span class="comp-desc">2열 4:5 · 0px(미디어) · 랭크는 트랙 필, 상위 3만 앰버. 선택 시 2px 앰버 링 + 딤 — 선택 상태가 앰버의 정당한 사용처. 근거 태그는 사람의 말로, 썸네일 필터·틴트 금지.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">browse-grid — FR-010/022</span>
+        <div class="gal">
+          <div class="gal-cell ph"></div>
+          <div class="gal-cell ph n2"><span class="gal-tc timecode">0:42</span></div>
+          <div class="gal-cell ph n3"></div>
+          <div class="gal-cell ph n4"></div>
+          <div class="gal-cell ph n5"></div>
+          <div class="gal-cell ph n6"><span class="gal-tc timecode">1:18</span></div>
+        </div>
+        <span class="comp-desc">전체 미디어 브라우즈(자동이 틀렸을 때의 우회로) — 3열 · 2px 갭 · 0px. 영상 셀엔 타임코드+스크림. 후보 화면에서 스크롤 없이 진입 가능해야 한다.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">reel-template-picker — FR-042</span>
+        <div class="demo-row" style="gap:8px">
+          <div class="tpl-card sel ph n2">
+            <div class="tpl-cuts"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="tpl-scrim"></div>
+            <div class="tpl-info"><span class="label">질주 6컷</span><span class="timecode" style="color:var(--body)">12s</span></div>
+          </div>
+          <div class="tpl-card ph n3">
+            <div class="tpl-cuts"><i></i><i></i><i></i><i></i></div>
+            <div class="tpl-scrim"></div>
+            <div class="tpl-info"><span class="label">풍경 스위치</span><span class="timecode" style="color:var(--body)">10s</span></div>
+          </div>
+          <div class="tpl-card ph n5">
+            <div class="tpl-cuts"><i></i><i></i><i></i></div>
+            <div class="tpl-scrim"></div>
+            <div class="tpl-info"><span class="label">페이스 존</span><span class="timecode" style="color:var(--body)">8s</span></div>
+          </div>
+        </div>
+        <span class="comp-desc">유행 릴스 형식(컷 구성·길이·전환·타이밍)의 데이터 정의 — 출시 5종+, 카드마다 결과 예시 미리보기(모션)와 컷 수 표시. 선택 시 앰버 링 + reel_template_selected 로깅. 릴스 템플릿(편집 프리셋)은 오버레이 스타일(기록 그래픽)과 별개 개념. 플로우: 베스트컷 → <b style="color:var(--body)">템플릿</b> → 구간 추천 → 초안.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">segment-trim-bar — FR-023</span>
+        <div class="trim">
+          <div class="trim-strip">
+            <div class="ph"></div><div class="ph n2"></div><div class="ph n3"></div><div class="ph n4"></div><div class="ph n5"></div><div class="ph n6"></div><div class="ph"></div><div class="ph n2"></div>
+          </div>
+          <div class="trim-sel"></div>
+          <div class="trim-handle" style="left:calc(26% - 3px)"></div>
+          <div class="trim-handle" style="left:calc(70% - 3px)"></div>
+        </div>
+        <div class="demo-row" style="justify-content:space-between;width:100%">
+          <span class="timecode" style="color:var(--body)">00:07.2 – 00:16.8</span>
+          <span class="ai-badge label"><span class="dot"></span>AI 추천 구간</span>
+        </div>
+        <span class="comp-desc">추천 구간은 앰버 딤 필 + 앰버 트림 핸들(히트 영역 44pt). 경계는 그대로 쓰거나 조정.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">overlay-chip — FR-030/032</span>
+        <div class="comp-stage" style="align-items:stretch">
+          <div class="ph n2" style="width:100%;height:120px;border-radius:8px;position:relative">
+            <div class="overlay-chip" style="position:absolute;left:10px;bottom:10px">
+              <span class="metric-sm">8.42</span><span class="label-up">KM</span>
+              <span class="metric-sm">5'42"</span><span class="label-up">Pace</span>
+            </div>
+          </div>
+        </div>
+        <span class="comp-desc">트랙 필 · 블러 배경 · 세션 실기록 바인딩 — 견본 숫자 금지. 결측 지표는 조용히 생략(FR-030), 얼굴·피사체·saliency 회피 배치(FR-032).</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">render-progress-track<span class="tag-sig">시그니처</span></span>
+        <div class="comp-stage" style="padding:24px">
+          <div class="track-loop" role="progressbar" aria-label="릴스 초안 생성 진행 중">
+            <div class="track-dot"></div>
+            <div class="track-center">
+              <span class="metric-sm">42s</span>
+              <span class="caption">초안 만드는 중</span>
+            </div>
+          </div>
+          <button class="btn btn-text" style="height:32px">취소</button>
+        </div>
+        <span class="comp-desc">시스템의 두 긴 대기 — 템플릿 초안 생성(P50 60초, US-007 AC3)과 릴스 export(P90 30초) — 에서 앰버 도트가 400m 트랙 루프를 돕니다. 단계 라벨("초안 만드는 중"/"내보내는 중"). 로고의 "달리는 점"이 실제로 달리는 곳. Reduce Motion 시 정적 진행으로 대체, 진행 중 화면 이탈해도 계속됨을 명시.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">metric-toggle-chips · 투명 PNG — US-006 AC4 / FR-034</span>
+        <div class="demo-row">
+          <span class="ai-badge label" style="background:var(--card);color:var(--ink)">거리</span>
+          <span class="ai-badge label" style="background:var(--card);color:var(--ink)">페이스</span>
+          <span class="ai-badge label" style="background:transparent;box-shadow:inset 0 0 0 1px var(--hairline);color:var(--muted)">경로</span>
+          <span class="ai-badge label" style="background:transparent;box-shadow:inset 0 0 0 1px var(--hairline);color:var(--muted)">날짜</span>
+        </div>
+        <div class="body-sm" style="color:var(--body)"><b style="color:var(--ink)">오버레이만 저장</b> — 투명 PNG</div>
+        <span class="comp-desc">지표 켜고 끄기 — 일상 컨트롤이라 앰버를 쓰지 않는다. "오버레이만 저장"은 상시 노출 — NRC가 못 주는 투명 기록 파일이 도그푸딩 1순위 페인.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">share-destination-sheet — US-009 / FR-061</span>
+        <div>
+          <div class="share-row"><span class="share-ic">◨</span><span class="title-sm">인스타그램 스토리</span><span class="caption">딥링크 — 바로 열림</span></div>
+          <div class="share-row"><span class="share-ic">◫</span><span class="title-sm">인스타그램 릴스</span><span class="caption">공유 시트</span></div>
+          <div class="share-row"><span class="share-ic">▦</span><span class="title-sm">인스타그램 피드</span><span class="caption">공유 시트</span></div>
+          <div class="share-row"><span class="share-ic">⇩</span><span class="title-sm">갤러리에 저장</span></div>
+        </div>
+        <span class="comp-desc">완성 화면은 [인스타그램 공유] [갤러리 저장] 두 버튼으로 끝(US-009) — 이 시트는 [인스타그램 공유] 탭 후에만. 행 56pt, 미설치 시 행 비활성 + 안내.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">path-choice — FR-070</span>
+        <div class="path-choice">
+          <div class="path-card"><h4>풀 플로우</h4><p>베스트컷 → 템플릿 → 초안 → 다듬기</p><span class="label-up">약 3분</span></div>
+          <div class="path-card"><h4>빠른 스탬프</h4><p>사진 1장 + 기록 오버레이</p><span class="label-up">약 1분</span></div>
+        </div>
+        <span class="comp-desc">세션 선택 직후 경로 분기. 빠른 스탬프는 "약 1분"을 UI가 약속한다(US-010, P50 60초).</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">toast — 결과 피드백</span>
+        <div class="toast"><span class="dot" style="background:var(--success)"></span><span class="body-sm" style="color:var(--ink)">인스타그램으로 전달했어요 — 게시는 인스타그램에서 마무리하세요</span></div>
+        <div class="toast"><span class="dot" style="background:var(--error)"></span><span class="body-sm" style="color:var(--ink)">렌더에 실패했어요. 다시 시도해 주세요</span></div>
+        <span class="comp-desc">관측 한계(인스타 반응 수치 미회수)를 문구로 정직하게. 상태 색은 도트에만 — 시맨틱 3색 전용, 앰버 아님.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">face-guard-notice — US-004 AC5</span>
+        <div class="face-guard">
+          <div>
+            <span class="title-sm" style="display:block;margin-bottom:4px">얼굴은 건드리지 않아요</span>
+            <span class="body-sm">AI는 얼굴을 만들거나 바꾸지 않아요. 잘 나온 컷을 고르는 데만 사용해요. 분석은 전부 이 기기 안에서 끝나요.</span>
+          </div>
+        </div>
+        <span class="comp-desc">AI 기능 최초 노출 시 1회. 마케팅 문구가 아니라 제품 제약(얼굴 불가침·온디바이스, PRD §11)의 고지.</span>
+      </div>
+
+      <div class="comp paper">
+        <span class="comp-title">consent-sheet-light — US-013 · Paper 신뢰 표면</span>
+        <div>
+          <div class="consent-item"><span class="consent-ic">♥</span><div><b>건강 데이터</b><span>러닝 거리·페이스·시간을 불러와 기록으로 보여드려요. 광고에 쓰지 않아요.</span></div></div>
+          <div class="consent-item"><span class="consent-ic">▣</span><div><b>사진 라이브러리</b><span>러닝 시간대에 찍은 사진·영상을 찾는 데만 사용해요.</span></div></div>
+          <div class="consent-item"><span class="consent-ic">◷</span><div><b>알림</b><span>러닝이 끝나면 잊기 전에 알려드려요. 꺼도 앱은 정상 동작해요.</span></div></div>
+        </div>
+        <span class="comp-desc">동의·프라이버시는 다크 앱 속 유일한 라이트 표면 — 흰 종이 위 검은 글씨, 계약서의 질감. 각 권한은 처음 필요해지는 시점에만.</span>
+      </div>
+
+      <div class="comp">
+        <span class="comp-title">record-cell — 기록 문법</span>
+        <div class="demo-row" style="gap:32px">
+          <div><span class="metric-lg">42.195</span><br><span class="label-up" style="color:var(--muted)">Distance · KM</span></div>
+          <div><span class="metric-lg" style="color:var(--primary)">4'58"</span><br><span class="label-up" style="color:var(--muted)">신기록 페이스</span></div>
+        </div>
+        <span class="comp-desc">기본은 잉크 — 신기록·하이라이트 문맥에서만 앰버. 오버레이 카탈로그(정적 10종+모션 3종, FR-031)와 릴스 템플릿 카탈로그(5종+, FR-042)는 별도 산출물이며 이 기록 문법과 결측 생략 규칙을 상속한다.</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 에디터 인시추 ═══════════ -->
+<section id="editor">
+  <div class="wrap">
+    <div class="eyebrow">In Situ</div>
+    <h2 class="section-head">에디터 — 시스템이 한 화면에 모이면</h2>
+    <p class="section-sub body-md">풀블리드 스테이지 위에 스크림 · 오버레이 칩 · 플로팅 원탭 CTA · 필름스트립 순서 배지가 함께 있는 모습입니다.
+    3분 동선(G1)의 시각적 주인공은 하나 — 플로팅 앰버 CTA뿐입니다.</p>
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="p-top">
+            <span class="p-icon">‹</span>
+            <span class="label" style="color:var(--ink)">편집</span>
+            <span class="p-icon">↩</span>
+          </div>
+          <div class="p-stage">
+            <div class="ph"></div>
+            <div class="p-scrim"></div>
+            <div class="p-overlaychip overlay-chip">
+              <span class="metric-sm">8.42</span><span class="label-up">KM</span>
+              <span class="metric-sm">5'42"</span><span class="label-up">Pace</span>
+            </div>
+            <div class="p-cta"><button class="btn btn-primary btn-type">추천 그대로 쓰기</button></div>
+          </div>
+          <div class="p-film">
+            <div class="f sel ph"><span class="order-badge">1</span></div>
+            <div class="f sel ph n3"><span class="order-badge">2</span></div>
+            <div class="f sel ph n2"><span class="order-badge">3</span></div>
+            <div class="f ph n4"></div>
+            <div class="f ph n5"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-notes">
+        <div class="note-line"><span class="n">1</span><span class="body-md"><strong style="color:var(--ink)">스테이지는 풀블리드.</strong> 크롬은 상·하단 스크림 위에만 얹고, 오버레이처럼 얼굴·피사체를 피해 배치합니다.</span></div>
+        <div class="note-line"><span class="n">2</span><span class="body-md"><strong style="color:var(--ink)">overlay-chip.</strong> 세션 실기록이 바인딩된 트랙 필. 값·단위의 정확성이 곧 디자인 품질입니다(FR-030).</span></div>
+        <div class="note-line"><span class="n">3</span><span class="body-md"><strong style="color:var(--ink)">one-tap-banner.</strong> [추천 그대로 쓰기]는 유일한 그림자 티어를 쓰는 유일한 플로팅 요소 — 무수정 공유율(G2 ≥ 20%)로 직결되는 TT-Share 최단 경로.</span></div>
+        <div class="note-line"><span class="n">4</span><span class="body-md"><strong style="color:var(--ink)">filmstrip-order-badge.</strong> 선택 순서를 앰버 필 배지로(FR-050). 드래그 재정렬 시 번호 실시간 갱신. 편집 상태는 자동 저장(FR-051).</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ Do / Don't ═══════════ -->
+<section id="dd">
+  <div class="wrap">
+    <div class="eyebrow">Discipline</div>
+    <h2 class="section-head">Do's and Don'ts</h2>
+    <div class="dd" style="margin-top:var(--sp-md)">
+      <div class="dd-col do">
+        <h3>Do</h3>
+        <ul>
+          <li>앰버는 주 CTA · 선택/채택 상태 · 상위 3 랭크 · 추천 브래킷 · 진행 도트 · 하이라이트 기록에만.</li>
+          <li>기록 수치는 항상 metric 토큰(Barlow Condensed 600 + tabular) — 숫자가 이 브랜드의 얼굴.</li>
+          <li>자동 추천에는 항상 AI 추천 배지 — 자동과 수동의 경계를 숨기지 않는다.</li>
+          <li>모든 대기에 결정적 진행 표시 + 카운트 — 셀렉 10초·초안 생성 60초·렌더 30초는 UI의 일부.</li>
+          <li>미디어 위 가독은 스크림으로 — 크롬도 얼굴·피사체를 피해 배치.</li>
+          <li>동의·프라이버시 표면은 Paper 라이트 서피스로.</li>
+          <li>화면당 주 CTA 1개 · 브랜드·기록 표면은 트랙 필 · 건너뛰기·우회로는 스크롤 없이 노출.</li>
+        </ul>
+      </div>
+      <div class="dd-col dont">
+        <h3>Don't</h3>
+        <ul>
+          <li>앰버를 경고·에러·비활성에 쓰지 않는다 — 상태는 iOS 시맨틱 3색.</li>
+          <li>탭 활성·슬라이더 등 일상 컨트롤에 앰버 금지 — 액센트가 흔해지면 CTA가 죽는다.</li>
+          <li>캔버스에 색조·그라데이션 금지 — 블루 캐스트도 사진 판단을 왜곡한다(암실 원칙). 순흑은 media-well만.</li>
+          <li>후보 썸네일에 필터·틴트·라운드 금지 — 셀렉은 원본 판단이다.</li>
+          <li>사용자 미디어 위에 브랜드 그라디언트·워터마크·장식 금지. 인스타그램 그라디언트 모방 금지.</li>
+          <li>얼굴 위에는 어떤 UI·오버레이도 자동 배치하지 않는다.</li>
+          <li>공유 동선에 결제·광고·모달·별점 요청 금지(USP 3) — 완성 화면은 두 버튼으로 끝.</li>
+          <li>Strava 오렌지·볼트 그린 등 제2 액센트 금지 · 그림자는 플로팅 CTA 단 1티어.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 반응형 ═══════════ -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Responsive</div>
+    <h2 class="section-head">디바이스 클래스 &amp; 접근성</h2>
+    <table style="margin-top:var(--sp-sm)">
+      <thead><tr><th>클래스</th><th>폭</th><th>주요 변화</th></tr></thead>
+      <tbody>
+        <tr><td>Compact</td><td>~375pt</td><td>metric-hero 56→44px · 후보 그리드 2열 유지(카드 축소) · 필름스트립 축소</td></tr>
+        <tr><td>Standard</td><td>390–402pt</td><td>기준 스펙</td></tr>
+        <tr><td>Max / Plus</td><td>430pt+</td><td>후보 2열 유지 + 카드 확대 · 브라우즈 그리드 4열 허용 — 후보 열은 늘리지 않는다(얼굴 판단)</td></tr>
+        <tr><td>iPad / Landscape</td><td>—</td><td>v1 범위 밖 — 세로 고정</td></tr>
+      </tbody>
+    </table>
+    <p class="body-sm" style="margin-top:var(--sp-md);max-width:660px">터치 타깃 최소 44pt(WCAG 2.2 AA, PRD §11) · 트림 핸들·순서 배지·오버레이 칩 핸들은 44pt 히트 영역 확장 · 본문은 Dynamic Type 추종, metric은 고정하되 VoiceOver가 수치를 문장으로 읽는다("8.4킬로미터, 킬로미터당 5분 42초") · Reduce Motion 시 트랙 루프는 정적 진행으로 대체 · 셀렉·오버레이·렌더·저장은 네트워크 없이 완결(PRD §11).</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand" style="margin-bottom:var(--sp-sm)"><span class="brand-pill" aria-hidden="true"></span>run-log design</div>
+    <p class="caption">이 페이지는 루트 <span class="token">design.md</span>의 렌더 컴패니언입니다. 정본은 design.md — 토큰·수치가 다르면 md가 우선합니다.<br>
+    사진 자리는 그라디언트 플레이스홀더입니다. 실제 제품에선 사용자의 러닝 미디어가 이 자리를 채웁니다 — 사진이 이 앱의 유일한 장식입니다.<br>
+    근거: .discovery/03-prd/PRD.md v2.1 (Approved) · 오버레이 그래픽 카탈로그(정적 10종 + 모션 3종, FR-031)와 릴스 템플릿 카탈로그(5종 이상, FR-042)는 별도 산출물.</p>
+  </div>
+</footer>
+
+</body>
+</html>

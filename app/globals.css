@@ -1,0 +1,397 @@
+/**
+ * app/globals.css — 디자인 토큰 SSOT (정본: docs/design.html 크로노 앰버 다크 시스템)
+ * ─────────────────────────────────────────────────────────
+ * 원칙 (design.md):
+ *  - 캔버스는 무채색 근흑 #131313 — 색조·그라데이션 캐스트 금지 (암실 원칙)
+ *  - 단일 액센트 Chrono Amber #FFB300 — 주 CTA·선택 상태·하이라이트 기록에만
+ *  - 기록 수치는 Barlow Condensed 600 + tabular numerals (전광판의 목소리)
+ *  - 브랜드 기하는 400m 트랙 필 (rounded-full) — 로고·주 CTA·기록 칩 공유
+ *
+ * ⚠ v2 교훈: Tailwind v4에서 py-[--token] 류 CSS 변수 arbitrary value는 무효.
+ *   spacing은 명시적 유틸(py-24 md:py-32 등)로 쓴다.
+ */
+@import "tailwindcss";
+
+/* ── 폰트 self-host (오프라인 CI 안전 — v2 교훈) ─────────── */
+@font-face {
+  font-family: "Pretendard Variable";
+  src: url("/fonts/PretendardVariable.woff2") format("woff2-variations");
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("/fonts/BarlowCondensed-Medium-latin.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("/fonts/BarlowCondensed-SemiBold-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── 디자인 토큰 (design.html {colors.*} 1:1) ────────────── */
+@theme {
+  /* Brand & Accent */
+  --color-amber: #ffb300; /* {colors.primary} Chrono Amber */
+  --color-amber-pressed: #db9900; /* {colors.primary-pressed} */
+  --color-amber-dim: rgba(255, 179, 0, 0.16); /* {colors.primary-dim} */
+  --color-on-primary: #1a1403; /* {colors.on-primary} */
+
+  /* Surface — 무채색 암실 */
+  --color-canvas: #131313; /* {colors.canvas} */
+  --color-media-well: #0a0a0a; /* {colors.media-well} */
+  --color-canvas-elevated: #1e1e1e; /* {colors.canvas-elevated} */
+  --color-surface-card: #242424; /* {colors.surface-card} */
+  --color-paper: #ffffff; /* {colors.paper} */
+  --color-paper-soft: #f4f6f7; /* {colors.paper-soft} */
+
+  /* Text & Hairline */
+  --color-ink: #ffffff; /* {colors.ink} */
+  --color-body: #a6a6a6; /* {colors.body} 7.7:1 */
+  --color-muted: #707070; /* {colors.muted} — 본문 금지 */
+  --color-hairline: #2c2c2c; /* {colors.hairline} */
+
+  /* Semantic (iOS dark) — 앰버 금지 영역 */
+  --color-info: #64d2ff;
+  --color-success: #30d158;
+  --color-error: #ff453a;
+
+  /* Typography */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue",
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-metric: "Barlow Condensed", "Arial Narrow", "Helvetica Neue",
+    sans-serif;
+}
+
+/* ── 전역 기본 ───────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 기록 수치 공통 — {typography.metric-*} */
+.metric {
+  font-family: var(--font-metric);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* 앰버 글로우 — 주 CTA·달리는 점 전용 (그림자는 플로팅 CTA 단 1티어) */
+.amber-glow {
+  box-shadow: 0 0 24px rgba(255, 179, 0, 0.35);
+}
+.amber-dot-glow {
+  box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
+}
+
+/* 폰 목업 릴스 시뮬레이션 — 재생 진행 바 */
+@keyframes reel-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.reel-progress {
+  transform-origin: left;
+  animation: reel-progress 9s linear infinite;
+}
+
+/* ── 스크롤 등장 (Reveal 컴포넌트 — v2 검증 패턴) ────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* JS 미동작 환경 폴백 — 콘텐츠가 영영 안 보이는 사고 방지 */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── 히어로 진입 스태거 (로드 시 1회, CSS만) ──────────────── */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-rise {
+  opacity: 0;
+  animation: rise-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-rise-1 { animation-delay: 0.05s; }
+.hero-rise-2 { animation-delay: 0.15s; }
+.hero-rise-3 { animation-delay: 0.25s; }
+.hero-rise-4 { animation-delay: 0.38s; }
+.hero-rise-5 { animation-delay: 0.5s; }
+
+/* ── 폰 목업: 부유 ────────────────────────────────────────── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+.float {
+  animation: float 7s ease-in-out infinite;
+}
+
+/* ── 폰 목업: 릴스 3컷 크로스페이드 (9초 = 3컷 × 3초) ──────── */
+@keyframes scene-cycle {
+  0%, 30% { opacity: 1; }
+  36%, 94% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.reel-scene {
+  opacity: 0;
+  animation: scene-cycle 9s linear infinite;
+}
+.reel-scene-1 { animation-delay: 0s; }
+.reel-scene-2 { animation-delay: 3s; }
+.reel-scene-3 { animation-delay: 6s; }
+
+/* 필름스트립 활성 링 — 재생 중 컷 따라 이동 */
+@keyframes thumb-active {
+  0%, 30% { opacity: 1; }
+  36%, 94% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.thumb-ring {
+  opacity: 0;
+  animation: thumb-active 9s linear infinite;
+}
+.thumb-ring-1 { animation-delay: 0s; }
+.thumb-ring-2 { animation-delay: 3s; }
+.thumb-ring-3 { animation-delay: 6s; }
+
+/* 경로(route) 오버레이 — 드로잉 루프 */
+@keyframes route-draw {
+  0% { stroke-dashoffset: 240; }
+  55%, 100% { stroke-dashoffset: 0; }
+}
+.route-path {
+  stroke-dasharray: 240;
+  animation: route-draw 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes route-dot {
+  0% { offset-distance: 0%; }
+  55%, 100% { offset-distance: 100%; }
+}
+
+/* 경로를 달리는 도트 — offset-path 미지원 시 숨김(기존 route-dot 키프레임 재사용) */
+.route-runner {
+  opacity: 0;
+}
+@supports (offset-path: path("M0 0")) {
+  .route-runner {
+    opacity: 1;
+    offset-path: path("M8 78 C 20 62, 14 44, 30 38 S 62 46, 74 32 S 96 10, 112 14");
+    offset-rotate: 0deg;
+    animation: route-dot 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+/* 트림 바 재생 헤드 — 트랙 필을 도는 앰버 도트 (S8 render-progress-track) */
+@keyframes reel-head {
+  from { left: 0%; }
+  to { left: 100%; }
+}
+.reel-head {
+  left: 0%;
+  animation: reel-head 9s linear infinite;
+}
+
+/* ── 히어로 배경: 히어로 대부분을 덮는 400m 트랙 궤도 (달리는 점) ──
+   스타디움 셰이프(가로로 긴 라운드 사각) 바깥 레인 + 안쪽 레인 1개.
+   콘텐츠 뒤(-z-10)에 깔리며 히트테스트를 막지 않는다. */
+.track-orbit {
+  /* 위치(inset)는 사용처에서 Tailwind 유틸로 지정 */
+  position: absolute;
+  border: 1.5px solid rgba(255, 179, 0, 0.14);
+  border-radius: 999px;
+  pointer-events: none;
+}
+.track-orbit::before {
+  /* 안쪽 레인 — 트랙 질감 (도트 없음, 더 희미하게) */
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 179, 0, 0.07);
+  border-radius: 999px;
+}
+@supports (offset-path: inset(0 round 999px)) {
+  .track-orbit::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-amber);
+    box-shadow: 0 0 12px rgba(255, 179, 0, 0.55);
+    offset-path: inset(-1px round 999px);
+    /* 히어로 전폭 둘레 — 한 바퀴 16초 (좁은 궤도 시절 8초의 2배) */
+    animation: track-run 16s linear infinite;
+  }
+}
+@keyframes track-run {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+/* ── 모션 로고: brand-pill 도트가 트랙을 정확히 한 바퀴 ────────
+   브리프 스펙: 정적 위치(오른쪽 위)에서 출발 → 한 바퀴 → 제자리 정지.
+   offset-path 미지원 브라우저는 정적 도트(absolute top/right)로 폴백. */
+@supports (offset-path: inset(0 round 999px)) {
+  .pill-dot {
+    top: auto !important;
+    right: auto !important;
+    offset-path: inset(-1px round 999px);
+    offset-distance: 25%;
+    offset-rotate: 0deg;
+    animation: pill-lap 2.4s linear 0.7s 1;
+  }
+}
+@keyframes pill-lap {
+  0% { offset-distance: 25%; }
+  74.99% { offset-distance: 100%; }
+  75% { offset-distance: 0%; }
+  100% { offset-distance: 25%; }
+}
+
+/* ── 베스트컷 데모: 상위 3 랭크를 앰버 링이 순회 (6초 = 3 × 2초) ── */
+@keyframes bestcut-active {
+  0%, 27% { opacity: 1; }
+  33%, 94% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.bestcut-ring {
+  opacity: 0;
+  animation: bestcut-active 6s linear infinite;
+}
+.bestcut-ring-1 { animation-delay: 0s; }
+.bestcut-ring-2 { animation-delay: 2s; }
+.bestcut-ring-3 { animation-delay: 4s; }
+
+/* ── 3단계 스크롤 활성화 (StepsFlow가 .is-active 토글) ─────── */
+.step-no {
+  color: var(--color-hairline);
+  transition: color 0.5s ease;
+}
+.step-bar {
+  transform: scaleX(0);
+  transform-origin: left;
+  background: var(--color-amber);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.step.is-active .step-no {
+  color: var(--color-amber);
+}
+.step.is-active .step-bar {
+  transform: scaleX(1);
+}
+
+/* ── FAQ 아코디언 (details/summary — JS 없음) ──────────────── */
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-chevron {
+  transition: transform 0.25s ease;
+}
+.faq-item[open] .faq-chevron {
+  transform: rotate(45deg);
+}
+
+/* ── 카드 호버 리프트 (웹 랜딩 — 앱과 달리 hover 허용) ─────── */
+.card-lift {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  border-color: #4a4a4a;
+}
+
+/* ── Reduce Motion: 모든 장식 모션 정지 (design.md 원칙) ──── */
+@media (prefers-reduced-motion: reduce) {
+  .reel-progress {
+    animation: none;
+    transform: scaleX(0.62);
+  }
+  .reel-head {
+    animation: none !important;
+    left: 60%;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-rise {
+    opacity: 1;
+    animation: none;
+  }
+  .float,
+  .reel-scene,
+  .thumb-ring,
+  .route-path,
+  .route-runner,
+  .track-orbit::after,
+  .card-lift,
+  .pill-dot,
+  .bestcut-ring,
+  .step-no,
+  .step-bar {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reel-scene-1,
+  .thumb-ring-1,
+  .bestcut-ring-1 {
+    opacity: 1;
+  }
+  .step .step-bar {
+    transform: scaleX(1);
+  }
+}

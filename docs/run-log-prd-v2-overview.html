@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>run-log PRD v2.1 · 디스커버리 산출물 한눈에</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF1F5; --surface:#FFFFFF; --ink:#131E2E; --muted:#5B6675;
+  --line:#D8DEE7; --route:#2049C7; --route-soft:#E3E9FB;
+  --hivis:#E4F163; --navy:#16233A; --ok:#2E7D4F; --warn:#A8641E;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --num:'Barlow Condensed','Pretendard Variable',sans-serif;
+  --body:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--route);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:3px solid var(--route);outline-offset:2px;border-radius:2px}
+
+/* 경로형 진행 표시 */
+#routebar{position:fixed;top:0;left:0;right:0;height:4px;background:transparent;z-index:50}
+#routebar .trail{height:100%;width:0;background:var(--route);position:relative;transition:none}
+#routebar .trail::after{content:"";position:absolute;right:-5px;top:-3px;width:10px;height:10px;border-radius:50%;background:var(--route);box-shadow:0 0 0 3px rgba(32,73,199,.2)}
+
+/* 히어로: 새벽 러닝 사진 위 기록 오버레이 */
+.hero{background:linear-gradient(160deg,#1B2A46 0%,#2C4470 34%,#5D7196 58%,#C9A98E 82%,#E9CBA6 100%);color:#fff;padding:72px 24px 64px}
+.hero-in{max-width:1080px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#DCE4F2;opacity:.9}
+.hero h1{font-size:clamp(34px,5.4vw,58px);line-height:1.12;margin:14px 0 10px;font-weight:800;letter-spacing:-.02em}
+.hero h1 .rl{color:var(--hivis)}
+.hero p.pitch{max-width:560px;font-size:17.5px;color:#E8EDF6;margin:0 0 34px}
+.overlaycard{display:inline-block;background:rgba(10,18,32,.42);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(6px);border-radius:14px;padding:20px 26px}
+.overlaycard .oc-label{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;color:#C9D4E6;text-transform:uppercase;margin-bottom:10px}
+.ocgrid{display:flex;flex-wrap:wrap;gap:8px 34px}
+.stat{min-width:74px}
+.stat b{display:block;font-family:var(--num);font-weight:700;font-size:44px;line-height:1;letter-spacing:.01em}
+.stat span{display:block;font-size:12.5px;color:#C9D4E6;margin-top:4px}
+.hero .meta{margin-top:26px;font-family:var(--mono);font-size:12.5px;color:#C9D4E6}
+
+/* 레이아웃 */
+.wrap{max-width:1080px;margin:0 auto;padding:40px 24px 96px;display:grid;grid-template-columns:216px minmax(0,1fr);gap:44px}
+nav.toc{position:sticky;top:28px;align-self:start;font-size:13.5px}
+nav.toc .toc-title{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+nav.toc a{display:block;color:var(--muted);padding:5px 10px;border-left:2px solid var(--line);line-height:1.45}
+nav.toc a.on{color:var(--ink);border-left-color:var(--route);font-weight:600;background:var(--route-soft);border-radius:0 6px 6px 0}
+nav.toc a.sub{padding-left:22px;font-size:12.5px}
+
+main{min-width:0}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:34px 38px;margin-bottom:26px}
+.sec>h2{font-size:24px;font-weight:800;letter-spacing:-.01em;margin:0 0 6px}
+.sec>h2 .no{font-family:var(--mono);font-weight:600;font-size:13px;color:var(--route);vertical-align:middle;margin-right:10px}
+.sec .lead{color:var(--muted);margin:0 0 20px;font-size:15px}
+.sec h3{font-size:17.5px;font-weight:700;margin:28px 0 10px}
+.sec h4{font-size:15.5px;font-weight:700;margin:20px 0 8px}
+mark{background:var(--hivis);padding:0 3px;border-radius:2px}
+
+table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+th{font-size:12.5px;letter-spacing:.02em;color:var(--muted);text-align:left;border-bottom:2px solid var(--ink);padding:8px 10px;font-weight:700}
+td{border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top}
+tr:last-child td{border-bottom:0}
+.tscroll{overflow-x:auto}
+.tscroll table{min-width:640px}
+.id{font-family:var(--mono);font-size:12.5px;background:var(--route-soft);color:var(--route);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:11.5px;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.must{border-color:var(--route);color:var(--route)}
+.pill.ok{border-color:var(--ok);color:var(--ok)}
+.pill.warn{border-color:var(--warn);color:var(--warn)}
+ul,ol{padding-left:22px;margin:10px 0}
+li{margin:4px 0}
+blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--route);background:var(--route-soft);border-radius:0 10px 10px 0;font-size:15px}
+
+/* 스플릿(파이프라인) */
+.splits{list-style:none;padding:0;margin:16px 0 0;position:relative}
+.splits::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--route-soft)}
+.splits li{position:relative;padding:0 0 18px 40px}
+.splits li::before{content:"";position:absolute;left:4px;top:6px;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--route)}
+.splits li b{display:block;font-weight:700}
+.splits li span{color:var(--muted);font-size:14px}
+
+/* 플로우 다이어그램 */
+.flow{margin:16px 0}
+.fstep{position:relative;border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;background:#FAFBFD;margin:0 auto;max-width:430px;text-align:center;font-size:14.5px}
+.fstep.key{border-color:var(--route);background:var(--route-soft)}
+.farrow{width:2px;height:20px;background:var(--route);margin:0 auto;position:relative}
+.farrow::after{content:"";position:absolute;bottom:-1px;left:-4px;border:5px solid transparent;border-top-color:var(--route)}
+.farrow.dash{background:repeating-linear-gradient(var(--route) 0 4px,transparent 4px 8px)}
+.fbranch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 auto;max-width:700px}
+.fcol{border:1.5px dashed var(--line);border-radius:12px;padding:14px 12px}
+.fcol .fname{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:10px}
+.fcol .fstep{max-width:100%}
+.fnote{font-size:12.5px;color:var(--muted);text-align:center;margin:4px 0}
+
+/* 엔티티 카드 */
+.ents{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:14px 0}
+.ent{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#FAFBFD}
+.ent b{font-family:var(--mono);font-size:13px}
+.ent ul{list-style:none;padding:6px 0 0;margin:0;font-size:12.5px;color:var(--muted)}
+.ent li{margin:2px 0}
+
+/* 점수 바 */
+.score{display:grid;grid-template-columns:minmax(150px,240px) 1fr 44px;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+.bar{height:10px;background:var(--route-soft);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--route);border-radius:99px}
+.score .v{font-family:var(--num);font-weight:700;font-size:19px;text-align:right}
+
+footer{max-width:1080px;margin:0 auto;padding:0 24px 60px;color:var(--muted);font-size:13px;font-family:var(--mono)}
+
+@media (max-width:840px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav.toc{position:static;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+  nav.toc .toc-title{width:100%}
+  nav.toc a{border:1px solid var(--line);border-radius:99px;padding:4px 12px}
+  nav.toc a.sub{display:none}
+  nav.toc a.on{border-color:var(--route)}
+  .sec{padding:24px 20px}
+  .fbranch{grid-template-columns:1fr}
+  .stat b{font-size:36px}
+}
+</style>
+</head>
+<body>
+<div id="routebar" aria-hidden="true"><div class="trail"></div></div>
+
+<header class="hero">
+  <div class="hero-in">
+    <div class="eyebrow">Discovery Team · 2026-07-02 · PM 김동호 · 독자: 개발팀(동호·지형·해찬)</div>
+    <h1><span class="rl">run-log</span> PRD v2.1<br>디스커버리 산출물 한눈에</h1>
+    <p class="pitch">뛰고 찍기만 해라. 고르고, 입히고, 릴스로 만드는 건 run-log가 한다. 마지막 선택은 네가 한다.</p>
+    <div class="overlaycard" role="group" aria-label="문서 요약 수치">
+      <div class="oc-label">Document Record</div>
+      <div class="ocgrid">
+        <div class="stat"><b>16</b><span>PRD 섹션</span></div>
+        <div class="stat"><b>25</b><span>기능 요구 FR</span></div>
+        <div class="stat"><b>13</b><span>User Story</span></div>
+        <div class="stat"><b>10</b><span>System Story</span></div>
+        <div class="stat"><b>11</b><span>사용자 결정</span></div>
+        <div class="stat"><b>9.1</b><span>자가 리뷰 /10</span></div>
+      </div>
+    </div>
+    <div class="meta">상태 Approved(2026-07-02 PM 김동호 승인) · 이 문서로 7/2 Design System → 7/3 API 명세 → 개발 착수</div>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="목차">
+  <div class="toc-title">목차</div>
+  <a href="#summary">이번 작업 요약</a>
+  <a href="#decisions">사용자 결정 로그 11건</a>
+  <a href="#market">시장분석 한 장</a>
+  <a href="#prd">PRD v2.1 전문</a>
+  <a class="sub" href="#p1">§1 개요·메타</a>
+  <a class="sub" href="#p2">§2 문제 정의</a>
+  <a class="sub" href="#p3">§3 목표·비목표</a>
+  <a class="sub" href="#p4">§4 페르소나·JTBD</a>
+  <a class="sub" href="#p5">§5 USP·포지셔닝</a>
+  <a class="sub" href="#p6">§6 성공 지표</a>
+  <a class="sub" href="#p7">§7 스코프·단계</a>
+  <a class="sub" href="#p8">§8 User Stories</a>
+  <a class="sub" href="#p9">§9 기능 요구</a>
+  <a class="sub" href="#p10">§10 System Stories</a>
+  <a class="sub" href="#p11">§11 NFR</a>
+  <a class="sub" href="#p12">§12 플로우·엔티티</a>
+  <a class="sub" href="#p13">§13 의존성</a>
+  <a class="sub" href="#p14">§14 리스크·OQ</a>
+  <a class="sub" href="#p15">§15 출시·분석</a>
+  <a class="sub" href="#p16">§16 용어집</a>
+  <a href="#review">자가 리뷰 채점</a>
+  <a href="#files">파일 맵 · 다음 단계</a>
+</nav>
+
+<main>
+
+<section class="sec" id="summary">
+  <h2>이번 작업 요약</h2>
+  <p class="lead">7/1 팀 회의로 확정된 PRD v2 뼈대를, 개발이 바로 쓸 수 있는 상세 PRD로 확장한 디스커버리 기록이다.</p>
+  <ol class="splits">
+    <li><b>의도 게이트</b><span>출시(product) 모드 · Greenfield(리버스 분석 없음) · 독자는 개발팀</span></li>
+    <li><b>사용자 Q&A 3라운드</b><span>스코프 경계에 걸린 11건을 PM이 결정. 도중 방향 전환 1건: 경쟁사 분석 제외를 철회하고 포함</span></li>
+    <li><b>Wave 1 시장분석 (Caleb)</b><span>내부 위키 + 2026-07 웹 검증. 빈자리 가설을 검증하고 일부는 반증</span></li>
+    <li><b>Wave 2 PRD 작성 (Paul)</b><span>16섹션 전문 + companion 3종(user-stories · service-stories · success-metrics)</span></li>
+    <li><b>자가 리뷰</b><span>10개 차원 채점 평균 9.1, 리뷰에서 찾은 구멍 4건을 본문에 반영</span></li>
+  </ol>
+  <blockquote>2026-07-02 PM 김동호 승인 완료(v2.1 Approved). 다음은 7/2 Design System → 7/3 API 명세 → 개발 착수. 목표치는 전부 가설이므로 클로즈 베타 실측으로 보정한다(<a href="#p6">§6</a>).</blockquote>
+</section>
+
+<section class="sec" id="decisions">
+  <h2>사용자 결정 로그 11건</h2>
+  <p class="lead">전부 PM(동호)이 결정했고 charter에 기록돼 있다. PRD의 해당 지점은 이 결정을 따른다.</p>
+  <div class="tscroll"><table>
+    <tr><th>#</th><th>질문</th><th>결정</th><th>PRD 반영</th></tr>
+    <tr><td>1</td><td>v1 연동 Must 범위</td><td>HealthKit 허브만. Strava 직접 연동은 v1.x Should</td><td>§7, FR-001</td></tr>
+    <tr><td>2</td><td>North Star</td><td>다음 러닝 재사용률 (이현수 멘토 생사 게이트)</td><td>§6</td></tr>
+    <tr><td>3</td><td>계정·서버</td><td><b>자체 서버 도입 확정(Kotlin/Spring + AWS)</b> — 미디어·건강 데이터 서버 저장, AI 베스트컷 선별은 서버 수행. 계정은 v1 익명 디바이스 ID 유지, 로그인·백업은 로드맵(OQ3). [07-02 결정, 기존 "자체 서버 없음" 대체]</td><td>§3, §11, §13, FR-090, SS-03</td></tr>
+    <tr><td>4</td><td>경쟁사 분석</td><td>제외 방침 철회, 포함. 내부 자료 + 웹서치 허용</td><td>§2, §5</td></tr>
+    <tr><td>5</td><td>"1분" 비전의 위상</td><td>단계별 목표치. v1 풀 플로우 P50 3분, vNext에서 1분</td><td>§6</td></tr>
+    <tr><td>6</td><td>결제 fake door</td><td>v1 포함, Could</td><td>US-012, FR-080</td></tr>
+    <tr><td>7</td><td>오버레이 v1 규모</td><td>최소 기준치 명시: 정적 10종 + 모션 3종 + 한글 폰트 3종, 3개 비율</td><td>FR-031</td></tr>
+    <tr><td>8</td><td>사용자 템플릿 저장</td><td>v1 제외, 후속 로드맵 "템플릿 추가"로</td><td>§3, §7</td></tr>
+    <tr><td>9</td><td>러닝 감지 푸시</td><td>v1 포함, Should. North Star 장치</td><td>US-011, FR-003</td></tr>
+    <tr><td>10</td><td>빠른 스탬프 경로</td><td>v1 포함, Should. 사진 1장 + 오버레이 즉시 공유</td><td>US-010, FR-070</td></tr>
+    <tr><td>11</td><td>산출물 문체</td><td>최종 산출물(PRD·HTML)에 humanizer 원칙 적용</td><td>문서 전체</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="market">
+  <h2>시장분석 한 장</h2>
+  <p class="lead">Caleb 산출물 요약. 원문: 02-market-analysis/market-report.md · competitive-landscape.md (주장별 출처 URL 포함)</p>
+
+  <h3>빈자리 가설 검증 (2026-07 기준)</h3>
+  <div class="tscroll"><table>
+    <tr><th>가설</th><th>판정</th><th>요지</th></tr>
+    <tr><td>정적 오버레이는 점유됐다</td><td><span class="pill ok">확인 + 강화</span></td><td>Garmin이 2026-04 투명 오버레이 3종 비율을 추가. Strava · Garmin · 서드파티까지 표준화돼 더 포화</td></tr>
+    <tr><td>러닝 전용 사후 자동 릴스는 빈자리</td><td><span class="pill ok">유효</span></td><td>한/영 검색 모두 신규 경쟁자 미발견. Share Aura 2.0도 실시간 · 정적 중심</td></tr>
+    <tr><td>베스트컷 자동 선별은 빈자리</td><td><span class="pill warn">정밀화 필요</span></td><td>범용 AI 베스트컷(CapCut · Filmora · OpusClip)은 성숙. 단 러닝 맥락 · 얼굴 품질 · 본인/크루 사진 특화는 없음</td></tr>
+  </table></div>
+  <blockquote>재정의된 빈자리: 개별 기능이 아니라 <mark>러닝 인증 워크플로우 전체의 통합·특화</mark>다. "AI가 릴스 만들어주는 앱"으로 포지셔닝하면 범용툴과 정면 충돌한다.</blockquote>
+
+  <h3>경쟁 지형 압축</h3>
+  <div class="tscroll"><table>
+    <tr><th>서비스</th><th>분류</th><th>강점</th><th>run-log 기회</th></tr>
+    <tr><td>Share Aura</td><td>직접</td><td>45+ 템플릿, 디자인 완성도, 4.9점(1.5K)</td><td>정적 중심, 사후 자동 릴스 없음, 한국어 미지원</td></tr>
+    <tr><td>EVERYGROUND</td><td>직접</td><td>한국어, 가민·삼성 연동</td><td>영상 없음, iOS 안정성 (2026-07 재검증 필요)</td></tr>
+    <tr><td>Strava · Garmin</td><td>인접(기록)</td><td>투명 PNG 표준, SNS 공유 표준</td><td>정적 오버레이만. 셀렉·릴스 없음</td></tr>
+    <tr><td>NRC</td><td>인접(기록)</td><td>무료, 대형 유저</td><td>투명 PNG 부재 + 1:1 강제가 이탈 원인. 직공략 지점</td></tr>
+    <tr><td>CapCut · Edits · EPIK</td><td>인접(편집)</td><td>릴스 편집력, Edits는 무료·IG 연동</td><td>러닝 기록 이해 못함, 무거움 · 결제 마찰(CapCut 연 구독 100%+ 인상)</td></tr>
+  </table></div>
+</section>
+
+<!-- ===================== PRD 전문 ===================== -->
+
+<section class="sec" id="prd">
+  <h2>PRD v2.1 전문</h2>
+  <p class="lead">아래 §1~§16이 정본 PRD.md의 전체 내용이다. 마크다운 정본: .discovery/03-prd/PRD.md</p>
+</section>
+
+<section class="sec" id="p1">
+  <h2><span class="no">§1</span>개요 &amp; 문서 메타</h2>
+  <p>run-log(구 런컷, 2026-07-01 개명)는 이미 쓰는 러닝 앱의 기록을 HealthKit으로 불러와, 러닝 때 찍은 사진과 영상 더미에서 베스트컷을 골라주고, 기록 오버레이를 입혀 릴스 초안까지 만든 뒤, 사용자가 직접 다듬어 인스타그램에 공유하는 iOS 앱이다.</p>
+  <div class="tscroll"><table>
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>버전 · 상태</td><td>v2.1 · Approved (2026-07-02, PM 김동호 승인)</td></tr>
+    <tr><td>작성</td><td>2026-07-02 · Paul(Discovery Team 리드) · PM 김동호</td></tr>
+    <tr><td>이해관계자</td><td>김동호(PM), 유지형, 정해찬</td></tr>
+    <tr><td>용도</td><td>Design System(7/2) → API 명세(7/3) → 개발 착수의 기반 문서</td></tr>
+    <tr><td>플랫폼</td><td>iOS 우선. Android는 iOS 완성 후 그 프로젝트 기반으로 Claude로 개발</td></tr>
+  </table></div>
+  <h4>변경 이력</h4>
+  <div class="tscroll"><table>
+    <tr><th>버전</th><th>날짜</th><th>내용</th></tr>
+    <tr><td>v1</td><td>2026-06-15</td><td>런컷 PRD v1. 인앱 GPS 측정 전제, AI 기능 전체 1차 제외</td></tr>
+    <tr><td>v2 뼈대</td><td>2026-07-01</td><td>인터뷰 3건 · 도그푸딩 반영 재작성. 측정을 외부 연동으로 반전, 자동편집 AI 포함 확정</td></tr>
+    <tr><td>v2.0</td><td>2026-07-02</td><td>본 문서. 16섹션 상세 확장, Q&amp;A 11건 결정 반영</td></tr>
+    <tr><td>v2.1</td><td>2026-07-02</td><td>PM 검토 반영: 유행 릴스 템플릿 자동 편집(FR-042) 추가, 릴스 플로우를 템플릿 선택형으로 구체화, 템플릿 초안 생성 시간 60초 이내 목표 신설</td></tr>
+    <tr><td>v2.1 승인</td><td>2026-07-02</td><td>PM 김동호 승인, 상태 Draft → Approved. 릴스 템플릿 최소 5종 확정</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p2">
+  <h2><span class="no">§2</span>문제 정의 &amp; 배경</h2>
+  <h3>해결하려는 문제</h3>
+  <p>인스타그램에 유행하는 방식으로 러닝 인증 콘텐츠(게시글 · 릴스)를 올리고 싶은 러너가, 편집이 익숙하지 않거나 그 과정이 번거로워 포기하거나 미룬다.</p>
+  <ul>
+    <li>페르소나 동욱님은 <mark>릴스 1개에 1~2시간</mark>을 쓴다. 당일에 못 올려 주말에 몰아 올리고, 잘 나온 얼굴 컷이 없는 날은 아예 포기한다(실제 1~2회).</li>
+    <li>인터뷰이 3인 모두 가장 오래 걸리는 일로 <mark>촬영 후 셀렉</mark>을 꼽았다. 이영지는 데일리런 기준 사진 약 100장, 영상 약 10개 중 1~2개를 고른다.</li>
+    <li>팀 도그푸딩 8건 중 4건에서 NRC · Apple Health 기록 누끼 실패가 반복됐다. CapCut Remove BG와 Edits 모두 이 기록 캡처의 배경을 못 딴다.</li>
+    <li>"편집에 20분 쏟다 보니 더 잘 만들고 싶어도 그만두게 됨"(도그푸딩, 해찬 06-26).</li>
+  </ul>
+  <p>확정된 페인 우선순위: ① 베스트컷 선별 ② 릴스 자동 편집 ③ 오버레이 자동 배치 (2026-07-01 팀 결정).</p>
+  <h3>배경</h3>
+  <p>기존 도구는 이 문제를 반쪽씩만 푼다. 러닝 인증 앱(Share Aura, EVERYGROUND)과 기록 앱의 공유 기능(Strava, Garmin)은 정적 스탯 카드와 오버레이에 강하지만 셀렉과 릴스를 자동화하지 않는다. 범용 편집 앱(CapCut, Instagram Edits, EPIK)은 릴스를 잘 만들지만 러닝 기록을 이해하지 못하고, NRC · Apple Health 기록 누끼를 못 하며, 무겁거나 결제 마찰이 크다.</p>
+  <h3>왜 지금인가</h3>
+  <ul>
+    <li>정적 오버레이 시장은 2026년 들어 더 포화됐다. Garmin이 2026-04에 투명 오버레이 3종 포맷을 추가하면서 투명 PNG는 표준이 됐다. 정적으로는 이제 차별화가 안 된다.</li>
+    <li>러닝 전용 사후 자동 릴스와 러닝 맥락 베스트컷 셀렉은 2026-07 현재 비어 있다. 범용 AI 편집 툴이 빠르게 성숙하고 있어 이 빈자리가 오래가지 않는다. 먼저 선점해야 한다(이현수 멘토 진단과 일치).</li>
+    <li>사용자 검증이 끝났다. 인터뷰 3건과 도그푸딩 8건이 독립적으로 같은 결론(셀렉 자동화 수요, 자동 초안 + 최종 사람 선택)에 수렴했다.</li>
+  </ul>
+</section>
+
+<section class="sec" id="p3">
+  <h2><span class="no">§3</span>목표 &amp; 비목표</h2>
+  <h3>Goals</h3>
+  <div class="tscroll"><table>
+    <tr><th>ID</th><th>목표</th><th>측정</th></tr>
+    <tr><td><span class="id">G1</span></td><td>러닝 인증 콘텐츠 제작을 세션 선택부터 공유까지 3분 안에 끝낸다</td><td>TT-Share P50 ≤ 3분(풀 플로우), ≤ 60초(빠른 스탬프)</td></tr>
+    <tr><td><span class="id">G2</span></td><td>자동 셀렉이 사용자의 눈을 대신할 수 있음을 증명한다</td><td>후보 상위 3위 내 채택 ≥ 60%, 무수정 공유율 ≥ 20%</td></tr>
+    <tr><td><span class="id">G3</span></td><td>한 번 쓴 러너가 다음 러닝에서 다시 돌아온다</td><td>North Star: 다음 러닝 재사용률, 베타 ≥ 40%</td></tr>
+    <tr><td><span class="id">G4</span></td><td>이후 ML 루프(랭킹 학습)의 데이터 기반을 만든다</td><td>후보 노출 순서 · 스킵 포함 퍼널 이벤트 100% 계측</td></tr>
+  </table></div>
+  <h3>Non-Goals (v1)</h3>
+  <div class="tscroll"><table>
+    <tr><th>항목</th><th>사유</th></tr>
+    <tr><td>인앱 GPS 측정</td><td>"측정을 하나 더 이 앱으로 하면 허들이 크다"(백지은), 환경 튜닝 난이도(이현수 멘토). 측정은 연동으로</td></tr>
+    <tr><td>범용 영상 편집기</td><td>CapCut · Edits와 정면 승부하지 않는다. 러닝 인증에 필요한 편집만</td></tr>
+    <tr><td>얼굴 생성 · 변형 · 보정 AI</td><td>페르소나의 강한 거부. AI는 인식과 선별까지만</td></tr>
+    <tr><td>콘텐츠 기획 · 문구 자동화</td><td>고숙련(백지은형)의 페인이며 비타깃. "인간의 재치 · 감"은 사람 몫</td></tr>
+    <tr><td>소셜 기능</td><td>공유는 인스타그램에 위임. 후속 로드맵 7번</td></tr>
+    <tr><td>BGM 라이브러리</td><td>저작권 부담. 음원은 인스타그램 쪽에서(06-20 DP-7)</td></tr>
+    <tr><td>사용자 템플릿 제작 · 저장</td><td>07-01 확정안에 없음. 후속 "템플릿 추가"로(사용자 결정 8)</td></tr>
+    <tr><td>계정 · 로그인 · 백업</td><td>v1은 익명 디바이스 ID(사용자 결정 3). 도입 시점은 OQ3</td></tr>
+    <tr><td>Android</td><td>iOS 완성 후 그 프로젝트 기반으로(07-01 결정)</td></tr>
+    <tr><td>대회 사진 검색</td><td>아워심볼 클러스터의 도메인. run-log는 본인 · 크루 촬영 사진</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p4">
+  <h2><span class="no">§4</span>타깃 사용자 &amp; 페르소나 &amp; JTBD</h2>
+  <div class="tscroll"><table>
+    <tr><th>구분</th><th>대상</th><th>비고</th></tr>
+    <tr><td>1차</td><td>인스타에 유행하는 방식으로 러닝 인증을 올리고 싶지만 편집이 익숙하지 않거나 번거로운 사람, 또는 그래서 시도조차 안 하는 사람</td><td>편집 숙련도 초 · 중급</td></tr>
+    <tr><td>2차</td><td>진성 · 시간압박형 러너(이영지형)</td><td>셀렉 자동화 · 빠른 스탬프의 부분 수혜자</td></tr>
+    <tr><td>비타깃</td><td>고숙련 크리에이터(백지은형)</td><td>병목이 편집이 아니라 기획. 전문 편집기가 필요한 유형</td></tr>
+  </table></div>
+  <h3>페르소나: 동욱님 (07-01 공식 확정)</h3>
+  <div class="tscroll"><table>
+    <tr><td>정체</td><td>인스타 러닝 인증 릴스로 팔로워와 협찬을 늘리고 싶은 예비 인플루언서 러너. 얼굴이 그대로 노출됨</td></tr>
+    <tr><td>러닝</td><td>주 1회 40분(5~9km), 주로 혼자 뛰며 셀카 영상 촬영. 러닝이 끝나고 촬영한다</td></tr>
+    <tr><td>도구</td><td>Strava(기록) + CapCut + 인스타 Edit 오버레이. 유행 템플릿을 따라 만든다</td></tr>
+    <tr><td>고통</td><td>구도 · 얼굴 · 환경이 다 맞는 컷 찾기가 최대 페인. 릴스 1개 1~2시간, 없으면 그날 포기</td></tr>
+    <tr><td>선택 기준</td><td>1순위 얼굴이 자연스럽게 잘 나온 컷(지인 · 직장 상사가 다 봄), 2순위 풍경</td></tr>
+    <tr><td>AI 태도</td><td>자동 선별 환영, 얼굴 생성 · 변형 거부. "여러 개 만들어 주고 내가 고르고 뒤에서 다듬을 수 있으면"</td></tr>
+    <tr><td>동기 루프</td><td>반응 좋은 릴스가 다음 러닝의 동기가 되고 협찬 DM으로 이어진 경험(8.3만 조회 → DM 3개)</td></tr>
+  </table></div>
+  <h3>사용자 시나리오</h3>
+  <p>토요일 오전, 동욱님이 한강에서 40분을 뛰고 벤치에 앉는다. 러닝 중간중간 한 구도당 3~4개씩 찍은 셀카 영상이 20여 개, 사진이 십수 장이다. 예전 같으면 여기서 캡컷을 열고 잘 나온 컷을 찾는 데만 한참을 썼고, 얼굴이 마음에 드는 컷이 없으면 그냥 접었다. 이제는 run-log 알림을 탭한다. 방금 러닝이 이미 선택돼 있고, 그 시간대 미디어가 모여 있고, 얼굴이 잘 나온 후보 8개가 순서대로 떠 있다. 두 번째 후보가 마음에 들어 고르고, 추천된 구간으로 만들어진 12초 릴스 초안에서 컷 하나만 바꾼다. 스트라바풍 오버레이를 확인하고 인스타그램 공유를 누른다. 벤치에서 일어나기 전에 끝났다.</p>
+  <h3>JTBD</h3>
+  <ol>
+    <li>러닝을 마쳤을 때, 찍어온 사진 · 영상에서 쓸 만한 컷을 빨리 찾고 싶다. 그래야 그날 안에 인증을 올릴 수 있다.</li>
+    <li>인스타에서 유행하는 기록 오버레이 · 릴스 형식을 내 기록으로 재현하고 싶다. 그래야 편집을 배우지 않고도 유행에 올라탈 수 있다.</li>
+    <li>AI가 후보를 만들어 줘도 최종 선택은 내가 하고 싶다. 그래야 얼굴이 노출되는 콘텐츠를 안심하고 올릴 수 있다.</li>
+    <li>인증을 꾸준히 올리고 싶다. 그래야 팔로워와 협찬 기회가 쌓인다.</li>
+  </ol>
+</section>
+
+<section class="sec" id="p5">
+  <h2><span class="no">§5</span>USP &amp; 포지셔닝</h2>
+  <p class="lead">근거: Caleb 산출물(02-market-analysis). 위 "시장분석 한 장"의 지형 표와 가설 검증이 이 섹션의 출처다.</p>
+  <h3>포지셔닝</h3>
+  <ul>
+    <li>콘텐츠 형식 × 특화도: 러닝 인증 앱은 정적 이미지 쪽에, 릴스를 잘 만드는 툴은 범용 쪽에 몰려 있다. <mark>"러닝 특화 + 릴스" 사분면이 비어 있다.</mark></li>
+    <li>셀렉 자동화 × 러닝 맥락: 러닝 앱은 기록을 이해하지만 셀렉을 자동화하지 않고, 범용 AI 툴은 셀렉을 자동화하지만 러닝 · 얼굴 맥락이 없다. 이 교집합도 비어 있다.</li>
+    <li>반증도 있다: 범용 "자동 베스트컷 → 릴스"는 이미 성숙했다. run-log를 "AI가 릴스 만들어주는 앱"으로 포지셔닝하면 범용툴과 정면 충돌한다. 빈자리는 개별 기능이 아니라 워크플로우 전체의 통합 · 특화다.</li>
+  </ul>
+  <h3>USP (우선순위순)</h3>
+  <ol>
+    <li><b>러닝 맥락 베스트컷 자동 셀렉.</b> 얼굴이 잘 나오고, 흔들리지 않고, 러닝 구도가 좋은 컷을 1차로 추려주되 최종 선택은 사람이 한다. 얼굴은 인식만 하고 만들지 않는다. 페르소나 1순위 페인, 완전한 빈자리, North Star 직접 기여.</li>
+    <li><b>러닝 인증 원스톱 자동 릴스 초안.</b> 셀렉된 클립에 기록 오버레이를 얹은 초안이 자동으로 나오고, 다듬어서 바로 공유한다. 반드시 USP 1과 기록 통합에 묶어서 제시한다.</li>
+    <li><b>가벼움과 무결제 동선.</b> 결제창 · 광고로 마지막 액션을 막지 않고, 완성 화면은 저장과 인스타 공유 두 버튼으로 끝낸다. CapCut 가격 인상과 EPIK 결제 마찰의 반면교사. USP 1 · 2를 떠받치는 신뢰 기반.</li>
+  </ol>
+  <blockquote>run-log는 편집이 익숙지 않거나 번거로워 러닝 인증을 미루는 예비 인플루언서 러너를 위한 앱이다. 찍어온 더미에서 러닝 맥락으로 베스트컷을 골라 기록을 입혀 몇 분 만에 인증까지 잇는다. 그러면서 얼굴을 생성하지 않고 최종 선택을 사람에게 남긴다.</blockquote>
+</section>
+
+<section class="sec" id="p6">
+  <h2><span class="no">§6</span>성공 지표</h2>
+  <p class="lead">측정은 전부 앱 내부 이벤트(§15). 모든 목표치는 초기 가설이며 클로즈 베타 실측 후 보정한다.</p>
+  <h3>North Star: 다음 러닝 재사용률</h3>
+  <div class="tscroll"><table>
+    <tr><td>정의</td><td>공유 · 저장을 1회 이상 완료한 사용자 중, 이후 새 러닝 세션이 감지된 사용자 가운데, 그 세션 발생 후 7일 안에 콘텐츠 제작을 다시 시작한 비율</td></tr>
+    <tr><td>측정</td><td>export_completed 보유 익명 ID 기준, next_run_detected → 7일 내 session_selected 연결</td></tr>
+    <tr><td>목표</td><td>클로즈 베타 ≥ 40%, 공개 후 3개월 ≥ 30% (가설)</td></tr>
+    <tr><td>근거</td><td>이현수 멘토 검증 퍼널 5게이트 중 생사 게이트. 사용자 결정 2</td></tr>
+  </table></div>
+  <h3>퍼널 지표 (5게이트 대응)</h3>
+  <div class="tscroll"><table>
+    <tr><th>#</th><th>게이트</th><th>정의</th><th>목표(가설)</th></tr>
+    <tr><td>1</td><td>앱 진입</td><td>진입 사용자 중 세션 선택까지 간 비율</td><td>≥ 70%</td></tr>
+    <tr><td>2</td><td>자동 결과 수용</td><td>무수정 공유율: 편집 액션 0회로 저장 · 공유한 비율</td><td>≥ 20%</td></tr>
+    <tr><td>2'</td><td>자동 결과 수용</td><td>후보 채택률: 최종 컷이 자동 후보 상위 3위 안</td><td>≥ 60%</td></tr>
+    <tr><td>3</td><td>공유</td><td>세션 선택 후 저장 · 공유 완료 비율</td><td>베타 ≥ 50%</td></tr>
+    <tr><td>4</td><td>재사용</td><td>North Star</td><td>베타 ≥ 40%</td></tr>
+    <tr><td>5</td><td>품질 · 속도</td><td>TT-Share: 세션 선택부터 완료까지</td><td>풀 플로우 P50 ≤ 3분 · 빠른 스탬프 P50 ≤ 60초</td></tr>
+  </table></div>
+  <p>비전의 "1분"은 단계별로 접근한다(사용자 결정 5). v1은 빠른 스탬프에서 60초를 먼저 달성하고, 풀 플로우는 3분에서 시작해 vNext에서 1분으로 조인다. 릴스도 편집 구간은 1분 안이다: 사용자가 템플릿을 고른 시점부터 자동 편집된 초안이 화면에 표시되기까지 걸리는 시간을 60초 이내로 한다. 이것은 생성에 걸리는 시간이지 릴스의 길이가 아니다(릴스 길이는 5~15초).</p>
+  <h3>가드레일</h3>
+  <div class="tscroll"><table>
+    <tr><th>지표</th><th>정의</th><th>목표(가설)</th></tr>
+    <tr><td>콜드 스타트</td><td>아이콘 탭부터 세션 리스트 표시</td><td>P50 ≤ 2초 (iPhone 12)</td></tr>
+    <tr><td>셀렉 대기</td><td>사진 100장 기준 후보 산출</td><td>P50 ≤ 10초, 진행 표시 필수</td></tr>
+    <tr><td>릴스 렌더</td><td>15초 릴스 export</td><td>P90 ≤ 30초</td></tr>
+    <tr><td>템플릿 초안 생성 시간</td><td>릴스 템플릿을 고른 시점부터 자동 편집된 초안이 화면에 표시되기까지 걸리는 시간</td><td>P50 ≤ 60초</td></tr>
+    <tr><td>안정성</td><td>크래시 프리 세션</td><td>≥ 99.5%</td></tr>
+    <tr><td>오버레이 스킵률</td><td>오버레이 단계를 건너뛴 비율</td><td>목표 없음, 관찰(설계 가정 검증)</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p7">
+  <h2><span class="no">§7</span>스코프 &amp; MVP &amp; 단계</h2>
+  <blockquote>MVP 정의: 동욱형 러너가 러닝 후 세션 선택부터 공유까지 3분 안에, 자동 셀렉과 오버레이 · 릴스 초안의 도움으로 콘텐츠를 완성하고, 다음 러닝에서 다시 돌아오는지를 검증하는 최소 범위. 증명하려는 가설: 셀렉과 편집을 자동화하면 포기하거나 미루던 러너가 더 자주 인증한다.</blockquote>
+  <h3>In Scope (v1) · 괄호는 07-01 확정안 대응 번호</h3>
+  <div class="tscroll"><table>
+    <tr><th>영역</th><th>포함</th></tr>
+    <tr><td>연동</td><td>HealthKit 허브: 러닝 워크아웃 목록 · 지표 · 경로 (1). Strava · NRC · Garmin · Apple Watch는 HealthKit 동기화로 커버</td></tr>
+    <tr><td>셀렉</td><td>세션 시간대 미디어 자동 수집, 품질 1차 필터, 베스트컷 후보 랭킹, 영상 구간 추천, 최종 선택은 사용자 (2)</td></tr>
+    <tr><td>오버레이</td><td>자동 배치(위치 · 가독성), 정적 10종 + 모션 3종 이상, 9:16 · 4:5 · 1:1, 스킵 가능 (3, 4)</td></tr>
+    <tr><td>릴스</td><td>유행 형식을 정의한 릴스 템플릿(5종 이상)을 고르면 선택 클립 + 오버레이로 5~15초 초안 자동 편집. 초안 생성 시간 60초 이내 (2)</td></tr>
+    <tr><td>에디터</td><td>트리밍 · 순서 · 오버레이 조정 · 필터 · 텍스트(한글 폰트) · 자르기, 초안 자동 저장 (5)</td></tr>
+    <tr><td>공유</td><td>갤러리 저장 + 인스타 공유(스토리 딥링크 · 공유 시트), 두 버튼 동선 (6)</td></tr>
+    <tr><td>빠른 경로</td><td>빠른 스탬프: 사진 1장 + 오버레이 즉시 공유 (사용자 결정 10)</td></tr>
+    <tr><td>리텐션</td><td>러닝 감지 푸시 (사용자 결정 9)</td></tr>
+    <tr><td>계측</td><td>전체 로깅: 노출 순서 · 스킵 포함 (06-20 DP-5)</td></tr>
+    <tr><td>수익 탐침</td><td>결제 fake door: 디자인만, 실결제 없음 (사용자 결정 6)</td></tr>
+  </table></div>
+  <h3>단계</h3>
+  <div class="tscroll"><table>
+    <tr><th>단계</th><th>범위</th><th>기준 요약</th></tr>
+    <tr><td>M1 클로즈 베타</td><td>Must 전부(코어 플로우)</td><td>팀 도그푸딩 1주 + 베타 유저(인터뷰이 3인 + 인스타 모집), 퍼널 계측 가동</td></tr>
+    <tr><td>M2 공개</td><td>Should 추가(푸시 · 빠른 스탬프 · 초안 다중), 여력 시 Could</td><td>베타 지표가 가설 범위 안, 크래시 프리 ≥ 99.5%</td></tr>
+    <tr><td>v1.x</td><td>Strava 직접 연동, 오버레이 확장, 투명 export 확대, 계정 검토</td><td>별도 정의</td></tr>
+    <tr><td>vNext</td><td>07-01 확정 로드맵: ① 인앱 측정 ② 오버레이 추가 ③ 패션러너용 오버레이 ④ 전문 러너용 편집 ⑤ 템플릿 추가 ⑥ 포토 핫스팟 ⑦ 소셜</td><td>v1 데이터와 후속 인터뷰로 재결정</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p8">
+  <h2><span class="no">§8</span>User Stories</h2>
+  <p class="lead">형식: "~로서, ~하기 위해, ~한다" + 인수 조건. 상세 AC는 정본 PRD.md §8. 여기는 스토리와 핵심 AC 요약.</p>
+  <div class="tscroll"><table>
+    <tr><th>ID</th><th>우선순위</th><th>스토리</th><th>핵심 AC</th></tr>
+    <tr><td><span class="id">US-001</span></td><td><span class="pill must">Must</span></td><td>러닝을 다시 측정하지 않기 위해 HealthKit 권한으로 기존 기록을 불러온다</td><td>어떤 소스 기록이든 러닝 타입이면 표시. 거부 시 graceful</td></tr>
+    <tr><td><span class="id">US-002</span></td><td><span class="pill must">Must</span></td><td>최근 러닝 목록에서 세션을 고른다</td><td>날짜 · 거리 · 시간 · 페이스 표시, TT-Share 측정 시작</td></tr>
+    <tr><td><span class="id">US-003</span></td><td><span class="pill must">Must</span></td><td>세션 시간대 사진 · 영상이 자동으로 모인 것을 본다</td><td>시작 전 30분~종료 후 2시간(조정 가능), 제한 접근 지원, 없으면 수동 경로</td></tr>
+    <tr><td><span class="id">US-004</span></td><td><span class="pill must">Must</span></td><td>얼굴 · 품질 기준 후보를 추려 받고 내가 최종 선택한다</td><td>1차 필터 + 랭킹(기본 8, 최소 4), 노출 순서 로깅, 후보 밖 우회로. 얼굴 분석은 서버 셀렉 파이프라인에서 — 인식·평가만, 생성·변형 없음</td></tr>
+    <tr><td><span class="id">US-005</span></td><td><span class="pill must">Must</span></td><td>컷편집에 들어갈 영상 구간을 추천받는다</td><td>안정 구간 1~3초 후보, 경계 조정 가능</td></tr>
+    <tr><td><span class="id">US-006</span></td><td><span class="pill must">Must</span></td><td>스타일을 고르면 자동 배치된 오버레이를 받는다</td><td>결측 지표 생략, 위치 · 색 자동 + 수동 조정, 스킵 가능, 요소 온오프</td></tr>
+    <tr><td><span class="id">US-007</span></td><td><span class="pill must">Must</span></td><td>유행 릴스 편집법을 배우지 않기 위해, 템플릿을 고르면 그 형식대로 자동 편집된 초안을 받는다</td><td>템플릿 5종+ (예시 미리보기 포함), 5~15초 + 기록 오버레이, 초안 생성 시간 P50 60초, BGM 없음(인스타에서)</td></tr>
+    <tr><td><span class="id">US-008</span></td><td><span class="pill must">Must</span></td><td>공유 전에 직접 다듬는다</td><td>트리밍 · 순서 · 오버레이 · 필터 · 텍스트(한글 폰트 3종+), 편집 수 로깅, 자동 저장 · 복구</td></tr>
+    <tr><td><span class="id">US-009</span></td><td><span class="pill must">Must</span></td><td>갤러리에 저장하거나 인스타그램으로 곧장 공유한다</td><td>완성 화면 = 미리보기 + 두 버튼, 결제 · 광고 없음, 스토리 딥링크</td></tr>
+    <tr><td><span class="id">US-010</span></td><td><span class="pill">Should</span></td><td>사진 1장에 기록만 얹는 날을 위한 빠른 스탬프 경로를 쓴다</td><td>3단계 이내, P50 60초, 오버레이만 투명 PNG 저장 가능</td></tr>
+    <tr><td><span class="id">US-011</span></td><td><span class="pill">Should</span></td><td>새 러닝이 기록되면 알림을 받는다</td><td>감지 → "오늘 러닝으로 콘텐츠 만들기", 탭하면 해당 세션 선택 상태로 진입</td></tr>
+    <tr><td><span class="id">US-012</span></td><td><span class="pill">Could</span></td><td>실결제 없는 Pro 페이지로 지불 의사를 잰다</td><td>관심 탭 이벤트만, 실결제 없음이 화면에 명시</td></tr>
+    <tr><td><span class="id">US-013</span></td><td><span class="pill must">Must</span></td><td>필요한 권한만 적시에 내주는 온보딩을 거친다</td><td>기능 필요 시점 요청, 거부해도 앱 정상 동작</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p9">
+  <h2><span class="no">§9</span>기능 요구사항</h2>
+  <div class="tscroll"><table>
+    <tr><th>ID</th><th>이름</th><th>우선순위</th><th>수용 조건(요약)</th><th>US / SS</th></tr>
+    <tr><td><span class="id">FR-001</span></td><td>HealthKit 워크아웃 가져오기</td><td><span class="pill must">Must</span></td><td>지표 · 경로 정규화, 결측 graceful 생략, 다중 소스 동시 기록(예: Garmin+NRC)은 시간 중첩 기준 병합</td><td>US-001 / SS-01</td></tr>
+    <tr><td><span class="id">FR-002</span></td><td>세션 리스트 · 선택</td><td><span class="pill must">Must</span></td><td>목록 · 선택. 기록 0건이면 지원 소스 앱 목록과 연동 안내</td><td>US-002 / SS-01</td></tr>
+    <tr><td><span class="id">FR-003</span></td><td>신규 러닝 감지</td><td><span class="pill">Should</span></td><td>HKObserverQuery 감지 → 로컬 알림, 중복 방지</td><td>US-011 / SS-09</td></tr>
+    <tr><td><span class="id">FR-010</span></td><td>세션-미디어 매칭</td><td><span class="pill must">Must</span></td><td>시간 창 수집(기본 -30분~+2시간), iCloud 원본은 다운로드 표시 · 오프라인 사유 안내</td><td>US-003 / SS-02</td></tr>
+    <tr><td><span class="id">FR-020</span></td><td>품질 1차 필터</td><td><span class="pill must">Must</span></td><td>흔들림 · 초점 · 노출 · 눈 감음 제외 — 서버 셀렉 파이프라인에서 수행(업로드 전 기기측 사전 필터 도입 여부는 설계 단계 결정)</td><td>US-004 / SS-03</td></tr>
+    <tr><td><span class="id">FR-021</span></td><td>베스트컷 랭킹</td><td><span class="pill must">Must</span></td><td>얼굴 · 구도 점수 랭킹(기본 8, 최소 4) — 서버 수행, 노출 순서 로깅, 100장 P50 10초(업로드+서버 처리 포함, Wi-Fi 기준)</td><td>US-004 / SS-03</td></tr>
+    <tr><td><span class="id">FR-022</span></td><td>후보 밖 선택</td><td><span class="pill must">Must</span></td><td>전체 미디어 수동 선택 경로</td><td>US-004 / SS-03</td></tr>
+    <tr><td><span class="id">FR-023</span></td><td>영상 구간 추천</td><td><span class="pill must">Must</span></td><td>안정 구간 1~3초 후보, 경계 조정</td><td>US-005 / SS-03</td></tr>
+    <tr><td><span class="id">FR-030</span></td><td>오버레이 렌더링</td><td><span class="pill must">Must</span></td><td>투명 배경, 3개 비율, 결측 요소 생략</td><td>US-006 / SS-04</td></tr>
+    <tr><td><span class="id">FR-031</span></td><td>오버레이 라이브러리</td><td><span class="pill must">Must</span></td><td>정적 ≥ 10종 + 모션 ≥ 3종 + 한글 폰트 ≥ 3종</td><td>US-006 · 008 / SS-04</td></tr>
+    <tr><td><span class="id">FR-032</span></td><td>오버레이 자동 배치</td><td><span class="pill must">Must</span></td><td>피사체 · 대비 기반 위치와 색, 수동 조정 허용</td><td>US-006 / SS-04</td></tr>
+    <tr><td><span class="id">FR-033</span></td><td>오버레이 스킵</td><td><span class="pill must">Must</span></td><td>건너뛰기 가능 + 스킵 로깅</td><td>US-006 / SS-04</td></tr>
+    <tr><td><span class="id">FR-034</span></td><td>투명 오버레이 단독 저장</td><td><span class="pill">Should</span></td><td>오버레이만 투명 PNG 저장</td><td>US-010 / SS-04 · 07</td></tr>
+    <tr><td><span class="id">FR-040</span></td><td>템플릿 릴스 초안 생성</td><td><span class="pill must">Must</span></td><td>템플릿 정의(컷 구성 · 전환 · 타이밍)대로 5~15초 자동 조립 + 오버레이, 온디바이스. 초안 생성 시간(템플릿 선택→초안 표시) P50 60초 이내</td><td>US-007 / SS-05</td></tr>
+    <tr><td><span class="id">FR-041</span></td><td>초안 다중 제시</td><td><span class="pill">Should</span></td><td>같은 템플릿 안에서 변형 2~3개 + 선택 로깅</td><td>US-007 / SS-05</td></tr>
+    <tr><td><span class="id">FR-042</span></td><td>릴스 템플릿 카탈로그</td><td><span class="pill must">Must</span></td><td>유행 릴스 형식(컷 수 · 컷 길이 · 전환 · 타이밍 · 오버레이 배치)을 데이터로 정의. 출시 시점 5종 이상 + 예시 미리보기, 선택 로깅. v1 신규 템플릿은 앱 업데이트로</td><td>US-007 / SS-05</td></tr>
+    <tr><td><span class="id">FR-050</span></td><td>에디터</td><td><span class="pill must">Must</span></td><td>트리밍 · 순서 · 교체 · 오버레이 · 필터 · 텍스트, 60fps</td><td>US-008 / SS-06</td></tr>
+    <tr><td><span class="id">FR-051</span></td><td>초안 자동 저장</td><td><span class="pill must">Must</span></td><td>강제 종료 후 복구 검증</td><td>US-008 / SS-06</td></tr>
+    <tr><td><span class="id">FR-060</span></td><td>갤러리 저장</td><td><span class="pill must">Must</span></td><td>사진 · 영상 저장</td><td>US-009 / SS-07</td></tr>
+    <tr><td><span class="id">FR-061</span></td><td>인스타그램 공유</td><td><span class="pill must">Must</span></td><td>스토리 딥링크 + 공유 시트, 두 버튼 동선</td><td>US-009 / SS-07</td></tr>
+    <tr><td><span class="id">FR-070</span></td><td>빠른 스탬프 경로</td><td><span class="pill">Should</span></td><td>사진 1장 + 오버레이 3단계</td><td>US-010 / SS-02 · 04 · 07</td></tr>
+    <tr><td><span class="id">FR-080</span></td><td>결제 fake door</td><td><span class="pill">Could</span></td><td>Pro 페이지 + 관심 이벤트, 실결제 없음</td><td>US-012 / SS-10</td></tr>
+    <tr><td><span class="id">FR-090</span></td><td>전체 로깅</td><td><span class="pill must">Must</span></td><td>§15 스키마 100%, 익명 ID. 분석 이벤트에 미디어 · 얼굴 데이터 미포함(미디어 업로드는 셀렉 파이프라인 별도 채널)</td><td>전체 / SS-08</td></tr>
+    <tr><td><span class="id">FR-100</span></td><td>온보딩 · 권한</td><td><span class="pill must">Must</span></td><td>적시 요청, graceful degradation</td><td>US-013 / SS-01 · 02 · 09</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p10">
+  <h2><span class="no">§10</span>Service / System Stories &amp; 추적성</h2>
+  <div class="tscroll"><table>
+    <tr><th>ID</th><th>이름</th><th>시스템 책임</th><th>상태 · 이벤트 · 데이터</th></tr>
+    <tr><td><span class="id">SS-01</span></td><td>HealthKit 동기화</td><td>워크아웃 쿼리 · RunSession 정규화 · 필드 편차 흡수 · 중복 병합</td><td>소스명 · 결측 · 병합 이력, 권한 상태 머신</td></tr>
+    <tr><td><span class="id">SS-02</span></td><td>미디어 인덱서</td><td>시간 창 PhotoKit 쿼리 · 세션 매핑</td><td>매칭 건수, 제한 접근 분기, 시간 창 설정</td></tr>
+    <tr><td><span class="id">SS-03</span></td><td>셀렉 엔진(서버, Kotlin/Spring + AWS)</td><td>미디어 업로드 → 품질 필터 → 랭킹 → 후보셋, 영상 구간 평가. 업로드 재시도 큐 · 진행 표시</td><td>후보 순위 · 노출 · 선택 이벤트. 얼굴 데이터는 선별 목적 외 사용 · 제3자 제공 금지, 보존 기간 · 삭제 정책은 OQ11</td></tr>
+    <tr><td><span class="id">SS-04</span></td><td>오버레이 렌더러</td><td>지표 바인딩 벡터 렌더 · 자동 배치</td><td>스타일 카탈로그, 적용 · 조정 · 스킵 이벤트, 결측 생략 규칙</td></tr>
+    <tr><td><span class="id">SS-05</span></td><td>릴스 컴포지션 엔진</td><td>ReelTemplate 정의 해석 → 클립을 템플릿 슬롯에 매핑 → AVFoundation 타임라인 조립 · 변형 · export</td><td>ReelTemplate 카탈로그(슬롯 · 타이밍 · 전환), 템플릿 선택 · 렌더 시간 · 변형 선택 이벤트</td></tr>
+    <tr><td><span class="id">SS-06</span></td><td>드래프트 영속화</td><td>자동 저장 · 복구</td><td>Draft 스냅샷, 복구 이벤트</td></tr>
+    <tr><td><span class="id">SS-07</span></td><td>공유 브릿지</td><td>저장 · 딥링크 · 공유 시트</td><td>ExportRecord, 인스타 미설치 폴백</td></tr>
+    <tr><td><span class="id">SS-08</span></td><td>이벤트 로깅</td><td>익명 ID · 오프라인 큐 · 배치 전송</td><td>§15 스키마, PII · 미디어 미포함 검증</td></tr>
+    <tr><td><span class="id">SS-09</span></td><td>러닝 감지 · 알림</td><td>HKObserverQuery · 중복 제거 · 로컬 알림</td><td>감지 · 발송 · 오픈 이벤트</td></tr>
+    <tr><td><span class="id">SS-10</span></td><td>fake door 계측</td><td>노출 · 클릭 계측, 실결제 빌드 수준 차단</td><td>노출 · 클릭 이벤트</td></tr>
+  </table></div>
+  <h3>US ↔ FR ↔ SS 추적 매핑</h3>
+  <div class="tscroll"><table>
+    <tr><th>US</th><th>FR</th><th>SS</th></tr>
+    <tr><td>US-001 연동 시작</td><td>FR-001, FR-100</td><td>SS-01</td></tr>
+    <tr><td>US-002 세션 선택</td><td>FR-002</td><td>SS-01, SS-08</td></tr>
+    <tr><td>US-003 미디어 수집</td><td>FR-010</td><td>SS-02</td></tr>
+    <tr><td>US-004 베스트컷</td><td>FR-020 ~ 022</td><td>SS-03</td></tr>
+    <tr><td>US-005 구간 추천</td><td>FR-023</td><td>SS-03</td></tr>
+    <tr><td>US-006 오버레이</td><td>FR-030 ~ 033</td><td>SS-04</td></tr>
+    <tr><td>US-007 템플릿 릴스 초안</td><td>FR-040, FR-041, FR-042</td><td>SS-05</td></tr>
+    <tr><td>US-008 에디터</td><td>FR-050, FR-051</td><td>SS-06</td></tr>
+    <tr><td>US-009 저장 · 공유</td><td>FR-060, FR-061</td><td>SS-07</td></tr>
+    <tr><td>US-010 빠른 스탬프</td><td>FR-070, FR-034</td><td>SS-02, SS-04, SS-07</td></tr>
+    <tr><td>US-011 러닝 알림</td><td>FR-003</td><td>SS-09</td></tr>
+    <tr><td>US-012 fake door</td><td>FR-080</td><td>SS-10</td></tr>
+    <tr><td>US-013 온보딩</td><td>FR-100</td><td>SS-01, SS-02, SS-09</td></tr>
+    <tr><td>(전체) 계측</td><td>FR-090</td><td>SS-08</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p11">
+  <h2><span class="no">§11</span>비기능 요구사항</h2>
+  <h3>성능 · 지연</h3>
+  <div class="tscroll"><table>
+    <tr><th>항목</th><th>목표</th><th>근거</th></tr>
+    <tr><td>콜드 스타트</td><td>P50 ≤ 2초, P95 ≤ 4초 (iPhone 12)</td><td>무거움이 채택 · 이탈을 가른다(백지은, CapCut 이탈)</td></tr>
+    <tr><td>셀렉 후보 산출(100장)</td><td>P50 ≤ 10초(업로드+서버 처리 포함, Wi-Fi 기준), 진행 표시</td><td>이영지 데일리런 100장이 현실 상한 근처. 서버 왕복 포함이므로 실측 후 재조정 가능(R11)</td></tr>
+    <tr><td>릴스 export(15초물)</td><td>P90 ≤ 30초</td><td>TT-Share 3분 안에 렌더가 병목이 되지 않도록</td></tr>
+    <tr><td>에디터 인터랙션</td><td>60fps</td><td>편집의 재미(비전)는 반응성에서 나온다</td></tr>
+    <tr><td>설치 용량</td><td>≤ 200MB (ML 모델 포함)</td><td>가벼움 인식</td></tr>
+  </table></div>
+  <h3>보안 · 프라이버시</h3>
+  <ul>
+    <li><b>[07-02 변경]</b> 미디어(원본 · 썸네일)와 건강 데이터는 자체 서버(Kotlin/Spring + AWS)로 전송 · 저장하고, AI 베스트컷 선별을 서버에서 수행한다. 전 구간 암호화(전송 TLS + 저장 at-rest), 수집 목적 고지와 명시적 동의 필수, 보존 기간 · 삭제 정책 명시(OQ11). 렌더 · 편집은 온디바이스(AVFoundation) 유지.</li>
+    <li>로깅은 익명 디바이스 ID 기반 이벤트 메타데이터만(§15 스키마 외 수집 금지). 계정 · PII 없음.</li>
+    <li>HealthKit 데이터는 Apple 정책상 광고 목적 사용 금지. 서버 저장 · 처리는 명시적 사용자 동의 하에서만(심사 5.1.3 대응, 개인정보처리방침에 고지). 분석 이벤트 속성에는 건강 수치를 넣지 않는다(파생 플래그만).</li>
+    <li>얼굴은 인식 · 평가만 하고 생성 · 변형 · 보정하지 않는다. 제품 원칙이자 심사 · 신뢰 방어선.</li>
+    <li>개인정보처리방침 URL, 권한 목적 문구 정비. 광고 SDK 없음, ATT 불요.</li>
+  </ul>
+  <h3>접근성 · 국제화 · 가용성</h3>
+  <ul>
+    <li>코어 플로우 VoiceOver, Dynamic Type, 명도 대비 4.5:1 이상(WCAG 2.2 AA 상응).</li>
+    <li>v1 한국어, 문자열 외부화로 영어 확장 대비. 한글 폰트 3종 이상은 FR-031.</li>
+    <li>오버레이 · 릴스 조립 · 편집 · 저장은 네트워크 없이 완결. <b>셀렉(베스트컷)은 서버 처리로 네트워크 필요</b> — 오프라인 시 전체 미디어 수동 선택(FR-022)으로 폴백. 예외는 iCloud에만 원본이 있는 미디어(다운로드 필요 사실을 알림). 로깅은 오프라인 큐.</li>
+    <li>크래시 프리 세션 ≥ 99.5%. export 파이프라인은 기기 성능에 맞춰 해상도 · 코덱 조정. 지원: iOS 17+, iPhone 12 기준선(OQ4).</li>
+    <li>관측성: 이벤트 발화를 검증하는 디버그 뷰. 대시보드는 분석 SDK 콘솔.</li>
+  </ul>
+</section>
+
+<section class="sec" id="p12">
+  <h2><span class="no">§12</span>상위 사용자 플로우 &amp; 데이터/엔티티</h2>
+  <h3>핵심 플로우</h3>
+  <div class="flow">
+    <div class="fstep">앱 진입</div>
+    <div class="farrow" aria-hidden="true"></div>
+    <div class="fstep">HealthKit 권한 <span class="fnote">거부 시: 안내 + 설정 유도</span></div>
+    <div class="farrow" aria-hidden="true"></div>
+    <div class="fstep">최근 러닝 세션 리스트 <span class="fnote">러닝 감지 푸시로도 진입</span></div>
+    <div class="farrow" aria-hidden="true"></div>
+    <div class="fstep key">세션 선택 · TT-Share 시작</div>
+    <div class="farrow" aria-hidden="true"></div>
+    <div class="fstep">세션 시간대 사진 · 영상 자동 수집</div>
+    <div class="farrow" aria-hidden="true"></div>
+    <div class="fbranch">
+      <div class="fcol">
+        <div class="fname">빠른 스탬프 (Should)</div>
+        <div class="fstep">사진 1장 선택</div>
+        <div class="farrow" aria-hidden="true"></div>
+        <div class="fstep">오버레이 적용</div>
+      </div>
+      <div class="fcol">
+        <div class="fname">풀 플로우</div>
+        <div class="fstep key">베스트컷 후보 제시 → 사용자 최종 선택</div>
+        <div class="farrow" aria-hidden="true"></div>
+        <div class="fstep">사진: 오버레이 자동 배치(스킵 가능)<br>릴스: 유행 템플릿 선택 → 구간 추천 → 초안 자동 편집(생성 60초 이내)</div>
+        <div class="farrow" aria-hidden="true"></div>
+        <div class="fstep">에디터에서 다듬기 · 자동 저장</div>
+      </div>
+    </div>
+    <div class="farrow" aria-hidden="true"></div>
+    <div class="fstep key">완성 화면: [갤러리 저장] [인스타 공유]</div>
+    <div class="farrow dash" aria-hidden="true"></div>
+    <div class="fstep">이벤트 로깅 → 다음 러닝 감지 → 푸시 (루프)</div>
+  </div>
+  <h3>개념 엔티티 (상세 스키마는 API 명세 단계)</h3>
+  <div class="ents">
+    <div class="ent"><b>DEVICE</b><ul><li>anonId 익명 ID</li></ul></div>
+    <div class="ent"><b>RUN_SESSION</b><ul><li>source (strava/nrc/garmin...)</li><li>startAt · endAt</li><li>distanceKm · durationSec · avgPace · calories</li><li>route · splits (결측 가능)</li></ul></div>
+    <div class="ent"><b>MEDIA_ASSET</b><ul><li>phAssetId</li><li>type (photo/video)</li><li>capturedAt</li></ul></div>
+    <div class="ent"><b>CANDIDATE_SCORE</b><ul><li>qualityScore · faceScore</li><li>rank</li><li>segment (영상 구간)</li></ul></div>
+    <div class="ent"><b>OVERLAY_STYLE</b><ul><li>kind (static/motion)</li><li>ratios (9:16 · 4:5 · 1:1)</li></ul></div>
+    <div class="ent"><b>REEL_TEMPLATE</b><ul><li>templateId</li><li>trendRef (유행 레퍼런스)</li><li>slotCount (컷 슬롯 수)</li><li>timing (컷 길이 · 전환 · 타이밍)</li></ul></div>
+    <div class="ent"><b>DRAFT</b><ul><li>type (photo/reel/stamp)</li><li>state (draft/edited/exported)</li><li>editActions · autosavedAt</li></ul></div>
+    <div class="ent"><b>EXPORT_RECORD</b><ul><li>action (save/share)</li><li>target (gallery/story/reel/feed)</li><li>edited</li></ul></div>
+  </div>
+  <p class="fnote" style="text-align:left">관계: DEVICE 1-N RUN_SESSION · RUN_SESSION 1-N MEDIA_ASSET(시간 매칭) · MEDIA_ASSET 1-N CANDIDATE_SCORE · RUN_SESSION 1-N DRAFT · OVERLAY_STYLE 1-N DRAFT · REEL_TEMPLATE 1-N DRAFT(형식 정의) · DRAFT 1-N EXPORT_RECORD</p>
+</section>
+
+<section class="sec" id="p13">
+  <h2><span class="no">§13</span>의존성 &amp; 외부 연동</h2>
+  <div class="tscroll"><table>
+    <tr><th>의존성</th><th>용도</th><th>제약 · 리스크</th></tr>
+    <tr><td>HealthKit</td><td>워크아웃 · 경로 읽기, 신규 러닝 감지</td><td>소스 앱의 동기화가 전제. NRC 경로 기록 여부는 스파이크 검증(R1). 심사 요건 5.1.3</td></tr>
+    <tr><td>PhotoKit</td><td>세션 시간대 미디어 수집</td><td>제한 접근 모드 대응 필수</td></tr>
+    <tr><td>자체 백엔드 서버 (Kotlin/Spring + AWS)</td><td>미디어 · 건강 데이터 저장, AI 베스트컷 선별</td><td>서버 비용 · 운영, 업로드 대역폭 · 지연이 TT-Share에 미치는 영향(R11), 개인정보 보호 대응(§11)</td></tr>
+    <tr><td>Vision / Core ML</td><td>오버레이 자동 배치(피사체 · 대비) 등 기기측 처리</td><td>역할 축소 — 셀렉은 서버로 이관. 구형 기기 성능</td></tr>
+    <tr><td>AVFoundation</td><td>구간 처리 · 릴스 조립 · export</td><td>코덱 · 해상도별 렌더 편차</td></tr>
+    <tr><td>인스타 스토리 딥링크</td><td>스토리 바로 공유(해찬 기 구현분)</td><td>Meta 정책 변경. 폴백: 저장 + 공유 시트</td></tr>
+    <tr><td>분석 SDK (미정)</td><td>익명 이벤트 수집</td><td>선정은 OQ2. 자체 서버가 생겼으므로 자체 수집으로의 대체 여부도 OQ2에서 함께 검토</td></tr>
+    <tr><td>한글 폰트</td><td>에디터 텍스트</td><td>OFL 등 상업 사용 가능 라이선스만</td></tr>
+    <tr><td>조직 의존성</td><td>디자인은 7/2 Claude Design, API 명세 7/3</td><td>품질 미달 시 와이어프레임 폴백(07-01 합의)</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p14">
+  <h2><span class="no">§14</span>리스크 / 가정 / 열린 질문</h2>
+  <h3>리스크</h3>
+  <div class="tscroll"><table>
+    <tr><th>ID</th><th>리스크</th><th>완화</th></tr>
+    <tr><td><span class="id">R1</span></td><td>NRC 등 일부 소스가 HealthKit에 경로 · 스플릿을 안 쓸 수 있음</td><td>착수 첫 주 소스별 필드 커버리지 스파이크. 결측 시 요소 생략(FR-030)으로 흡수</td></tr>
+    <tr><td><span class="id">R2</span></td><td>자동 셀렉 품질이 낮으면 채택이 무너짐(수용 라인은 품질 충족 여부)</td><td>후보 채택률 조기 측정 · 랭킹 반복, 수동 우회로(FR-022)</td></tr>
+    <tr><td><span class="id">R3</span></td><td>범용 AI 편집 툴의 러닝 특화 잠식</td><td>해자를 러닝 맥락 + 기록 통합 + 서버 AI 셀렉 품질 조합에. 출시 속도가 방어책</td></tr>
+    <tr><td><span class="id">R4</span></td><td>Share Aura 2.0 확장(자체 트래킹 · Runstreaming)</td><td>분기별 재조사. 각도 유지: 사후 셀렉 · 릴스</td></tr>
+    <tr><td><span class="id">R5</span></td><td>인스타 딥링크 · 공유 정책 변경</td><td>공유 시트 · 갤러리 저장 폴백 상시 유지</td></tr>
+    <tr><td><span class="id">R6</span></td><td>구형 기기 렌더 · 편집 성능(렌더는 온디바이스 유지)</td><td>iPhone 12 기준선, 기기별 해상도 조정</td></tr>
+    <tr><td><span class="id">R7</span></td><td>오버레이 디자인 품질 · 수량(Claude 디자인) 미달</td><td>7/2 조기 검토, 와이어프레임 폴백 기 합의</td></tr>
+    <tr><td><span class="id">R8</span></td><td>베타 리크루팅 난항</td><td>인터뷰이 3인 의향 확보. 추가는 인스타 직접 모집</td></tr>
+    <tr><td><span class="id">R9</span></td><td>EVERYGROUND 최신 동향 미확인</td><td>착수 전 스토어 직접 확인</td></tr>
+    <tr><td><span class="id">R10</span></td><td>유행 릴스 템플릿의 수명이 짧아 갱신 부담이 큼</td><td>템플릿을 코드가 아닌 데이터 정의로 분리. v1은 앱 업데이트로 추가, 원격 배포는 v1.x 검토(OQ10)</td></tr>
+    <tr><td><span class="id">R11</span></td><td>미디어 업로드 지연 · 실패(대용량 영상, 네트워크 품질)가 셀렉 10초 · TT-Share 3분 목표를 위협</td><td>백그라운드 업로드 + 재시도 큐, 썸네일 · 저해상도 우선 처리 검토, 진행 표시, 오프라인 시 수동 선택(FR-022) 폴백</td></tr>
+  </table></div>
+  <h3>가정 (검증 필요)</h3>
+  <div class="tscroll"><table>
+    <tr><td><span class="id">A1</span></td><td>셀렉 · 편집 자동화가 인증 빈도를 올린다 (핵심 가설)</td><td>베타 퍼널, 특히 공유 전환율과 North Star</td></tr>
+    <tr><td><span class="id">A2</span></td><td>동욱형 세그먼트가 시장으로 성립할 만큼 크다</td><td>정량 데이터 없음. 베타 모집 반응 · 오가닉으로 간접 검증</td></tr>
+    <tr><td><span class="id">A3</span></td><td>HealthKit 허브만으로 기록 소스가 충분히 커버된다</td><td>R1 스파이크 + 베타 연동 실패율</td></tr>
+    <tr><td><span class="id">A4</span></td><td>오버레이는 스킵 가능한 선택 단계가 실사용에 맞다</td><td>스킵률 관찰</td></tr>
+  </table></div>
+  <h3>Open Questions</h3>
+  <div class="tscroll"><table>
+    <tr><td><span class="id">OQ1</span></td><td>베스트컷 랭킹 구현(서버 셀렉 파이프라인 내): 휴리스틱으로 시작 vs 학습 모델(RAG vs 파인튜닝) — RAG 도입 여부 미정</td><td>담당자 학습 후 공유, 이현수 멘토 질의 예정</td></tr>
+    <tr><td><span class="id">OQ2</span></td><td>분석 SDK 선정(Amplitude, Firebase 등)</td><td>API 명세 단계(7/3)</td></tr>
+    <tr><td><span class="id">OQ3</span></td><td>계정 · 백업 도입 시점</td><td>v1 데이터 보고 재논의</td></tr>
+    <tr><td><span class="id">OQ4</span></td><td>최소 지원 iOS · 기기 기준선</td><td>착수 시 성능 실측</td></tr>
+    <tr><td><span class="id">OQ5</span></td><td>미디어 매칭 시간 창 기본값 적정성</td><td>베타 로그로 튜닝</td></tr>
+    <tr><td><span class="id">OQ6</span></td><td>릴스 초안 길이 정책(5~15초 내 기본값)</td><td>디자인 · 베타 피드백</td></tr>
+    <tr><td><span class="id">OQ7</span></td><td>수익모델 방향</td><td>fake door 데이터 확보 후</td></tr>
+    <tr><td><span class="id">OQ8</span></td><td>Android 착수 시점, repo 이름 변경(run-cut → run-log)</td><td>팀 결정</td></tr>
+    <tr><td><span class="id">OQ9</span></td><td>앰버서더 영입</td><td>서비스 개발 후 상의(06-20 DP-8)</td></tr>
+    <tr><td><span class="id">OQ10</span></td><td>릴스 템플릿 소싱 · 갱신 운영(트렌드 큐레이션 담당, 갱신 주기, 원격 배포 여부)</td><td>디자인 단계에서 초기 5종 확정, 운영 방식은 v1 데이터 보고</td></tr>
+    <tr><td><span class="id">OQ11</span></td><td>서버 데이터 정책: 미디어 · 건강 데이터 보존 기간과 삭제 정책(사용자 삭제권 포함), 업로드 대상(원본 vs 압축본 vs 썸네일 우선)</td><td>설계 단계(James)에서 초안, 개인정보처리방침에 반영. 익명 ID 체계에서 기기 변경 시 데이터 이전 불가 문제는 OQ3(계정)과 연동</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p15">
+  <h2><span class="no">§15</span>출시 기준 &amp; 분석 계획</h2>
+  <h3>Release Criteria (M2 공개 기준)</h3>
+  <ol>
+    <li>Must FR 전체 AC 통과.</li>
+    <li>이벤트 100% 계측, 디버그 뷰로 발화 검증. 후보 노출 순서 · 스킵이 빠짐없이 남는다.</li>
+    <li>팀 도그푸딩 1주: 3인 각자 실제 러닝 3회 이상으로 콘텐츠 제작.</li>
+    <li>베타에서 크래시 프리 ≥ 99.5%, TT-Share P50 ≤ 3분 실측.</li>
+    <li>오버레이 수량: 정적 ≥ 10, 모션 ≥ 3, 한글 폰트 ≥ 3.</li>
+    <li>프라이버시 검증: 네트워크 검사에서 미디어 · 얼굴 · 건강 원본 전송 0건.</li>
+    <li>권한 문구 · 개인정보처리방침 · 심사 요건 정비.</li>
+  </ol>
+  <h3>이벤트 정의 (핵심)</h3>
+  <div class="tscroll"><table>
+    <tr><th>이벤트</th><th>트리거</th><th>주요 속성</th><th>연결 지표</th></tr>
+    <tr><td><span class="id">app_open</span></td><td>앱 진입</td><td>cold_start_ms</td><td>콜드 스타트, 퍼널 1</td></tr>
+    <tr><td><span class="id">run_synced</span></td><td>워크아웃 정규화</td><td>source, has_route, has_splits</td><td>A3, R1</td></tr>
+    <tr><td><span class="id">next_run_detected</span></td><td>새 러닝 감지</td><td></td><td>North Star 분모</td></tr>
+    <tr><td><span class="id">notification_sent / opened</span></td><td>알림 발송 · 오픈</td><td></td><td>재사용 기여</td></tr>
+    <tr><td><span class="id">session_selected</span></td><td>세션 선택</td><td>entry(list/push/quick)</td><td>퍼널 1 · 3, North Star 분자, TT-Share 시작</td></tr>
+    <tr><td><span class="id">media_matched</span></td><td>미디어 수집 완료</td><td>photo_count, video_count, window_min</td><td>OQ5</td></tr>
+    <tr><td><span class="id">candidates_shown</span></td><td>후보 제시</td><td>candidate_ids, order, latency_ms</td><td>퍼널 2', 셀렉 대기</td></tr>
+    <tr><td><span class="id">candidate_skipped</span></td><td>후보 넘김</td><td>rank</td><td>랭킹 학습 데이터</td></tr>
+    <tr><td><span class="id">cut_selected</span></td><td>컷 확정</td><td>rank(후보 밖 null), manual_browse</td><td>후보 채택률</td></tr>
+    <tr><td><span class="id">segment_suggested / adopted</span></td><td>구간 추천 · 채택</td><td>adjusted</td><td>추천 품질</td></tr>
+    <tr><td><span class="id">overlay_applied / skipped / adjusted</span></td><td>오버레이 적용 · 스킵 · 조정</td><td>style_id, adjust_count</td><td>스킵률, 배치 품질</td></tr>
+    <tr><td><span class="id">reel_template_selected</span></td><td>릴스 템플릿 선택</td><td>template_id</td><td>템플릿 선호 · 채택 분포</td></tr>
+    <tr><td><span class="id">reel_draft_generated</span></td><td>릴스 초안 완료</td><td>template_id, duration_sec, variant_count, draft_latency_ms(생성 소요 시간), render_ms</td><td>릴스 렌더, 템플릿 초안 생성 시간</td></tr>
+    <tr><td><span class="id">draft_edited</span></td><td>편집 액션</td><td>action_type, cumulative_count</td><td>무수정 판정</td></tr>
+    <tr><td><span class="id">draft_autosaved / restored</span></td><td>자동 저장 · 복구</td><td></td><td>FR-051</td></tr>
+    <tr><td><span class="id">export_completed</span></td><td>저장 · 공유 완료</td><td>action, target, edited, tt_share_ms</td><td>퍼널 3 · 5, 무수정 공유율</td></tr>
+    <tr><td><span class="id">quick_stamp_completed</span></td><td>빠른 스탬프 완료</td><td>tt_ms, overlay_only</td><td>60초 목표</td></tr>
+    <tr><td><span class="id">pro_page_viewed / pro_interest_clicked</span></td><td>fake door</td><td>entry</td><td>OQ7</td></tr>
+    <tr><td><span class="id">error_occurred</span></td><td>처리 실패</td><td>domain, code</td><td>안정성</td></tr>
+  </table></div>
+  <h3>지표 ↔ 이벤트 계산</h3>
+  <div class="tscroll"><table>
+    <tr><td>North Star 재사용률</td><td>export_completed 보유 ID 중 next_run_detected 후 7일 내 session_selected 발생 비율</td></tr>
+    <tr><td>공유 전환율</td><td>session_selected 대비 export_completed</td></tr>
+    <tr><td>무수정 공유율</td><td>export_completed(edited=false) / export_completed</td></tr>
+    <tr><td>후보 채택률</td><td>cut_selected(rank ≤ 3) / cut_selected</td></tr>
+    <tr><td>TT-Share</td><td>session_selected → export_completed 의 tt_share_ms 분포</td></tr>
+    <tr><td>오버레이 스킵률</td><td>overlay_skipped / (applied + skipped)</td></tr>
+  </table></div>
+</section>
+
+<section class="sec" id="p16">
+  <h2><span class="no">§16</span>부록 / 용어집 / 참고</h2>
+  <h3>용어집</h3>
+  <div class="tscroll"><table>
+    <tr><td>오버레이</td><td>사진 · 영상 위에 얹는 기록 그래픽(거리 · 페이스 · 경로 등)</td></tr>
+    <tr><td>베스트컷</td><td>여러 미디어 중 품질 · 얼굴 · 구도가 좋아 쓸 만한 컷</td></tr>
+    <tr><td>셀렉</td><td>찍은 미디어에서 올릴 것을 고르는 행위. 인터뷰 공통 최대 페인</td></tr>
+    <tr><td>릴스 / 캐러셀</td><td>인스타그램 세로 숏폼 영상 / 게시글의 여러 장 슬라이드</td></tr>
+    <tr><td>릴스 템플릿</td><td>유행 릴스의 컷 구성 · 컷 길이 · 전환 · 타이밍 · 오버레이 배치를 데이터로 정의한 편집 프리셋. 오버레이 스타일(기록 그래픽)과는 별개 개념</td></tr>
+    <tr><td>투명 PNG(누끼)</td><td>배경이 투명한 기록 이미지. Strava · Garmin은 제공, NRC는 미제공</td></tr>
+    <tr><td>HealthKit / 워크아웃 / HKWorkoutRoute</td><td>iOS 건강 데이터 허브 / 운동 세션 단위 / 워크아웃에 붙는 GPS 경로</td></tr>
+    <tr><td>온디바이스 ML</td><td>서버 전송 없이 기기 안에서 도는 기계학습 처리</td></tr>
+    <tr><td>무수정 공유</td><td>자동 초안을 편집 없이 그대로 저장 · 공유하는 것</td></tr>
+    <tr><td>TT-Share / 콜드 스타트</td><td>세션 선택부터 완료까지 시간 / 앱 프로세스 없는 상태의 첫 구동 시간</td></tr>
+    <tr><td>fake door</td><td>실기능 없이 수요만 측정하는 UI. 여기서는 실결제 없는 Pro 페이지</td></tr>
+    <tr><td>MoSCoW / saliency</td><td>Must~Won't 우선순위 표기 / 시선이 가는 영역 추정(오버레이 배치에 사용)</td></tr>
+  </table></div>
+  <h3>참고 문서</h3>
+  <ul>
+    <li>결정: wiki/decisions/PRD v2 확정 2026-07-01.md · 1차 MVP 범위 의사결정 2026-06-20.md</li>
+    <li>리서치: wiki/feedback/러닝-유저-인터뷰-인사이트.md · 콘텐츠-편집-도그푸딩-페인포인트.md</li>
+    <li>시장: .discovery/02-market-analysis/market-report.md · competitive-landscape.md (Caleb, 2026-07-02)</li>
+    <li>멘토링: wiki/summaries/멘토링 요약 2026-06-15 이현수멘토님.md (퍼널 5게이트 · 전체 로깅)</li>
+    <li>운영 결정 기록: .discovery/00-plan/charter.md (Q&amp;A 11건)</li>
+    <li>전작: raw/specs/2026-06-15-run-cut-PRD.md (PRD v1, 본 문서로 대체)</li>
+    <li>유행 릴스 레퍼런스(템플릿 소싱 예시, 2026-07-02 PM 제공): <a href="https://www.instagram.com/runner_mang/reel/DWf1olHgKrx/">runner_mang 릴스</a> · <a href="https://www.instagram.com/reel/DYQ54kozvfE/">릴스 DYQ54kozvfE</a></li>
+  </ul>
+</section>
+
+<section class="sec" id="review">
+  <h2>자가 리뷰 채점</h2>
+  <p class="lead">prd-review 루브릭, 10개 차원 0~10점. 평가 상세와 "10점의 모습"은 prd-review.md. 보강 4건 반영 후 점수다.</p>
+  <div class="score"><span>문제 정의의 명료성</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>페르소나 · JTBD 구체성</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>USP · 포지셔닝 설득력</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>성공 지표 측정 가능성</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>스코프 · MVP 명료성</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>기능 요구 완전성 · 검증가능성</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>NFR 커버리지</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>추적성 (Story↔요구↔지표)</span><div class="bar"><i style="width:100%"></i></div><span class="v">10</span></div>
+  <div class="score"><span>리스크 · 가정 · OQ의 정직함</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <div class="score"><span>시장 근거의 출처</span><div class="bar"><i style="width:90%"></i></div><span class="v">9</span></div>
+  <p style="margin-top:14px">평균 <b>9.1</b>. 남은 감점은 문서로 해결 불가능한 것들이다: 베타 실측 전 목표치, 니치 정량 데이터 부재, 경쟁자 실기기 재검증. 전부 §14에 추적 항목으로 존재한다.</p>
+  <h3>리뷰에서 반영한 개선 4건</h3>
+  <ol>
+    <li>§4 사용자 시나리오 추가(동욱님 토요일 러닝 흐름).</li>
+    <li>FR-002: 기록 0건 신규 유저의 빈 상태 AC.</li>
+    <li>FR-001 · SS-01: 다중 소스 동시 기록(Garmin+NRC) 중복 병합.</li>
+    <li>FR-010 · §11: iCloud 원본 미보유 미디어 처리와 오프라인 원칙 예외.</li>
+    <li><b>[07-02] 아키텍처 전환:</b> 온디바이스 전용 → 자체 서버(Kotlin/Spring + AWS). 미디어 · 건강 데이터 서버 저장, AI 베스트컷 선별 서버 수행, 렌더 · 편집은 온디바이스 유지. 계정은 v1 익명 유지. 반영: 사용자 결정 3, §11, §13, SS-03, FR-020 · 021 · 090, US-004, R3 · R6 · R11(신설), OQ1 · OQ11(신설).</li>
+  </ol>
+</section>
+
+<section class="sec" id="files">
+  <h2>파일 맵 · 다음 단계</h2>
+  <div class="tscroll"><table>
+    <tr><th>파일</th><th>내용</th></tr>
+    <tr><td><span class="id">.discovery/03-prd/PRD.md</span></td><td>정본 PRD 16섹션 (이 페이지의 원본)</td></tr>
+    <tr><td><span class="id">user-stories.md · service-stories.md · success-metrics.md</span></td><td>companion 정규본 3종</td></tr>
+    <tr><td><span class="id">prd-review.md</span></td><td>차원별 채점 + 10점의 모습 + 개선 기록</td></tr>
+    <tr><td><span class="id">.discovery/02-market-analysis/</span></td><td>Caleb 시장분석 2종 (출처 URL 전량)</td></tr>
+    <tr><td><span class="id">.discovery/00-plan/charter.md</span></td><td>의도 게이트 + 사용자 결정 11건</td></tr>
+  </table></div>
+  <h3>다음 단계</h3>
+  <ol>
+    <li>PM 리뷰 · 승인 완료 (2026-07-02, v2.1 Approved).</li>
+    <li>7/2 Design System → 7/3 API 명세 → 개발 착수. 티켓은 2~4시간 단위(제한재 멘토님 조언).</li>
+    <li>착수 첫 주: R1 스파이크(소스별 HealthKit 필드 커버리지), OQ1(베스트컷 구현 접근) 이현수 멘토 질의.</li>
+  </ol>
+</section>
+
+</main>
+</div>
+
+<footer>run-log Discovery Team · Paul 작성 · 2026-07-02 · 정본은 .discovery/03-prd/PRD.md</footer>
+
+<script>
+(function(){
+  var trail=document.querySelector('#routebar .trail');
+  var links=[].slice.call(document.querySelectorAll('nav.toc a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+  function onScroll(){
+    var h=document.documentElement;
+    var p=h.scrollTop/(h.scrollHeight-h.clientHeight);
+    trail.style.width=(p*100)+'%';
+    var cur=null;
+    for(var i=0;i<secs.length;i++){
+      if(secs[i].getBoundingClientRect().top<=120) cur=i;
+    }
+    links.forEach(function(a,i){a.classList.toggle('on',i===cur)});
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>

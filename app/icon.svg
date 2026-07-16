@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 파비콘 — brand-pill 파생: 암실 캔버스 + 400m 트랙 필 + 달리는 점 -->
+  <rect width="64" height="64" rx="14" fill="#131313"/>
+  <rect x="8" y="22" width="48" height="20" rx="10" fill="none" stroke="#FFB300" stroke-width="4"/>
+  <circle cx="46" cy="22" r="5" fill="#FFB300"/>
+</svg>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<!-- 인스타 프로필용 로고 렌더 (헤드리스 캡처 전용)
+     1024×1024 뷰포트 × deviceScaleFactor 2 = 2048×2048 출력.
+     원형 크롭 안전: 마크 660×305 → 대각 반경 ≈364px < 내접원 반경 512px (1024 기준). -->
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; }
+  #c {
+    width: 1024px; height: 1024px; background: #131313;
+    display: flex; align-items: center; justify-content: center;
+  }
+  svg { width: 660px; overflow: visible; }
+</style>
+</head>
+<body>
+<div id="c">
+  <svg viewBox="0 0 260 120">
+    <defs>
+      <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+        <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#FFB300" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <rect x="10" y="10" width="240" height="100" rx="50" fill="none" stroke="#FFB300" stroke-width="7"/>
+    <circle cx="185" cy="10" r="9" fill="#FFB300" filter="url(#glow)"/>
+  </svg>
+</div>
+</body>
+</html>

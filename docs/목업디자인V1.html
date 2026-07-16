@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[코드네임: run-log] Design Wave 1 결과 보고 — 와이어프레임 · 목업 · 카탈로그</title>
+<style>
+  :root{
+    --amber:#FFB300; --amber-dim:rgba(255,179,0,.16); --amber-pressed:#DB9900;
+    --canvas:#131313; --elevated:#1E1E1E; --card:#242424; --well:#0A0A0A;
+    --ink:#FFFFFF; --body:#A6A6A6; --muted:#707070; --hairline:#2C2C2C;
+    --info:#64D2FF; --success:#30D158; --error:#FF453A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--canvas);color:var(--body);font-family:"Pretendard","Apple SD Gothic Neo",-apple-system,sans-serif;font-size:15px;line-height:1.65;padding:0 0 80px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+  header{padding:56px 0 32px;border-bottom:1px solid var(--hairline)}
+  .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+  h1{color:var(--ink);font-size:30px;letter-spacing:-0.3px;line-height:1.3;margin-bottom:10px}
+  h1 .pill{display:inline-block;border:2px solid var(--amber);border-radius:999px;padding:2px 14px;font-size:16px;vertical-align:middle;color:var(--amber);position:relative;margin-right:6px}
+  h1 .pill::after{content:"";position:absolute;top:-4px;right:14px;width:7px;height:7px;border-radius:50%;background:var(--amber)}
+  .sub{color:var(--muted);font-size:13px}
+  h2{color:var(--ink);font-size:20px;letter-spacing:-0.2px;margin:48px 0 14px;padding-top:8px}
+  h2 .num{color:var(--amber);font-weight:600;margin-right:8px}
+  h3{color:var(--ink);font-size:16px;margin:24px 0 10px}
+  p{margin:10px 0}
+  strong{color:var(--ink);font-weight:600}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+  th{color:var(--ink);text-align:left;font-weight:600;padding:9px 12px;border-bottom:1px solid var(--hairline);background:var(--elevated);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--hairline);vertical-align:top}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12.5px;background:var(--elevated);color:#D8D8D8;padding:1px 6px;border-radius:5px}
+  .notice{background:var(--amber-dim);border:1px solid var(--amber);border-radius:12px;padding:20px 22px;margin:28px 0}
+  .notice .t{color:var(--amber);font-weight:700;font-size:16px;margin-bottom:8px}
+  .notice ul{margin:8px 0 0 18px}
+  .notice li{margin:6px 0;color:#E8D9B5}
+  .cardbox{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:18px 20px;margin:14px 0}
+  ul,ol{margin:10px 0 10px 22px}
+  li{margin:5px 0}
+  .chip{display:inline-block;background:var(--elevated);border:1px solid var(--hairline);border-radius:999px;padding:2px 11px;font-size:12px;margin:2px 3px 2px 0;color:#C9C9C9}
+  .chip.amber{border-color:var(--amber);color:var(--amber)}
+  .footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--hairline);color:var(--muted);font-size:12.5px}
+  a{color:var(--info);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+  .stat{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:16px;text-align:center}
+  .stat .n{color:var(--amber);font-size:32px;font-weight:700;letter-spacing:-1px}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:4px}
+  .mock{background:var(--elevated);border:1px solid var(--hairline);border-radius:12px;margin:18px 0;overflow:hidden}
+  .mock-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--hairline);flex-wrap:wrap}
+  .mock-head .t{color:var(--ink);font-weight:700;font-size:15px}
+  .mock-head .open{font-size:13px;white-space:nowrap}
+  .mock-body{padding:10px 18px 14px}
+  .mock-frames{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .preview{height:236px;overflow:hidden;position:relative;background:#1A1A1A;border-top:1px solid var(--hairline)}
+  .preview iframe{width:4600px;height:1080px;border:0;transform:scale(.215);transform-origin:0 0;pointer-events:none}
+  .preview::after{content:"";position:absolute;inset:0}
+  .ok{color:var(--success)}
+  .toc{background:var(--elevated);border-radius:12px;padding:16px 20px;margin:24px 0;font-size:13.5px}
+  .toc a{color:var(--body)} .toc a:hover{color:var(--amber)}
+  .toc ol{margin:6px 0 0 20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Design Team · Wave 1 Report · 2026-07-03 · Paul</div>
+  <h1><span class="pill">코드네임</span>Design Wave 1 — 와이어프레임 · Claude Design 목업 · 카탈로그</h1>
+  <div class="sub">기준 문서 <code>.discovery/03-prd/PRD-design-v1.md</code> (출시 모드) · 산출 루트 <code>.agent-team/07-design/</code> · 작성 Paul (Design 리드)</div>
+</header>
+
+<div class="notice">
+  <div class="t">⚠ 서비스명 미확정 — 모든 목업은 심볼 단독 + {SERVICE_NAME} 토큰</div>
+  <ul>
+    <li>전 산출물에서 서비스명 텍스트 노출 <strong>0건</strong>을 리드가 기계 검증(grep)으로 확인했습니다. 로고는 400m 트랙 필 + 달리는 도트 심볼 단독, 워드마크 슬롯은 비워 뒀습니다(D1 · N1~N13).</li>
+    <li>프라이버시 관련 문구는 전부 <strong>[OQ13 — PM 결정 대기]</strong> placeholder — 자리·형식만 설계했습니다(C1~C4 정합).</li>
+  </ul>
+</div>
+
+<div class="stat-row">
+  <div class="stat"><div class="n">13</div><div class="l">화면 (S1~S13) 목업 완료</div></div>
+  <div class="stat"><div class="n">89</div><div class="l">상태별 프레임 (로딩·빈·에러·오프라인 포함)</div></div>
+  <div class="stat"><div class="n">10+3</div><div class="l">오버레이 정적+모션 · 한글 폰트 3종</div></div>
+  <div class="stat"><div class="n">5</div><div class="l">릴스 템플릿 초기 확정안</div></div>
+</div>
+
+<div class="toc">
+  <strong style="color:var(--ink)">목차</strong>
+  <ol>
+    <li><a href="#how">진행 방식 · Claude Design 확인 위치</a></li>
+    <li><a href="#flow">UX 플로우 요약</a></li>
+    <li><a href="#screens">화면별 목업 (S1~S13)</a></li>
+    <li><a href="#catalogs">카탈로그 2종 (오버레이 · 릴스 템플릿)</a></li>
+    <li><a href="#decisions">설계 결정 로그 (이번 세션)</a></li>
+    <li><a href="#c1c5">C1~C5 카피 모순 — 반영 결과</a></li>
+    <li><a href="#open">PM 결정 대기 항목</a></li>
+    <li><a href="#next">다음 단계 (Develop 인계)</a></li>
+  </ol>
+</div>
+
+<h2 id="how"><span class="num">1</span>진행 방식 · 결과 확인 위치</h2>
+<p><strong>Jonnathan(수석 디자이너)</strong>이 UX Flow Map · S1~S13 와이어프레임(13×6 상태 매트릭스 전 칸) · 카탈로그 2종 스펙 · 목업 제작 가이드를 설계하고, <strong>빌더 4명</strong>이 그 스펙만을 기준으로 고충실도 HTML 목업을 병렬 제작했습니다. 빌더 질의 9건은 전부 리드/Jonnathan 판정을 거쳐 반영됐고(§5), Jonnathan 자가 리뷰는 <strong>57/60</strong>(잔여 감점은 전부 PM 결정 대기 항목)입니다.</p>
+<div class="cardbox">
+  <p><strong>Claude Design에서 보기:</strong> <a href="https://claude.ai/design" target="_blank">claude.ai/design</a> → <strong>"Design System"</strong> 프로젝트에 16개 파일을 푸시했습니다 — Foundations(토큰 시트 1) · Screens(S1~S13, 13) · Catalogs(2). 카드 그룹은 파일의 <code>@dsCard</code> 마커 기준으로 자동 구성됩니다.</p>
+  <p><strong>로컬에서 보기:</strong> 아래 각 카드의 "전체 보기" 링크(이 파일 기준 상대 경로, 원본: <code>.agent-team/07-design/mockups/</code>). 미리보기는 축소 렌더라 실제 크기는 링크로 여세요.</p>
+</div>
+<p style="font-size:13px;color:var(--muted)">참고: 인계서가 참조한 <code>docs/design.html</code>(Design System 원본)이 리포에 없어, 인계서 §0.1이 동일 내용으로 보증한 텍스트 추출본(<code>.discovery/00-plan/design-extracted-reference.txt</code>)을 정본 참조로 사용했습니다.</p>
+
+<h2 id="flow"><span class="num">2</span>UX 플로우 요약</h2>
+<div class="cardbox">
+<p style="font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;line-height:2">
+S1 온보딩 → S2 홈(세션 선택) → <span style="color:var(--amber)">path-choice</span> → S3 미디어 수집<br>
+&nbsp;&nbsp;├─ <strong>빠른 스탬프(60초):</strong> S11 (사진 1장+오버레이, 3단계) → S10<br>
+&nbsp;&nbsp;└─ <strong>풀 플로우(3분):</strong> S4 베스트컷(서버 셀렉·다중선택 1~6컷) → <span style="color:var(--amber)">format-choice*</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 사진: S6 오버레이 → S9 에디터<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 릴스: S7 템플릿(5종) → S5 구간 추천 → S8 초안(60초 내) → S9 에디터<br>
+&nbsp;&nbsp;→ S10 완성([인스타 공유] 주 CTA + [갤러리 저장]) → S12 러닝 감지 푸시 (재사용 루프)&nbsp;&nbsp;&nbsp;⊕ S13 Pro fake door
+</p>
+<p class="mock-frames">* format-choice(사진/릴스 분기 시트)는 PRD 미정의 → Jonnathan <strong>신설 제안</strong> 상태. PM 확정 대상(§7). 상세: <code>ux-flow-map.md</code> — US-001~013 · FR-001~100 · SS-01~10 전 항목 매핑, 폴백 사다리 13행 포함.</p>
+</div>
+
+<h2 id="screens"><span class="num">3</span>화면별 목업 (S1~S13)</h2>
+<p>각 파일은 해당 화면의 <strong>모든 상태</strong>를 프레임으로 나열합니다(iPhone 390×844). 앰버 사용처는 프레임마다 라벨에 명기해 "화면당 ≤3" 규칙이 검증 가능합니다.</p>
+
+<div class="mock"><div class="mock-head"><span class="t">S0 · 디자인 토큰 시트</span><a class="open" href="../.agent-team/07-design/mockups/s00-tokens.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">컬러 스와치 17종 + <strong>Paper 신설 3종(v1.1 제안)</strong> · 타이포 13종 · spacing/rounded 래더 · brand-pill 소/대 · 버튼 3종 · AI 배지/시맨틱 도트</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s00-tokens.html" loading="lazy" title="S0"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S1 · 온보딩 · 권한 요청 — 5프레임</span><a class="open" href="../.agent-team/07-design/mockups/s01-onboarding.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">기본(consent-sheet-light Paper + <strong>서버 업로드 고지 자리 C4</strong>) · 로딩 · 권한거부(graceful) · 에러 · 오프라인</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s01-onboarding.html" loading="lazy" title="S1"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S2 · 홈 · 세션 리스트 — 7프레임</span><a class="open" href="../.agent-team/07-design/mockups/s02-home.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">기본(session-card·소스 배지·거리 플레이트 변형) · 로딩 스켈레톤 · <strong>기록 0건 빈 상태(N8)</strong> · 권한거부 · 에러 · 오프라인 · 푸시 진입(path-choice 자동)</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s02-home.html" loading="lazy" title="S2"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S3 · 미디어 수집 결과 — 8프레임</span><a class="open" href="../.agent-team/07-design/mockups/s03-media.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">사진 권한 요청(C4 고지 자리) · 기본(-30분~+2시간 창) · 로딩 · <strong>미디어 0건 수동 경로</strong> · 권한거부 · 제한 접근 · 에러 · 오프라인+iCloud 안내</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s03-media.html" loading="lazy" title="S3"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S4 · 베스트컷 후보 (서버 셀렉) — 11프레임 · 아키텍처 정합 핵심</span><a class="open" href="../.agent-team/07-design/mockups/s04-bestcut.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames"><strong>업로드 중(n/m) → 분석 중 2단계(C3, 불확정 스피너 0)</strong> · face-guard-notice(C1 수정) · 기본(0컷) · <strong>다중선택 2컷(v1.1 순서 배지)</strong> · 6컷 상한 toast · 후보부족 · 빈 · 네트워크 오류 · <strong>오프라인 수동 폴백(FR-022)</strong> · 셀룰러 감지</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s04-bestcut.html" loading="lazy" title="S4"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S5 · 영상 구간 추천 — 6프레임</span><a class="open" href="../.agent-team/07-design/mockups/s05-segment.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">segment-trim-bar(추천 구간 앰버 딤 필 + 44pt 트림 핸들) · 조정 중 · 추천 실패 · 오류 · 오프라인</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s05-segment.html" loading="lazy" title="S5"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S6 · 오버레이 선택 · 배치 — 6프레임</span><a class="open" href="../.agent-team/07-design/mockups/s06-overlay.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">기본(실기록 바인딩) · <strong>결측 지표 조용한 생략</strong> · 수동 조정(얼굴 회피 배치) · metric-toggle-chips(앰버 0 — 일상 컨트롤) · 스킵 · 오프라인 정상(온디바이스)</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s06-overlay.html" loading="lazy" title="S6"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S7 · 릴스 템플릿 선택 — 6프레임</span><a class="open" href="../.agent-team/07-design/mockups/s07-template.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">5종 카탈로그(예시 미리보기+컷 수) · 선택(앰버 링) · 로딩 · <strong>Reduce Motion</strong> · 슬롯&gt;선택 컷 안내 · 빈/에러</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s07-template.html" loading="lazy" title="S7"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S8 · 릴스 초안 · 변형 — 6프레임</span><a class="open" href="../.agent-team/07-design/mockups/s08-draft.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames"><strong>render-progress-track 시그니처</strong>(트랙 필 위 앰버 도트 루프 + 초 카운트 + 단계 라벨, P50 60초) · Reduce Motion · 기본 · 변형 2~3개 · 에러 · 오프라인</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s08-draft.html" loading="lazy" title="S8"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S9 · 에디터 — 7프레임</span><a class="open" href="../.agent-team/07-design/mockups/s09-editor.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">기본(filmstrip-order-badge · one-tap-banner [추천 그대로 쓰기]) · 텍스트 도구(한글 폰트 3종) · <strong>자동 저장/복구</strong> · 에러 롤백 · 오프라인 정상</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s09-editor.html" loading="lazy" title="S9"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S10 · 완성 화면 — 10프레임</span><a class="open" href="../.agent-team/07-design/mockups/s10-complete.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames"><strong>[인스타 공유](주 CTA) + [갤러리 저장] 두 버튼으로 끝 — 결제·광고 없음(USP 3)</strong> · share-destination-sheet(56pt) · export 진행 · 성공 2종 · 인스타 미설치 폴백 · 권한 거부 · 알림 제안 · 오프라인</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s10-complete.html" loading="lazy" title="S10"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S11 · 빠른 스탬프 — 8프레임</span><a class="open" href="../.agent-team/07-design/mockups/s11-quickstamp.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">3단계 이내 · "약 1분" 약속 UI · <strong>[오버레이만 저장 — 투명 PNG] 상시 노출(FR-034)</strong> · 사진 0장 폴백 · 결측 지표 · 에러 · 오프라인</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s11-quickstamp.html" loading="lazy" title="S11"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S12 · 러닝 감지 푸시 — 6프레임</span><a class="open" href="../.agent-team/07-design/mockups/s12-push.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">잠금화면/배너(본문 무이름 카피 — N7) · 탭 → 세션 선택 상태 진입 · 알림 권한 없음 홈 배너 보완 · 다중 세션 · 오프라인</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s12-push.html" loading="lazy" title="S12"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">S13 · Pro 페이지 (fake door) — 3프레임</span><a class="open" href="../.agent-team/07-design/mockups/s13-pro.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames"><strong>"결제는 일어나지 않습니다" 전 프레임 명시</strong> · {PRO_LABEL} 토큰(N9 — "Pro" 접미도 미확정) · 관심 탭 이벤트</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/s13-pro.html" loading="lazy" title="S13"></iframe></div></div>
+
+<h2 id="catalogs"><span class="num">4</span>카탈로그 2종 — 디자인 직접 산출 FR</h2>
+
+<div class="mock"><div class="mock-head"><span class="t">오버레이 카탈로그 (FR-031)</span><a class="open" href="../.agent-team/07-design/mockups/catalog-overlays.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames">정적 <strong>10종</strong>(ST-01~10) + 모션 <strong>3종</strong>(카운트업·루트 드로우·페이스 틱, Reduce Motion 대체 포함) + 한글 폰트 <strong>3종</strong>(Black Han Sans·Do Hyeon·Jua — SIL OFL, 배포 전 재확인 고지) · 3비율(9:16/4:5/1:1 — ST-03 전 비율 렌더) · <strong>결측 지표 생략 규칙 시연</strong>(FR-030) · 워터마크 없음(N11)</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/catalog-overlays.html" loading="lazy" title="오버레이 카탈로그"></iframe></div></div>
+
+<div class="mock"><div class="mock-head"><span class="t">릴스 템플릿 카탈로그 (FR-042 · OQ10 초기 5종 확정안)</span><a class="open" href="../.agent-team/07-design/mockups/catalog-reel-templates.html" target="_blank">전체 보기 →</a></div>
+<div class="mock-body"><div class="mock-frames"><code>tpl_dash</code> · <code>tpl_scenery</code> · <code>tpl_pacezone</code> · <code>tpl_startline</code> · <code>tpl_finishroll</code> — 각 컷 수/컷 길이/전환/타이밍 다이어그램 + 미리보기 시퀀스 + OQ6 기본 길이 제안. 유행 근거는 레퍼런스 실물 미열람으로 전면 <strong>[추정] 표기</strong>(수치 날조 대신 정직 고지 — PM 대조 요청)</div></div>
+<div class="preview"><iframe src="../.agent-team/07-design/mockups/catalog-reel-templates.html" loading="lazy" title="릴스 템플릿 카탈로그"></iframe></div></div>
+
+<h2 id="decisions"><span class="num">5</span>설계 결정 로그 (이번 세션 · 빌더 질의 판정 포함)</h2>
+<table>
+  <tr><th>#</th><th>결정</th><th>근거 · 판정자</th></tr>
+  <tr><td>W1</td><td><strong>S4는 항상 다중선택(1~6컷)</strong> — 순서 배지(filmstrip-order-badge 재사용, 우상단) + CTA 라벨 통합 카운터("n컷으로 계속") + 상한 toast. 사진 게시물은 "사진 1컷 선택"일 때만 format-choice에서 활성</td><td>Jonnathan (wireframes v1.1) — 빌더 B 스펙 갭 질의로 촉발</td></tr>
+  <tr><td>W2</td><td><strong>Paper 표면 보조 토큰 3종 신설 제안</strong>: <code>--paper-ink</code> <code>--paper-ink-secondary(#5C5C5C)</code> <code>--paper-divider(#E3E7E9)</code> — WCAG AA 대비 계산 포함. opacity 합성 근사는 전면 금지로 규칙 강화. <strong>정본 design.md 반영 필요</strong></td><td>Jonnathan (mockup-guide v1.1) — 빌더 A 토큰 갭 질의로 촉발</td></tr>
+  <tr><td>W3</td><td>face-guard-notice는 <strong>다크 시트</strong>(surface-card + info 도트) — Paper는 "다크 앱 속 유일한 라이트 표면 = consent-sheet-light"로 한정</td><td>Paul (PRD §0.2 근거)</td></tr>
+  <tr><td>W4</td><td>S10 버튼 위계: <strong>[인스타 공유] = 주 CTA(앰버)</strong>, [갤러리 저장] = 아웃라인 보조 — "화면당 주 CTA 1개"</td><td>Paul (wireframe 위계 채택)</td></tr>
+  <tr><td>W5</td><td>앰버 ≤3 계수는 <strong>의미론 그룹 단위</strong>(예: S4 다중선택 = 랭크 1그룹 + 선택 상태 1그룹 + CTA = 3그룹)</td><td>Jonnathan (Design System "상태 단위 정의" 근거)</td></tr>
+  <tr><td>W6</td><td>릴스 전환 효과(휩 팬·speed ramp 등)는 목업에서 리터럴 렌더하지 않고 타임라인·표로 정확 명기 — 오해 방지, 실렌더는 Develop 몫</td><td>Paul/빌더 D</td></tr>
+</table>
+
+<h2 id="c1c5"><span class="num">6</span>C1~C5 카피 모순 — 반영 결과</h2>
+<table>
+  <tr><th>#</th><th>인계서 지적</th><th>반영</th></tr>
+  <tr><td>C1</td><td>face-guard "이 기기 안에서 끝나요"</td><td class="ok">✅ 해당 문장 삭제, 사실인 앞부분("얼굴을 만들거나 바꾸지 않아요")만 유지 + OQ13 placeholder</td></tr>
+  <tr><td>C2</td><td>"셀렉…네트워크 없이 완결"</td><td class="ok">✅ 온디바이스/서버 경계 표 정본화(ux-flow-map §3.4) — 오프라인 시 S4·S5만 폴백, S6/S8~S11 "정상 동작" 명시</td></tr>
+  <tr><td>C3</td><td>진행 모델에 업로드+서버 미반영</td><td class="ok">✅ "업로드 중(n/m) → 분석 중" 2단계 + Wi-Fi 단서 + 셀룰러 감지 프레임 (S4)</td></tr>
+  <tr><td>C4</td><td>동의 카피 서버 업로드 미고지</td><td class="ok">✅ S1(건강)·S3(사진) 동의 시트에 서버 전송·보존/삭제 고지 <strong>자리</strong> 설계 — 문구는 [OQ13]</td></tr>
+  <tr><td>C5</td><td>44pt 근거 오인용</td><td class="ok">✅ 전 산출물 "Apple HIG / WCAG 2.5.5" 표기</td></tr>
+</table>
+
+<h2 id="open"><span class="num">7</span>PM 결정 대기 항목</h2>
+<table>
+  <tr><th>항목</th><th>내용</th></tr>
+  <tr><td><strong>OQ12</strong> 서비스명</td><td>확정 시 {SERVICE_NAME}/{PRO_LABEL} 토큰 값 교체 + 워드마크 슬롯 삽입만으로 전체 반영되도록 설계됨</td></tr>
+  <tr><td><strong>OQ13</strong> 프라이버시 카피</td><td>고지 자리·형식 완료, 최종 문구 PM 결정(법무/개인정보 검토 — C4 심사 5.1.3 직결)</td></tr>
+  <tr><td><strong>OQ6</strong> 릴스 기본 길이</td><td>카탈로그에 제안값 포함(근거 명시, "제안" 표기) — 베타 피드백으로 확정</td></tr>
+  <tr><td><strong>OQ10</strong> 템플릿 5종 대조</td><td>유행 근거가 레퍼런스 실물 미열람으로 [추정] — PM이 §16 레퍼런스와 대조 요망</td></tr>
+  <tr><td>format-choice 신설</td><td>사진/릴스 분기 시트 — PRD 미정의라 Jonnathan 제안 상태(대안 포함 문서화). 승인 필요</td></tr>
+  <tr><td>Paper 토큰 3종</td><td>W2 신설 제안 — 정본 design.md 반영 승인 필요</td></tr>
+  <tr><td>S13 진입점</td><td>PRD 미정의 — 제안 상태</td></tr>
+  <tr><td>design.html 부재</td><td>인계서가 참조한 <code>docs/design.html</code>이 리포에 없음 — 복구본 커밋 여부 확인 요망(추출본으로 작업엔 지장 없었음)</td></tr>
+</table>
+
+<h2 id="next"><span class="num">8</span>다음 단계</h2>
+<ol>
+  <li><strong>Develop 인계서</strong> <code>.agent-team/_state/handoff-design.md</code> 작성 완료 — 디자인 트랙 기준.</li>
+  <li><strong>아키텍처 트랙(James)</strong> — 이번 지시 범위 밖이라 미착수. Develop 착수 전 ERD·API 계약·build-plan이 필요하므로 <strong>후속 세션에서 <code>/wave1-design</code>(James 단독) 실행을 권장</strong>합니다.</li>
+  <li>PM 결정(§7) 회신 시 토큰 교체·문구 삽입은 각 1곳 수정으로 전파되도록 설계돼 있습니다.</li>
+</ol>
+
+<div class="footer">
+  [코드네임: run-log] Design Team · Paul 작성 · 2026-07-03 · 정본 산출물 <code>.agent-team/07-design/</code> · Claude Design 프로젝트 "Design System" · 서비스명은 미확정이며 본 문서의 "run-log"는 전부 임시 코드네임입니다.
+</div>
+
+</div>
+</body>
+</html>

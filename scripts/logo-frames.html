@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<!--
+  로고 영상 프레임 캡처용 페이지 (헤드리스 전용 — 배포 안 됨)
+  결정론적 렌더: CSS 애니메이션 대신 window.setFrame(i)로 프레임별 도트 위치를
+  path.getPointAtLength로 계산해 배치한다 (캡처 타이밍 무관, 프레임 정확).
+
+  타임라인 30fps · 총 96프레임(3.2s):
+    0–11   홀드 (정적 위치)
+    12–83  한 바퀴 (72f = 2.4s, easeInOutSine — 출발·정지의 러너 감각)
+    84–95  홀드 (제자리 복귀)
+  방향: 반시계 (실제 400m 트랙 방향)
+-->
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; }
+  #stage {
+    width: 1080px; height: 1080px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  svg { width: 780px; height: 360px; overflow: visible; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg viewBox="0 0 260 120">
+    <defs>
+      <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+        <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#FFB300" flood-opacity="0.5"/>
+      </filter>
+    </defs>
+    <!-- 도트 궤도 (보이지 않는 기준 경로) — 오른쪽 위 출발, 반시계 -->
+    <path id="orbit" d="M185 10 L60 10 A50 50 0 0 0 60 110 L200 110 A50 50 0 0 0 200 10 L185 10" fill="none" stroke="none"/>
+    <rect x="10" y="10" width="240" height="100" rx="50" fill="none" stroke="#FFB300" stroke-width="7"/>
+    <circle id="dot" cx="185" cy="10" r="9" fill="#FFB300" filter="url(#glow)"/>
+  </svg>
+</div>
+<script>
+  const HOLD_IN = 12, LAP = 72, HOLD_OUT = 12;
+  const TOTAL = HOLD_IN + LAP + HOLD_OUT; // 96
+
+  const orbit = document.getElementById("orbit");
+  const dot = document.getElementById("dot");
+  const L = orbit.getTotalLength();
+
+  const easeInOutSine = (t) => (1 - Math.cos(Math.PI * t)) / 2;
+
+  window.TOTAL_FRAMES = TOTAL;
+  window.setFrame = (i) => {
+    let progress = 0;
+    if (i >= HOLD_IN && i < HOLD_IN + LAP) {
+      progress = easeInOutSine((i - HOLD_IN + 1) / LAP);
+    } else if (i >= HOLD_IN + LAP) {
+      progress = 1;
+    }
+    const p = orbit.getPointAtLength((progress % 1) * L);
+    dot.setAttribute("cx", p.x);
+    dot.setAttribute("cy", p.y);
+  };
+</script>
+</body>
+</html>

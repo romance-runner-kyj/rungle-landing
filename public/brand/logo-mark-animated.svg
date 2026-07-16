@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 120">
+  <!-- run-log 브랜드 마크 (웹 애니메이션) — 도트가 오른쪽 위 정적 위치에서 출발해
+       400m 트랙을 반시계(실제 트랙 방향)로 정확히 한 바퀴 돌고 제자리에 멈춘다.
+       Reduce Motion: 정지. offset-path 미지원: 정적 도트 폴백.
+       랜딩 히어로·로딩 인디케이터 재사용 가능 (loop가 필요하면 animation-iteration-count만 infinite로). -->
+  <defs>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#FFB300" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <style>
+    .dot-run {
+      display: none;
+    }
+    @supports (offset-path: path("M0 0 L1 1")) {
+      .dot-static { display: none; }
+      .dot-run {
+        display: inline;
+        offset-path: path("M185 10 L60 10 A50 50 0 0 0 60 110 L200 110 A50 50 0 0 0 200 10 L185 10");
+        offset-rotate: 0deg;
+        offset-distance: 0%;
+        animation: lap 2.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.6s 1;
+      }
+    }
+    @keyframes lap {
+      from { offset-distance: 0%; }
+      to { offset-distance: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .dot-run { animation: none; }
+    }
+  </style>
+  <rect x="10" y="10" width="240" height="100" rx="50" fill="none" stroke="#FFB300" stroke-width="7"/>
+  <!-- 폴백: offset-path 미지원 환경의 정적 도트 -->
+  <circle class="dot-static" cx="185" cy="10" r="9" fill="#FFB300" filter="url(#glow)"/>
+  <!-- 달리는 점 -->
+  <circle class="dot-run" r="9" fill="#FFB300" filter="url(#glow)"/>
+</svg>

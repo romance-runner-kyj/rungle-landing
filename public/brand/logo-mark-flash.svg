@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 120">
+  <!-- run-log 브랜드 마크 (웹 애니메이션 v2 — 가속 랩 + 카메라 플래시)
+       도트가 천천히 출발 → 가속(easeInQuart 근사)으로 한 바퀴 → 제자리 정지
+       → 사진 플래시처럼 찰칵 (스웰 + 섬광 버스트 + 충격파 링).
+       Reduce Motion: 정지. offset-path 미지원: 정적 도트 폴백. -->
+  <defs>
+    <filter id="glow" x="-120%" y="-120%" width="340%" height="340%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#FFB300" flood-opacity="0.5"/>
+    </filter>
+    <radialGradient id="burst">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#FFD966" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#FFB300" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <style>
+    .dot-run { display: none; }
+    @supports (offset-path: path("M0 0 L1 1")) {
+      .dot-static { display: none; }
+      .dot-run {
+        display: inline;
+        offset-path: path("M185 10 L60 10 A50 50 0 0 0 60 110 L200 110 A50 50 0 0 0 200 10 L185 10");
+        offset-rotate: 0deg;
+        offset-distance: 0%;
+        /* 천천히 출발 → 후반 가속 (easeInQuart 근사) */
+        animation: lap 1.6s cubic-bezier(0.7, 0, 0.9, 0.4) 0.3s 1,
+                   dot-pop 0.5s ease-out 1.9s 1;
+      }
+      .burst {
+        animation: burst-out 0.45s ease-out 1.98s 1;
+      }
+      .shock {
+        animation: shock-out 0.45s ease-out 1.98s 1;
+      }
+    }
+    .burst, .shock { opacity: 0; }
+    @keyframes lap {
+      from { offset-distance: 0%; }
+      to { offset-distance: 100%; }
+    }
+    @keyframes dot-pop {
+      0% { r: 9; }
+      25% { r: 16; }
+      100% { r: 9; }
+    }
+    @keyframes burst-out {
+      0% { r: 14; opacity: 1; }
+      100% { r: 105; opacity: 0; }
+    }
+    @keyframes shock-out {
+      0% { r: 12; opacity: 0.85; }
+      100% { r: 135; opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .dot-run, .burst, .shock { animation: none; }
+    }
+  </style>
+  <rect x="10" y="10" width="240" height="100" rx="50" fill="none" stroke="#FFB300" stroke-width="7"/>
+  <!-- 섬광 버스트 + 충격파 링 (도착 지점 고정) -->
+  <circle class="burst" cx="185" cy="10" r="14" fill="url(#burst)"/>
+  <circle class="shock" cx="185" cy="10" r="12" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <!-- 폴백: offset-path 미지원 환경의 정적 도트 -->
+  <circle class="dot-static" cx="185" cy="10" r="9" fill="#FFB300" filter="url(#glow)"/>
+  <!-- 달리는 점 -->
+  <circle class="dot-run" r="9" fill="#FFB300" filter="url(#glow)"/>
+</svg>
