@@ -102,10 +102,10 @@ export const copy: Record<Locale, Copy> = {
   /* ─────────────────────────── KO (정본) ─────────────────────────── */
   ko: {
     meta: {
-      title: "rungle — 러닝 기록에서 릴스까지, 자동으로",
+      title: "rungle — 러닝 기록 오버레이로 인증 릴스 자동 생성",
       description:
-        "이미 쓰는 러닝 앱의 기록을 불러와, 찍어온 사진·영상에서 베스트컷을 골라 기록을 입힌 릴스 초안까지 자동으로. 마지막 선택은 당신이 합니다. iOS 출시 소식을 가장 먼저 받아보세요.",
-      ogImageAlt: "rungle — 러닝 기록에서 릴스까지, 자동으로",
+        "러닝 기록 오버레이를 입힌 러닝 인증 릴스, 자동으로. 이미 쓰는 러닝 앱의 기록을 불러와 찍어온 사진·영상에서 베스트컷을 골라 기록 오버레이 사진과 릴스 초안까지 만들어 드려요. 마지막 선택은 당신이 합니다. iOS 출시 소식을 가장 먼저 받아보세요.",
+      ogImageAlt: "rungle — 러닝 기록 오버레이로 인증 릴스 자동 생성",
     },
     nav: {
       cta: "사전 등록",
@@ -115,8 +115,8 @@ export const copy: Record<Locale, Copy> = {
     hero: {
       badge: "iOS · 출시 준비 중",
       headline1: "러닝 기록에서",
-      headline2: "릴스까지, 자동으로",
-      sub: "뛰고 찍기만 하세요. 고르고, 입히고, 릴스로 만드는 건 rungle가 합니다. 마지막 선택은 당신이 하고요.",
+      headline2: "인증 릴스까지, 자동으로",
+      sub: "뛰고 찍기만 하세요. 베스트컷 셀렉, 러닝 기록 사진 자동 생성, 릴스 초안까지 rungle가 합니다. 마지막 선택은 당신이 하고요.",
     },
     waitlist: {
       placeholder: "이메일 주소",
@@ -243,7 +243,7 @@ export const copy: Record<Locale, Copy> = {
       sub: "출시하면 이메일로 가장 먼저 초대해 드릴게요.",
     },
     footer: {
-      tagline: "러닝 기록에서 릴스까지, 자동으로",
+      tagline: "러닝 기록에서 인증 릴스까지, 자동으로",
       copyright: "© 2026 rungle",
     },
     mockup: {
@@ -259,10 +259,10 @@ export const copy: Record<Locale, Copy> = {
   /* ─────────────────────────── EN (번역) ─────────────────────────── */
   en: {
     meta: {
-      title: "rungle — From your run to a Reel, automatically",
+      title: "rungle — Auto-generate running stats overlays and run Reels",
       description:
-        "rungle pulls the runs you already track, picks the best shots from your photos and videos, and drafts a Reel with your stats overlaid. You make the final call. Be first to know when we launch on iOS.",
-      ogImageAlt: "rungle — From your run to a Reel, automatically",
+        "Running stats overlays and Instagram run Reels, generated automatically. rungle pulls the runs you already track, picks the best shots from your photos and videos, and drafts a Reel with your stats overlaid. You make the final call. Be first to know when we launch on iOS.",
+      ogImageAlt: "rungle — Auto-generate running stats overlays and run Reels",
     },
     nav: {
       cta: "Get early access",
@@ -273,7 +273,7 @@ export const copy: Record<Locale, Copy> = {
       badge: "iOS · launching soon",
       headline1: "From your run",
       headline2: "to a Reel, automatically",
-      sub: "Just run and shoot. rungle picks, overlays, and drafts the Reel — you make the final call.",
+      sub: "Just run and shoot. rungle handles the culling, the stats overlay, and the Reel draft — you make the final call.",
     },
     waitlist: {
       placeholder: "Email address",
