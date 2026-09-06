@@ -96,29 +96,30 @@ export async function buildOgImage(lang: Locale) {
           />
         </div>
 
-        {/* 헤드라인 */}
+        {/* 헤드라인 — 히어로 3구, 마지막 구만 앰버 */}
         <div
           style={{
             display: "flex",
             color: INK,
-            fontSize: 78,
+            fontSize: 72,
             lineHeight: 1.15,
             fontWeight: 700,
           }}
         >
-          {t.hero.headline1}
+          {t.hero.lines[0]}
         </div>
         <div
           style={{
             display: "flex",
-            color: AMBER,
-            fontSize: 78,
+            gap: 20,
+            fontSize: 72,
             lineHeight: 1.15,
             fontWeight: 700,
-            marginBottom: 44,
+            marginBottom: 40,
           }}
         >
-          {t.hero.headline2}
+          <span style={{ color: INK }}>{t.hero.lines[1]}</span>
+          <span style={{ color: AMBER }}>{t.hero.lines[2]}</span>
         </div>
 
         {/* 기록 칩 행 — 전광판의 목소리 (Barlow Condensed) */}

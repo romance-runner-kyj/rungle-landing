@@ -15,9 +15,9 @@ function check(name, ok, detail = "") {
 
 const browser = await chromium.launch();
 
-for (const [locale, path, expectLang, expectH1] of [
-  ["ko", "/", "ko", "러닝 기록에서"],
-  ["en", "/en", "en", "From your run"],
+for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
+  ["ko", "/", "ko", "뛰고 찍기까지", "https://apps.apple.com/kr/", ["출시 준비", "사전 등록", "출시하면", "베타"]],
+  ["en", "/en", "en", "Run and shoot", "https://apps.apple.com/us/", ["launching soon", "early access", "waitlist", "beta"]],
 ]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await page.goto(BASE + path, { waitUntil: "networkidle" });
@@ -28,32 +28,33 @@ for (const [locale, path, expectLang, expectH1] of [
   const h1 = await page.locator("h1").first().textContent();
   check(`${locale}: h1`, (h1 ?? "").includes(expectH1), (h1 ?? "").trim());
 
-  const forms = await page.locator("form").count();
-  check(`${locale}: waitlist 폼 2개`, forms === 2, String(forms));
+  /* App Store CTA: Nav·히어로·최종 3개, 로케일에 맞는 스토어(kr/us) — 중앙 반복 없음 */
+  const storeLinks = await page.locator(`a[href^="${storePrefix}"]`).count();
+  check(`${locale}: App Store 링크 3개 (${storePrefix})`, storeLinks === 3, String(storeLinks));
+  const otherStore = await page
+    .locator('a[href^="https://apps.apple.com/"]')
+    .evaluateAll((els, prefix) => els.filter((a) => !a.href.startsWith(prefix)).length, storePrefix);
+  check(`${locale}: 다른 로케일 스토어 링크 없음`, otherStore === 0, String(otherStore));
 
-  const emailInputs = await page.locator('input[type="email"]').count();
-  check(`${locale}: 이메일 입력 2개`, emailInputs === 2, String(emailInputs));
+  /* 출시 전 문구 잔존 금지 — 닫힌 <details>(FAQ 답변)까지 보려면 innerText가 아니라 textContent */
+  const bodyText = ((await page.locator("body").textContent()) ?? "").toLowerCase();
+  const leftovers = stale.filter((w) => bodyText.includes(w.toLowerCase()));
+  check(`${locale}: 출시 전 문구 없음`, leftovers.length === 0, leftovers.join(", "));
 
-  const honeypots = await page.locator('input[name="_gotcha"]').count();
-  check(`${locale}: 허니팟`, honeypots === 2, String(honeypots));
+  /* 앱 화면은 실제 캡처(webp) — 히어로 1장 + 화면 섹션 4장 */
+  /* next/image가 src를 /_next/image?url=%2Fmedia%2F… 로 인코딩하므로 디코드 후 매칭 */
+  const shots = await page
+    .locator("img")
+    .evaluateAll(
+      (els, needle) =>
+        els.filter((img) => decodeURIComponent(img.getAttribute("src") ?? "").includes(needle)).length,
+      `/media/app/${locale}/`
+    );
+  check(`${locale}: 앱 캡처 5장 (${locale} 로케일)`, shots === 5, String(shots));
 
-  /* CTA는 처음(히어로 폼)·끝(최종 폼)·Nav 앵커 1개만 — 중앙 반복 제거 확인 */
-  const ctaAnchors = await page.locator('a[href="#waitlist"]').count();
-  check(`${locale}: #waitlist 앵커 = 1 (Nav만)`, ctaAnchors === 1, String(ctaAnchors));
-
-  /* 07-03: 유료/안드로이드 문답 제거 결정으로 6 → 4 */
+  /* FAQ 4문항 — 연동·사진 한 장·사진/얼굴 처리·기기 (09-06 토스식 리뉴얼) */
   const faqItems = await page.locator("details.faq-item").count();
   check(`${locale}: FAQ 4문항`, faqItems === 4, String(faqItems));
-
-  const emailBg = await page
-    .locator('input[type="email"]')
-    .first()
-    .evaluate((el) => getComputedStyle(el).backgroundColor);
-  check(
-    `${locale}: 이메일 입력 흰 배경`,
-    emailBg === "rgb(255, 255, 255)",
-    emailBg
-  );
 
   /* Reveal(IntersectionObserver)·lazy 이미지 발화를 위해 실제 스크롤 후 캡처 */
   await page.evaluate(async () => {
@@ -75,6 +76,15 @@ for (const [locale, path, expectLang, expectH1] of [
     viewport: { width: 390, height: 844 },
   });
   await mobile.goto(BASE + path, { waitUntil: "networkidle" });
+  await mobile.evaluate(async () => {
+    const step = window.innerHeight * 0.6;
+    for (let y = 0; y <= document.body.scrollHeight; y += step) {
+      window.scrollTo({ top: y, behavior: "instant" });
+      await new Promise((r) => setTimeout(r, 160));
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  });
+  await mobile.waitForTimeout(1200);
   const hasHScroll = await mobile.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth
   );

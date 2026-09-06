@@ -1,12 +1,12 @@
 /**
  * app/components/Nav.tsx — 상단 내비게이션
  * ─────────────────────────────────────────────────────────
- * brand-pill 로고 + 언어 토글(Link, 풀 페이지 전환 — v2 검증 구조) + CTA 앵커.
+ * brand-pill 로고 + 언어 토글(Link, 풀 페이지 전환 — v2 검증 구조) + App Store CTA.
  */
 import Link from "next/link";
 import BrandPill from "./BrandPill";
 import type { Copy } from "../lib/copy";
-import type { Locale } from "../lib/locales";
+import { LOCALE_META, type Locale } from "../lib/locales";
 
 type Props = {
   lang: Locale;
@@ -32,7 +32,7 @@ export default function Nav({ lang, t }: Props) {
             {t.langToggle}
           </Link>
           <a
-            href="#waitlist"
+            href={LOCALE_META[lang].appStoreUrl}
             className="rounded-full bg-amber px-4 py-1.5 text-sm font-semibold text-on-primary transition active:bg-amber-pressed"
           >
             {t.cta}
