@@ -1,18 +1,21 @@
 /**
  * app/lib/copy.ts — 카피 SSOT (ko 정본 → en 번역)
  * ─────────────────────────────────────────────────────────
- * 진실성 가드 (개발 브리프):
- *  - 출시 전 제품 — 존재하지 않는 기능을 주장하지 않는다.
- *  - 가상 대기자 수 등 허위 소셜 프루프 금지 — 정성적 표현만.
- *  - "온디바이스 분석" 주장 금지 — PRD v2.1(07-02)에서 셀렉은 서버 수행으로 변경됨.
- *    얼굴 관련 카피는 "인식만, 만들지 않는다"까지만. (충돌 보고 완료)
+ * 스타일: 토스(toss.im) 랜딩 문법 — 히어로는 짧은 구 3개, 섹션은 2줄 헤드라인(마침표 없음)
+ * + 2줄 설명(해요체, 상황 → 결과), 화면 하나에 메시지 하나. 결정 2026-09-06(B안 다크 유지).
  *
- * 근거:
- *  - 히어로 카피 공식: Submagic "[입력]에서 [결과물]까지 + 자동화" (리서치 HIGH)
- *  - 톤: PRD 한 줄 비전 "뛰고 찍기만 해라…" 번안
- *  - 러너 페인 수치: PRD §2 실측 인터뷰·도그푸딩 (릴스 1개 30분, 사진 100장 등)
+ * 진실성 가드:
+ *  - 출시된 제품 — 앱에 없는 기능을 주장하지 않는다. 화면은 App Store 판넬
+ *    원본 캡처(public/media/app)만 쓰고 CSS로 앱을 재현하지 않는다.
+ *  - 허위 소셜 프루프 금지 — 정성적 표현만. 가격·구독·무료 언급 금지(정책 미확정).
+ *  - 프라이버시 표현은 스토어 설명 범위까지만 — 선별·편집은 기기 안 처리, 사진·영상
+ *    원본 미전송(1.0 출시 빌드 기준). 얼굴 관련 카피는 "인식만, 만들지 않는다"까지만.
+ *  - 각 screen 카피는 그 캡처에 실제 보이는 것(버튼·필터·트랙)과 맞춘다.
  */
 import type { Locale } from "./locales";
+import type { AppScreen } from "../components/PhoneMockup";
+
+type TwoLines = [string, string];
 
 export type Copy = {
   meta: {
@@ -27,74 +30,40 @@ export type Copy = {
   };
   hero: {
     badge: string;
-    headline1: string;
-    headline2: string; // 앰버 하이라이트 라인
-    sub: string;
+    lines: [string, string, string]; // 3구, 마지막 구는 앰버
+    sub: TwoLines;
   };
-  waitlist: {
-    placeholder: string;
-    submit: string;
-    submitting: string;
-    done: string;
-    error: string;
-    invalidEmail: string;
-    microcopy: string; // 리스크 제거 마이크로카피 (Runna 패턴)
+  cta: {
+    label: string; // App Store 이동 버튼 (히어로·최종)
+    microcopy: string; // 리스크 제거 마이크로카피 — 스토어 설명에 있는 사실만
   };
-  value: {
-    title: string;
-    body: string;
-  };
-  pain: {
-    title: string;
-    sub: string;
-    cards: { stat: string; label: string; desc: string }[];
-  };
-  features: {
-    title: string;
-    cards: { name: string; title: string; desc: string }[];
-    faceGuard: string;
-  };
-  bestcut: {
-    title: string;
-    sub: string;
-    aiBadge: string;
-    cards: { rank: number | null; tags: string[] }[];
-    note: string;
-  };
-  steps: {
-    title: string;
-    sub: string;
-    items: { no: string; title: string; desc: string }[];
+  screens: {
+    key: AppScreen;
+    kicker: string;
+    headline: TwoLines;
+    desc: TwoLines;
+  }[];
+  principles: {
+    headline: TwoLines;
+    items: { title: string; desc: string }[];
   };
   trackers: {
-    title: string;
-    body: string;
+    headline: TwoLines;
+    desc: TwoLines;
     names: string[];
     note: string;
-  };
-  emotive: {
-    title: string;
-    body: string;
   };
   faq: {
     title: string;
     items: { q: string; a: string }[];
   };
   finalCta: {
-    title: string;
+    headline: TwoLines;
     sub: string;
   };
   footer: {
     tagline: string;
     copyright: string;
-  };
-  mockup: {
-    sessionTitle: string;
-    sessionMeta: string;
-    aiBadge: string;
-    reasonTags: string[];
-    draftLabel: string;
-    shareButton: string;
   };
 };
 
@@ -102,314 +71,240 @@ export const copy: Record<Locale, Copy> = {
   /* ─────────────────────────── KO (정본) ─────────────────────────── */
   ko: {
     meta: {
-      title: "rungle — 러닝 기록 오버레이로 인증 릴스 자동 생성",
+      title: "rungle(런글) — 러닝 기록 오버레이 사진과 러닝 릴스, 뛰고 찍으면 바로",
       description:
-        "러닝 기록 오버레이를 입힌 러닝 인증 릴스, 자동으로. 이미 쓰는 러닝 앱의 기록을 불러와 찍어온 사진·영상에서 베스트컷을 골라 기록 오버레이 사진과 릴스 초안까지 만들어 드려요. 마지막 선택은 당신이 합니다. iOS 출시 소식을 가장 먼저 받아보세요.",
-      ogImageAlt: "rungle — 러닝 기록 오버레이로 인증 릴스 자동 생성",
+        "쓰던 러닝 앱의 기록을 애플 건강으로 불러와, 그때 찍은 사진에서 잘 나온 컷을 골라 거리·페이스·시간을 얹은 러닝 기록 오버레이 사진과 러닝 릴스 초안을 만들어요. 계정 없이, iOS App Store에서.",
+      ogImageAlt: "rungle — 뛰고 찍기까지, 나머지는 런글이",
     },
     nav: {
-      cta: "사전 등록",
+      cta: "앱 받기",
       langToggle: "EN",
       langToggleAria: "Switch to English",
     },
     hero: {
-      badge: "iOS · 출시 준비 중",
-      headline1: "러닝 기록에서",
-      headline2: "인증 릴스까지, 자동으로",
-      sub: "뛰고 찍기만 하세요. 베스트컷 셀렉, 러닝 기록 사진 자동 생성, 릴스 초안까지 rungle가 합니다. 마지막 선택은 당신이 하고요.",
-    },
-    waitlist: {
-      placeholder: "이메일 주소",
-      submit: "출시 알림 받기",
-      submitting: "등록 중",
-      done: "등록 완료! 출시하면 가장 먼저 알려드릴게요.",
-      error: "전송에 실패했어요. 잠시 후 다시 시도해 주세요.",
-      invalidEmail: "유효한 이메일 주소를 입력해 주세요.",
-      microcopy: "출시하면 가장 먼저 초대해 드려요 · 출시 소식 외에는 보내지 않아요",
-    },
-    value: {
-      title: "매 러닝은 이미 한 편의 스토리예요",
-      body: "스무 개의 셀카 영상, 십수 장의 사진, 그리고 오늘의 기록. 재료는 늘 충분했어요. 없었던 건 그걸 릴스로 이어 붙일 시간이죠. rungle는 러닝이 끝난 벤치에서, 오늘의 러닝을 올릴 수 있는 릴스로 만들어요.",
-    },
-    pain: {
-      title: "러너들이 편집 앞에서 멈추는 이유",
-      sub: "rungle를 만들기 전, 러너들을 직접 만나 들은 이야기예요.",
-      cards: [
-        {
-          stat: "30분",
-          label: "릴스 1개",
-          desc: "유행 템플릿을 따라 만들면 릴스 하나에 30분. 당일에 못 올려 주말에 몰아 올리게 돼요.",
-        },
-        {
-          stat: "100장 → 1장",
-          label: "촬영 후 셀렉",
-          desc: "사진 백여 장, 영상 십여 개에서 쓸 만한 컷 고르기 — 만난 러너 모두가 가장 오래 걸리는 일로 꼽았어요.",
-        },
-        {
-          stat: "0개",
-          label: "포기한 날",
-          desc: "얼굴이 잘 나온 컷이 없는 날은 아예 올리기를 포기해요. 뛴 기록은 남았는데, 스토리는 사라지죠.",
-        },
+      badge: "iOS · App Store 출시",
+      lines: ["뛰고 찍기까지", "나머지는", "런글이"],
+      sub: [
+        "러닝이 끝난 벤치에서 기록 오버레이 사진과 릴스 초안이 나와요.",
+        "편집에 쓰던 시간은 다음 러닝에 쓰면 돼요.",
       ],
     },
-    features: {
-      title: "고르고, 입히고, 만드는 건 rungle가",
-      cards: [
-        {
-          name: "베스트컷 셀렉",
-          title: "AI가 먼저 골라드려요",
-          desc: "얼굴이 잘 나오고, 흔들리지 않고, 러닝 구도가 좋은 컷을 AI가 후보로 추려요. 최종 선택은 언제나 당신 몫이에요.",
-        },
-        {
-          name: "자동 릴스 초안",
-          title: "템플릿 고르면 초안까지",
-          desc: "유행 릴스 형식의 템플릿을 고르면, 선택한 컷에 거리·페이스·시간 오버레이를 입힌 릴스 초안이 자동으로 만들어져요. 다듬는 건 취향껏.",
-        },
-        {
-          name: "가벼운 마무리",
-          title: "완성 화면은 두 버튼으로 끝",
-          desc: "갤러리 저장, 인스타그램 공유. 마지막 순간에 결제창이나 광고가 끼어들지 않아요.",
-        },
-      ],
-      faceGuard:
-        "얼굴은 건드리지 않아요 — AI는 잘 나온 컷을 고르는 데만 쓰고, 얼굴을 만들거나 바꾸지 않아요.",
+    cta: {
+      label: "App Store에서 받기",
+      microcopy: "iOS · 계정 없이 바로 시작해요",
     },
-    bestcut: {
-      title: "백 장 중에 쓸 컷, 먼저 추려드려요",
-      sub: "찍어온 사진·영상에서 얼굴·흔들림·구도를 보고 후보를 순서대로 보여드려요. 고르는 건 당신이에요.",
-      aiBadge: "AI 추천",
-      cards: [
-        { rank: 1, tags: ["얼굴 또렷", "구도 좋음"] },
-        { rank: 2, tags: ["빛 좋음"] },
-        { rank: 3, tags: ["안정 구간"] },
-        { rank: null, tags: ["후보 밖 — 전체에서 직접"] },
-      ],
-      note: "자동 추천에는 항상 AI 추천 배지가 붙어요. 후보가 마음에 안 들면 전체 미디어에서 직접 골라도 돼요.",
-    },
-    steps: {
-      title: "세 걸음이면 끝나요",
-      sub: "러닝이 끝난 자리에서 벤치에서 일어나기 전에.",
+    screens: [
+      {
+        key: "pathchoice",
+        kicker: "기록에서 시작하기",
+        headline: ["러닝 하나 고르면", "따라오는 그날 사진"],
+        desc: [
+          "사진첩을 뒤질 필요 없이, 기록과 그때 찍은 사진이 모여요.",
+          "릴스를 만들지, 사진에 기록만 넣을지 고르면 돼요.",
+        ],
+      },
+      {
+        key: "bestcut",
+        kicker: "추천 사진 고르기",
+        headline: ["백 장을 넘기던 일은", "이제 고르는 일로"],
+        desc: [
+          "얼굴·흔들림·구도를 보고 잘 나온 순서로 보여드려요.",
+          "인물·배경으로 나눠 보고, 올릴 컷은 내가 골라요.",
+        ],
+      },
+      {
+        key: "editor",
+        kicker: "초안 다듬기",
+        headline: ["초안은 이미 있으니", "손보는 건 잠깐"],
+        desc: [
+          "빈 타임라인 대신, 기록이 얹힌 짧은 초안에서 시작해요.",
+          "컷을 바꾸고, 잘라내고, 문구를 얹는 정도면 충분해요.",
+        ],
+      },
+      {
+        key: "share",
+        kicker: "인스타그램에 공유하기",
+        headline: ["오늘 달린 숫자 그대로", "올리면 끝"],
+        desc: [
+          "캡처를 오려 붙이지 않아도 거리·페이스·시간이 얹혀 있어요.",
+          "인스타그램에 올리거나, 저장하거나, 다른 앱으로 보내요.",
+        ],
+      },
+    ],
+    principles: {
+      headline: ["하지 않기로 한 것도", "분명하게"],
       items: [
         {
-          no: "01",
-          title: "기록 연동",
-          desc: "이미 쓰는 러닝 앱의 기록을 애플 건강(HealthKit)으로 불러와요. 다시 측정할 필요 없어요.",
+          title: "얼굴은 알아보기만",
+          desc: "잘 나온 컷을 고르려고 인식할 뿐, 만들거나 바꾸거나 보정하지 않아요.",
         },
         {
-          no: "02",
-          title: "AI 편집",
-          desc: "러닝 시간대의 사진·영상이 자동으로 모이고, 베스트컷 후보와 릴스 초안이 만들어져요.",
+          title: "사진은 아이폰 안에",
+          desc: "선별과 편집은 전부 기기 안에서 끝나고, 사진·영상은 밖으로 나가지 않아요.",
         },
         {
-          no: "03",
-          title: "릴스 공유",
-          desc: "마음에 드는 초안을 골라 다듬고, 인스타그램으로 바로 공유해요.",
+          title: "마무리는 결제창·광고 없이",
+          desc: "저장하고 공유하는 순간을 막아서지 않아요.",
         },
       ],
     },
     trackers: {
-      title: "쓰던 앱, 그대로 쓰세요",
-      body: "측정은 이미 잘하고 있는 앱에게. rungle는 애플 건강(HealthKit)에 모인 러닝 기록을 불러올 뿐, 새 측정 앱을 강요하지 않아요.",
+      headline: ["측정은 쓰던 앱이", "런글은 그다음부터"],
+      desc: [
+        "다시 측정하거나 앱을 갈아탈 일은 없어요.",
+        "애플 건강에 남은 러닝 기록을 그대로 불러와요.",
+      ],
       names: ["Strava", "Nike Run Club", "Garmin", "Apple Watch"],
-      note: "애플 건강에 러닝 기록을 남기는 앱이라면 어떤 앱이든.",
-    },
-    emotive: {
-      title: "다음 러닝이 기다려지게",
-      body: "올린 릴스에 달리는 반응이 다음 러닝의 연료가 돼요. 기록하고, 올리고, 다시 달리는 루프 — rungle는 그 루프가 끊기지 않게 편집이라는 마찰을 치워요.",
+      note: "애플 건강에 러닝 기록을 남기는 앱이면 어떤 앱이든 돼요.",
     },
     faq: {
       title: "자주 묻는 질문",
       items: [
         {
-          q: "언제 출시하나요?",
-          a: "iOS 클로즈 베타를 먼저 진행하고 공개 출시로 이어가요. 사전 등록하시면 베타부터 가장 먼저 초대해 드려요.",
+          q: "어떤 러닝 앱과 같이 쓸 수 있나요?",
+          a: "애플 건강(HealthKit)에 러닝 기록을 남기는 앱이면 돼요. Strava, Nike Run Club, Garmin, Apple Watch 모두 애플 건강을 거쳐 들어와요. 애플 건강에 기록이 없으면 러닝 앱의 기록 화면을 캡처해 넣어도 거리·페이스·시간을 읽어 오고, 읽은 값은 내가 확인하고 고칠 수 있어요.",
         },
         {
-          q: "어떤 러닝 앱과 연동되나요?",
-          a: "애플 건강(HealthKit)에 러닝 기록을 남기는 앱이면 돼요. Strava, Nike Run Club, Garmin, Apple Watch 모두 HealthKit 동기화로 불러와요. 앱에서 러닝을 다시 측정할 필요는 없어요.",
+          q: "릴스 말고 사진 한 장만 올리고 싶어요.",
+          a: "만들기에서 '사진에 기록 넣기'를 고르면 돼요. 사진 한 장에 거리·페이스·시간만 얹어 저장하거나 공유해요.",
         },
         {
-          q: "AI가 얼굴을 보정하거나 바꾸나요?",
-          a: "아니요. 얼굴은 잘 나온 컷을 고르는 데만 인식하고, 만들거나 바꾸거나 보정하지 않아요. 최종 선택도 항상 사람이 해요.",
+          q: "제 사진과 얼굴은 어떻게 다뤄지나요?",
+          a: "사진·영상 원본은 기기 밖으로 나가지 않고, 컷 고르기와 편집은 전부 아이폰 안에서 해요. 얼굴은 잘 나온 컷을 고르려고 알아볼 뿐, 만들거나 바꾸거나 보정하지 않아요. 건강 데이터는 기록을 보여 주는 데만 써요.",
         },
         {
-          q: "제 사진은 어떻게 다뤄지나요?",
-          a: "베스트컷 선별 목적으로만 쓰여요. 광고에 쓰지 않고, 다른 목적으로 수집하지 않아요. 건강 데이터도 기록 표시에만 사용해요.",
+          q: "어떤 기기에서 쓸 수 있나요?",
+          a: "iOS 앱이에요. App Store에서 받아 계정 없이 바로 시작해요. 안드로이드 버전은 없어요.",
         },
       ],
     },
     finalCta: {
-      title: "가장 먼저 달려볼 사람?",
-      sub: "출시하면 이메일로 가장 먼저 초대해 드릴게요.",
+      headline: ["오늘 뛴 건", "오늘 올리기"],
+      sub: "다음 러닝이 끝나는 자리에서 바로 만들 수 있어요.",
     },
     footer: {
-      tagline: "러닝 기록에서 인증 릴스까지, 자동으로",
+      tagline: "러닝 끝나면, 릴스가 나온다",
       copyright: "© 2026 rungle",
-    },
-    mockup: {
-      sessionTitle: "한강 새벽런",
-      sessionMeta: "7월 2일 수 · 오전 6:12",
-      aiBadge: "AI 추천",
-      reasonTags: ["얼굴 또렷", "구도 좋음"],
-      draftLabel: "릴스 초안",
-      shareButton: "인스타그램 공유",
     },
   },
 
   /* ─────────────────────────── EN (번역) ─────────────────────────── */
   en: {
     meta: {
-      title: "rungle — Auto-generate running stats overlays and run Reels",
+      title: "rungle — Running stats overlays and run Reels, right after the run",
       description:
-        "Running stats overlays and Instagram run Reels, generated automatically. rungle pulls the runs you already track, picks the best shots from your photos and videos, and drafts a Reel with your stats overlaid. You make the final call. Be first to know when we launch on iOS.",
-      ogImageAlt: "rungle — Auto-generate running stats overlays and run Reels",
+        "Pulls your runs from Apple Health, picks the best shots from that day and drafts a running stats overlay photo or run Reel for Instagram. No account needed. iOS.",
+      ogImageAlt: "rungle — Run and shoot, leave the rest to rungle",
     },
     nav: {
-      cta: "Get early access",
+      cta: "Get the app",
       langToggle: "KO",
       langToggleAria: "한국어로 전환",
     },
     hero: {
-      badge: "iOS · launching soon",
-      headline1: "From your run",
-      headline2: "to a Reel, automatically",
-      sub: "Just run and shoot. rungle handles the culling, the stats overlay, and the Reel draft — you make the final call.",
-    },
-    waitlist: {
-      placeholder: "Email address",
-      submit: "Notify me at launch",
-      submitting: "Submitting",
-      done: "You're on the list! We'll email you first at launch.",
-      error: "Something went wrong. Please try again in a moment.",
-      invalidEmail: "Please enter a valid email address.",
-      microcopy: "First invites at launch · launch news only, nothing else",
-    },
-    value: {
-      title: "Every run is already a story",
-      body: "Twenty selfie clips, a dozen photos, and today's stats. The raw material was always there — what was missing is the time to cut it into a Reel. rungle turns today's run into a post-ready Reel before you get up from the bench.",
-    },
-    pain: {
-      title: "Why runners stall at editing",
-      sub: "What runners told us before we built rungle.",
-      cards: [
-        {
-          stat: "30 min",
-          label: "per Reel",
-          desc: "Following a trending template takes a solid 30 minutes per Reel. It doesn't go up that day — it piles up for the weekend.",
-        },
-        {
-          stat: "100 → 1",
-          label: "the culling",
-          desc: "Picking usable shots out of a hundred photos and a dozen clips — every runner we met called it the slowest part.",
-        },
-        {
-          stat: "0 posts",
-          label: "the days you quit",
-          desc: "No good face shot, no post. The run made it into the log — the story never did.",
-        },
+      badge: "iOS · Now on the App Store",
+      lines: ["Run and shoot", "leave the rest", "to rungle"],
+      sub: [
+        "Stats-overlay photo and Reel draft, done on the bench.",
+        "The time you spent editing goes back to running.",
       ],
     },
-    features: {
-      title: "rungle does the picking, overlaying, drafting",
-      cards: [
-        {
-          name: "Best-cut select",
-          title: "AI picks candidates first",
-          desc: "Sharp faces, steady frames, good running form — AI shortlists the best cuts. The final pick is always yours.",
-        },
-        {
-          name: "Auto Reel draft",
-          title: "Choose a template, get a draft",
-          desc: "Pick a trending-style template and get a Reel draft with your distance, pace, and time overlaid on your chosen cuts. Polish it your way.",
-        },
-        {
-          name: "A light finish",
-          title: "Two buttons and you're done",
-          desc: "Save to gallery, share to Instagram. No paywall or ads wedged into your last step.",
-        },
-      ],
-      faceGuard:
-        "Hands off your face — AI only helps pick your best shots. It never generates or alters faces.",
+    cta: {
+      label: "Download on the App Store",
+      microcopy: "iOS · No account needed",
     },
-    bestcut: {
-      title: "The keepers out of a hundred shots, shortlisted first",
-      sub: "rungle scans your photos and clips for faces, blur, and framing, then shows candidates in order. The pick is yours.",
-      aiBadge: "AI pick",
-      cards: [
-        { rank: 1, tags: ["Sharp face", "Good framing"] },
-        { rank: 2, tags: ["Great light"] },
-        { rank: 3, tags: ["Steady segment"] },
-        { rank: null, tags: ["Outside picks — browse all"] },
-      ],
-      note: "Automatic picks always carry the AI badge. Not feeling the candidates? Browse your full roll and choose directly.",
-    },
-    steps: {
-      title: "Three steps, done",
-      sub: "Right where your run ends — before you leave the bench.",
+    screens: [
+      {
+        key: "pathchoice",
+        kicker: "Start from a run",
+        headline: ["Pick a run,", "its photos follow"],
+        desc: [
+          "Skip the camera roll. The run's stats and photos come together.",
+          "Then choose: make a Reel, or stamp the stats on a photo.",
+        ],
+      },
+      {
+        key: "bestcut",
+        kicker: "Suggested photos",
+        headline: ["From a hundred shots", "to the keepers"],
+        desc: [
+          "Sorted by faces, blur and framing, best first.",
+          "Filter by people or scenery. The final pick is yours.",
+        ],
+      },
+      {
+        key: "editor",
+        kicker: "Polish the draft",
+        headline: ["Draft already made,", "polish takes a minute"],
+        desc: [
+          "Start from a short draft, stats on, not a blank timeline.",
+          "Swap a cut, trim, drop in some text. That's usually enough.",
+        ],
+      },
+      {
+        key: "share",
+        kicker: "Share to Instagram",
+        headline: ["Stats already on it,", "post and done"],
+        desc: [
+          "No screenshot cropping: distance, pace and time are on it.",
+          "Post to Instagram, save it, or send it to another app.",
+        ],
+      },
+    ],
+    principles: {
+      headline: ["What we don't do,", "stated plainly"],
       items: [
         {
-          no: "01",
-          title: "Connect your runs",
-          desc: "rungle pulls runs you already track via Apple Health (HealthKit). No re-measuring.",
+          title: "Faces are only detected",
+          desc: "Only to judge which shot is sharpest. Never generated, altered or retouched.",
         },
         {
-          no: "02",
-          title: "AI edits",
-          desc: "Photos and videos from your run window gather automatically; best-cut candidates and a Reel draft follow.",
+          title: "Photos stay on your iPhone",
+          desc: "Selection and editing happen on the device. Your photos and videos never leave it.",
         },
         {
-          no: "03",
-          title: "Share the Reel",
-          desc: "Pick the draft you like, polish it, and share straight to Instagram.",
+          title: "No paywall at the finish",
+          desc: "Saving and sharing are never blocked by a paywall or an ad.",
         },
       ],
     },
     trackers: {
-      title: "Keep the app you already run with",
-      body: "Tracking stays with the app that's already good at it. rungle just reads your runs from Apple Health (HealthKit) — no new tracker required.",
+      headline: ["Keep your tracker,", "rungle does the rest"],
+      desc: [
+        "No re-measuring, no switching apps.",
+        "rungle reads the runs already in Apple Health.",
+      ],
       names: ["Strava", "Nike Run Club", "Garmin", "Apple Watch"],
       note: "Any app that writes runs to Apple Health works.",
-    },
-    emotive: {
-      title: "Make the next run something to look forward to",
-      body: "Reactions to your Reel fuel the next run. Log it, post it, run again — rungle clears the editing friction so the loop never breaks.",
     },
     faq: {
       title: "Frequently asked questions",
       items: [
         {
-          q: "When does it launch?",
-          a: "We're running an iOS closed beta first, then opening up. Join the waitlist and you'll be invited first, starting with the beta.",
-        },
-        {
           q: "Which running apps does it work with?",
-          a: "Any app that writes runs to Apple Health (HealthKit) — Strava, Nike Run Club, Garmin, and Apple Watch all sync through it. No re-measuring in our app.",
+          a: "Any app that writes runs to Apple Health (HealthKit). Strava, Nike Run Club, Garmin and Apple Watch all sync through it. No run in Apple Health? Drop in a screenshot of your running app's summary and rungle reads the distance, pace and time. You can check and correct the values before they're used.",
         },
         {
-          q: "Does the AI retouch or alter faces?",
-          a: "No. Faces are only recognized to pick your best shots — never generated, altered, or retouched. The final pick is always human.",
+          q: "I just want to post one photo, not a Reel.",
+          a: "Choose 'Stamp records on a photo' on the Create screen. It puts distance, pace and time on a single photo for you to save or share.",
         },
         {
-          q: "How are my photos handled?",
-          a: "They're used only to select your best cuts. Never for ads, never collected for other purposes. Health data is used only to display your stats.",
+          q: "How are my photos and my face handled?",
+          a: "Your photos and videos never leave your device. Selection and editing happen on your iPhone. Faces are only detected to judge how good a shot is, never generated, altered or retouched. Health data is used only to display your stats.",
+        },
+        {
+          q: "What devices does it run on?",
+          a: "rungle is an iOS app. Download it from the App Store and start right away, no account needed. There's no Android version.",
         },
       ],
     },
     finalCta: {
-      title: "Want to run it first?",
-      sub: "We'll send first invites by email at launch.",
+      headline: ["Today's run,", "posted today"],
+      sub: "Make it on the spot, right where your next run ends.",
     },
     footer: {
-      tagline: "From your run to a Reel, automatically",
+      tagline: "Your run ends, your Reel begins",
       copyright: "© 2026 rungle",
-    },
-    mockup: {
-      sessionTitle: "Han River dawn run",
-      sessionMeta: "Wed Jul 2 · 6:12 AM",
-      aiBadge: "AI pick",
-      reasonTags: ["Sharp face", "Good framing"],
-      draftLabel: "Reel draft",
-      shareButton: "Share to Instagram",
     },
   },
 };

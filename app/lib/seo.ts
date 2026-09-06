@@ -31,6 +31,8 @@ export function buildMetadata(lang: Locale): Metadata {
 
   return {
     metadataBase: new URL(SITE_URL),
+    /* iOS Safari 스마트 앱 배너 — 방문자 지역의 스토어로 Apple이 알아서 연결 */
+    itunes: { appId: "6795858744" },
     title: t.title,
     description: t.description,
     alternates: {
