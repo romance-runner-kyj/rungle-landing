@@ -10,11 +10,10 @@ import type { Metadata } from "next";
 import { LOCALE_META, type Locale } from "./locales";
 import { copy } from "./copy";
 
-// rungle.app은 landing.rungle.app으로 경로 보존 301 → canonical은 landing.
-// apex를 직접 서빙하게 되면 이 값만 https://rungle.app 으로 바꾼다.
+// 랜딩은 rungle.app(apex)에서 직접 서빙한다. landing.rungle.app은 rungle.app으로 301 (rungle#1111).
 export const SITE_URL: string =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://landing.rungle.app";
+  "https://rungle.app";
 
 function canonicalPath(lang: Locale): string {
   return LOCALE_META[lang].path;

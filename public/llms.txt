@@ -77,8 +77,8 @@ iOS 전용이라 안드로이드 버전은 없다.
 
 ## Links
 
-- [한국어 랜딩 페이지](https://landing.rungle.app/)
-- [English landing page](https://landing.rungle.app/en)
+- [한국어 랜딩 페이지](https://rungle.app/)
+- [English landing page](https://rungle.app/en)
 - [App Store (한국)](https://apps.apple.com/kr/app/%EB%9F%B0%EA%B8%80-rungle/id6795858744)
 - [App Store (US · 한국 외 지역용 링크)](https://apps.apple.com/us/app/rungle/id6795858744)
 
