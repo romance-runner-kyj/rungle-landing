@@ -6,6 +6,7 @@
  */
 import "../globals.css";
 import type { ReactNode } from "react";
+import MetaPixel from "../components/MetaPixel";
 import { buildMetadata } from "../lib/seo";
 
 export const metadata = buildMetadata("ko");
@@ -22,7 +23,7 @@ export default function KoRootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">{children}<MetaPixel /></body>
     </html>
   );
 }

@@ -20,7 +20,23 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
   ["en", "/en", "en", "Run and shoot", "https://apps.apple.com/us/", ["launching soon", "early access", "waitlist", "beta"]],
 ]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const pixelRequests = [];
+  /* Meta에 실제 PageView를 보내지 않고 Pixel 스크립트 로드 시도만 확인한다 */
+  await page.route("https://connect.facebook.net/**", async (route) => {
+    pixelRequests.push(route.request().url());
+    await route.abort();
+  });
+  await page.route("https://www.facebook.com/tr**", async (route) => {
+    pixelRequests.push(route.request().url());
+    await route.abort();
+  });
   await page.goto(BASE + path, { waitUntil: "networkidle" });
+
+  check(
+    `${locale}: Meta Pixel fbevents.js 로드 시도`,
+    pixelRequests.some((url) => url.includes("/fbevents.js")),
+    pixelRequests.join(", ")
+  );
 
   const lang = await page.evaluate(() => document.documentElement.lang);
   check(`${locale}: <html lang>`, lang === expectLang, lang);
