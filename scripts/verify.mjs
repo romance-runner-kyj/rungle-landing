@@ -16,8 +16,8 @@ function check(name, ok, detail = "") {
 const browser = await chromium.launch();
 
 for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
-  ["ko", "/", "ko", "뛰고 찍기까지", "https://apps.apple.com/kr/", ["출시 준비", "사전 등록", "출시하면", "베타"]],
-  ["en", "/en", "en", "Run and shoot", "https://apps.apple.com/us/", ["launching soon", "early access", "waitlist", "beta"]],
+  ["ko", "/", "ko", "뛰고 찍기까지", "https://apps.apple.com/app/apple-store/id6795858744?pt=129210758&ct=landing_ko&mt=8", ["출시 준비", "사전 등록", "출시하면", "베타"]],
+  ["en", "/en", "en", "Run and shoot", "https://apps.apple.com/app/apple-store/id6795858744?pt=129210758&ct=landing_en&mt=8", ["launching soon", "early access", "waitlist", "beta"]],
 ]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const pixelRequests = [];
@@ -44,7 +44,7 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
   const h1 = await page.locator("h1").first().textContent();
   check(`${locale}: h1`, (h1 ?? "").includes(expectH1), (h1 ?? "").trim());
 
-  /* App Store CTA: Nav·히어로·최종 3개, 로케일에 맞는 스토어(kr/us) — 중앙 반복 없음 */
+  /* App Store CTA: Nav·히어로·최종 3개, 로케일에 맞는 캠페인 링크(ct=landing_ko/landing_en) — 중앙 반복 없음 */
   const storeLinks = await page.locator(`a[href^="${storePrefix}"]`).count();
   check(`${locale}: App Store 링크 3개 (${storePrefix})`, storeLinks === 3, String(storeLinks));
   const otherStore = await page
