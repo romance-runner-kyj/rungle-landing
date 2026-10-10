@@ -97,7 +97,7 @@
 - 원본: `rungle/ios/Rungle/Resources/Fonts/`의 NotoSansKR-Regular·SemiBold(각 2.4MB), BodoniModa-MediumItalic, Anton-Regular. 전부 OFL — `public/fonts/LICENSE-OFL.txt` 동봉.
 - 서브셋(필수 — Noto 원본은 그대로 못 싣는다): `uv tool run --from 'fonttools[woff]' pyftsubset <ttf> --unicodes="U+0020-007E,U+00A0-00FF,U+2018-201D,U+2026,U+AC00-D7A3" --flavor=woff2 --layout-features='*'`. 한글은 KS X 1001 2,350자 대신 완성형 전체(U+AC00–D7A3, 약 1MB → woff2 약 500KB)로 잡아 카피 글자가 빠질 걱정을 없앤다. 명령은 `scripts/subset-fonts.sh`에 적고 산출물 woff2를 커밋한다.
 - 로드: `next/font/local`로 세 벌 선언(`--font-sans`·`--font-display`·`--font-wordmark` CSS 변수). preload·`font-display: swap`·폴백 `size-adjust`를 Next가 만든다. 두 layout의 수동 `<link rel="preload">`는 지운다.
-- OG(satori)는 woff2를 못 읽는다. 같은 서브셋 명령으로 뽑은 ttf 3종을 `app/lib/fonts/`(public 밖)에 두고 `og.tsx`가 `readFile`로 읽는다.
+- OG(satori)는 woff2를 못 읽는다. 같은 서브셋 명령으로 뽑은 ttf 3종(Noto SemiBold·Bodoni Italic·Anton)도 `public/fonts/`에 두고 `og.tsx`가 지금처럼 `readFile(join(process.cwd(), "public/fonts/…"))`로 읽는다(현행 패턴이 배포에서 검증됐고, public 밖 파일은 서버리스 번들 추적을 따로 확인해야 한다).
 - 삭제: `public/fonts/PretendardVariable.woff2`·`Pretendard-Bold.otf`·`BarlowCondensed-SemiBold.ttf`.
 
 ## 6. 브랜드
@@ -230,11 +230,11 @@
 | `app/components/PhoneMockup.tsx` | `AppScreen` 키 교체, 앰버 광 삭제, 그림자 토큰, 베젤 #111, `getImageProps` + `<picture>`로 라이트·다크 캡처 분기 |
 | `app/components/Nav.tsx` | amber→action, rounded-full→8px, 워드마크 |
 | `app/components/AppStoreButton.tsx` | amber-glow 삭제, bg-action + border-control, 높이 52, radius 8 |
-| `app/lib/og.tsx` | 흰 바탕·v2 마크·Noto/Bodoni/Anton ttf(`app/lib/fonts/`), 기록 칩 삭제 |
+| `app/lib/og.tsx` | 흰 바탕·v2 마크·Noto/Bodoni/Anton ttf(`public/fonts/`), 기록 칩 삭제 |
 | `app/(ko)/layout.tsx`, `app/(en)/layout.tsx` | 수동 preload 삭제, next/font 변수 클래스, `viewport.colorScheme`·`themeColor` |
 | `app/icon.svg` | v2 아이콘 |
-| `public/fonts/` | Pretendard·Barlow 삭제, Noto 400/600·Bodoni Italic·Anton woff2 + LICENSE-OFL.txt |
-| `app/lib/fonts/` | OG용 ttf 서브셋 3개(신규) |
+| `public/fonts/` | Pretendard·Barlow 삭제, Noto 400/600·Bodoni Italic·Anton woff2 + OG용 ttf 3개 + LICENSE-OFL.txt |
+| `app/lib/fonts.ts` | 신규. `next/font/local` 선언 3개(`--font-noto`·`--font-bodoni`·`--font-anton`) |
 | `public/media/app/{ko,en}/` | 1.x 4장 삭제, v2 라이트 5장 + 다크 5장 |
 | `public/llms.txt` | §7.3 |
 | `scripts/verify.mjs` | h1 기대값 "달린 기록을"/"Run stats", 금지 문구에 "계정 없이"·"no account" 추가. 다크 패스 추가: `colorScheme: "dark"` 컨텍스트에서 body 배경 `rgb(17, 17, 17)`, 폰 `<img>`의 `currentSrc`가 `-dark.webp`, 모바일 가로 스크롤 없음, `ko-dark-full.png` 저장. 캡처 5장(`<picture>` 안 `<img>` 수)·FAQ 4·링크 3은 그대로 |
