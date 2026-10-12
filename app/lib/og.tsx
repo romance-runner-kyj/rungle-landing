@@ -23,17 +23,12 @@ const HAIRLINE = "#2C2C2C";
 export async function buildOgImage(lang: Locale) {
   const t = copy[lang];
 
-  const [pretendard, barlow] = await Promise.all([
-    readFile(join(process.cwd(), "public/fonts/Pretendard-Bold.otf")).catch(
-      () => null
-    ),
-    readFile(
-      join(process.cwd(), "public/fonts/BarlowCondensed-SemiBold.ttf")
-    ).catch(() => null),
-  ]);
+  const noto = await readFile(
+    join(process.cwd(), "public/fonts/NotoSansKR-SemiBold.ttf")
+  );
 
-  const sans = pretendard ? "Pretendard" : "sans-serif";
-  const metric = barlow ? "Barlow Condensed" : "sans-serif";
+  const sans = "Noto Sans KR";
+  const metric = sans;
 
   return new ImageResponse(
     (
@@ -177,26 +172,12 @@ export async function buildOgImage(lang: Locale) {
     {
       ...OG_SIZE,
       fonts: [
-        ...(pretendard
-          ? [
-              {
-                name: "Pretendard",
-                data: pretendard,
-                style: "normal" as const,
-                weight: 700 as const,
-              },
-            ]
-          : []),
-        ...(barlow
-          ? [
-              {
-                name: "Barlow Condensed",
-                data: barlow,
-                style: "normal" as const,
-                weight: 600 as const,
-              },
-            ]
-          : []),
+        {
+          name: "Noto Sans KR",
+          data: noto,
+          style: "normal" as const,
+          weight: 600 as const,
+        },
       ],
     }
   );

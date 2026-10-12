@@ -12,15 +12,6 @@
  */
 @import "tailwindcss";
 
-/* ── 폰트 self-host (오프라인 CI 안전 — v2 교훈) ─────────── */
-@font-face {
-  font-family: "Pretendard Variable";
-  src: url("/fonts/PretendardVariable.woff2") format("woff2-variations");
-  font-weight: 45 920;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ── 디자인 토큰 (design.html {colors.*} 1:1) ────────────── */
 @theme {
   /* Brand & Accent */
@@ -49,9 +40,8 @@
   --color-error: #ff453a;
 
   /* Typography */
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
-    BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue",
-    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-sans: var(--font-noto), -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
 
 /* ── 전역 기본 ───────────────────────────────────────────── */
