@@ -31,7 +31,7 @@ export default function PhoneMockup({ lang, screen, priority }: Props) {
       <div className="rounded-[44px] border border-hairline bg-stage p-2 shadow-card">
         <div className="relative aspect-[1320/2868] overflow-hidden rounded-[36px] bg-stage">
           <picture>
-            <source media="(prefers-color-scheme: dark)" srcSet={dark.props.srcSet} />
+            <source media="(prefers-color-scheme: dark)" srcSet={dark.props.srcSet} sizes={dark.props.sizes} />
             <img {...light.props} alt="" />
           </picture>
         </div>
