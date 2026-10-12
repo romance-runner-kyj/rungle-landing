@@ -4,6 +4,7 @@
  */
 import "../globals.css";
 import type { ReactNode } from "react";
+import JsonLd from "../components/JsonLd";
 import MetaPixel from "../components/MetaPixel";
 import { buildMetadata } from "../lib/seo";
 
@@ -20,6 +21,7 @@ export default function EnRootLayout({ children }: { children: ReactNode }) {
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        <JsonLd lang="en" />
       </head>
       <body className="flex min-h-full flex-col">{children}<MetaPixel /></body>
     </html>
