@@ -1,57 +1,52 @@
 /**
- * app/globals.css — 디자인 토큰 SSOT (정본: docs/design.html 크로노 앰버 다크 시스템)
- * ─────────────────────────────────────────────────────────
- * 원칙 (design.md):
- *  - 캔버스는 무채색 근흑 #131313 — 색조·그라데이션 캐스트 금지 (암실 원칙)
- *  - 단일 액센트 Chrono Amber #FFB300 — 주 CTA·선택 상태·하이라이트 기록에만
- *  - 기록 수치(Barlow Condensed)는 OG 이미지에서만 — 페이지 본문엔 없음(토스식 리뉴얼)
- *  - 브랜드 기하는 400m 트랙 필 (rounded-full) — 로고·주 CTA·기록 칩 공유
- *
- * ⚠ v2 교훈: Tailwind v4에서 py-[--token] 류 CSS 변수 arbitrary value는 무효.
- *   spacing은 명시적 유틸(py-24 md:py-32 등)로 쓴다.
+ * app/globals.css — 랜딩 v2 디자인 토큰
+ * 정본: ios/Rungle/DesignSystem/DS+V2Tokens.swift.
+ * 랜딩 적용 범위: docs/superpowers/specs/2026-10-10-landing-v2-redesign-design.md.
+ * 폰트는 Task 1의 next/font/local 변수에 연결한다.
  */
 @import "tailwindcss";
 
-/* ── 디자인 토큰 (design.html {colors.*} 1:1) ────────────── */
 @theme {
-  /* Brand & Accent */
-  --color-amber: #ffb300; /* {colors.primary} Chrono Amber */
-  --color-amber-pressed: #db9900; /* {colors.primary-pressed} */
-  --color-amber-dim: rgba(255, 179, 0, 0.16); /* {colors.primary-dim} */
-  --color-on-primary: #1a1403; /* {colors.on-primary} */
-
-  /* Surface — 무채색 암실 */
-  --color-canvas: #131313; /* {colors.canvas} */
-  --color-media-well: #0a0a0a; /* {colors.media-well} */
-  --color-canvas-elevated: #1e1e1e; /* {colors.canvas-elevated} */
-  --color-surface-card: #242424; /* {colors.surface-card} */
-  --color-paper: #ffffff; /* {colors.paper} */
-  --color-paper-soft: #f4f6f7; /* {colors.paper-soft} */
-
-  /* Text & Hairline */
-  --color-ink: #ffffff; /* {colors.ink} */
-  --color-body: #a6a6a6; /* {colors.body} 7.7:1 */
-  --color-muted: #707070; /* {colors.muted} — 본문 금지 */
-  --color-hairline: #2c2c2c; /* {colors.hairline} */
-
-  /* Semantic (iOS dark) — 앰버 금지 영역 */
-  --color-info: #64d2ff;
-  --color-success: #30d158;
-  --color-error: #ff453a;
-
-  /* Typography */
-  --font-sans: var(--font-noto), -apple-system, BlinkMacSystemFont, system-ui,
-    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --color-canvas: #FFFFFF;
+  --color-surface: #F5F5F5;
+  --color-ink: #111111;
+  --color-body: #666666;
+  --color-muted: #707070;
+  --color-hairline: #E0E0E0;
+  --color-control: #888888;
+  --color-action: #B9E0FD;
+  --color-action-pressed: #8CCBF5;
+  --color-on-action: #111111;
+  --color-accent: #00658C;
+  --color-stage: #0A0A0A;
+  --shadow-card: 0 8px 24px rgba(0,0,0,0.12);
+  --font-sans: var(--font-noto), -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-display: var(--font-bodoni), "Bodoni 72", Didot, Georgia, serif;
+  --font-wordmark: var(--font-anton), Impact, "Arial Narrow Bold", sans-serif;
 }
 
-/* ── 전역 기본 ───────────────────────────────────────────── */
+:root {
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: #111111;
+    --color-surface: #1C1C1C;
+    --color-ink: #F5F5F5;
+    --color-body: #B3B3B3;
+    --color-muted: #999999;
+    --color-hairline: #333333;
+    --color-control: #777777;
+    --color-action: #0EB4FC;
+    --color-action-pressed: #0795D4;
+    --color-on-action: #111111;
+    --color-accent: #0EB4FC;
+  }
+}
+
 html {
   scroll-behavior: smooth;
-}
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
 }
 
 body {
@@ -59,18 +54,9 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  word-break: keep-all; /* 한국어 단어 단위 줄바꿈 (토스와 동일). 영문은 영향 없음 */
+  word-break: keep-all;
 }
 
-/* 앰버 글로우 — 주 CTA·달리는 점 전용 (그림자는 플로팅 CTA 단 1티어) */
-.amber-glow {
-  box-shadow: 0 0 24px rgba(255, 179, 0, 0.35);
-}
-.amber-dot-glow {
-  box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
-}
-
-/* ── 스크롤 등장 (Reveal 컴포넌트 — v2 검증 패턴) ────────── */
 .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -79,11 +65,12 @@ body {
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
+
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
-/* JS 미동작 환경 폴백 — 콘텐츠가 영영 안 보이는 사고 방지 */
+
 @media (scripting: none) {
   .reveal {
     opacity: 1;
@@ -91,7 +78,6 @@ body {
   }
 }
 
-/* ── 히어로 진입 스태거 (로드 시 1회, CSS만) ──────────────── */
 @keyframes rise-in {
   from {
     opacity: 0;
@@ -102,104 +88,55 @@ body {
     transform: translateY(0);
   }
 }
+
 .hero-rise {
   opacity: 0;
   animation: rise-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
 .hero-rise-1 { animation-delay: 0.05s; }
 .hero-rise-2 { animation-delay: 0.15s; }
 .hero-rise-3 { animation-delay: 0.25s; }
 .hero-rise-4 { animation-delay: 0.38s; }
 .hero-rise-5 { animation-delay: 0.5s; }
 
-/* ── 폰 목업: 부유 ────────────────────────────────────────── */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
+/* 트랙 선 중심선(173×94 viewBox, 트랙은 y=7.8부터, 선 13 → 중심선 inset 6.5, r 36.5). 시작점 = 정적 점 위치 */
+@supports (offset-path: path("M0 0H1")) {
+  .mark-dot {
+    cx: 0;
+    cy: 0;
+    offset-path: path("M122.3 14.3 H130 A36.5 36.5 0 0 1 166.5 50.8 A36.5 36.5 0 0 1 130 87.3 H43 A36.5 36.5 0 0 1 6.5 50.8 A36.5 36.5 0 0 1 43 14.3 Z");
+    offset-rotate: 0deg;
+    animation: mark-lap 1.4s linear 0.7s 1;
   }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-.float {
-  animation: float 7s ease-in-out infinite;
 }
 
-/* ── 히어로 배경: 히어로 대부분을 덮는 400m 트랙 궤도 (달리는 점) ──
-   스타디움 셰이프(가로로 긴 라운드 사각) 바깥 레인 + 안쪽 레인 1개.
-   콘텐츠 뒤(-z-10)에 깔리며 히트테스트를 막지 않는다. */
-.track-orbit {
-  /* 위치(inset)는 사용처에서 Tailwind 유틸로 지정 */
-  position: absolute;
-  border: 1.5px solid rgba(255, 179, 0, 0.14);
-  border-radius: 999px;
-  pointer-events: none;
-}
-.track-orbit::before {
-  /* 안쪽 레인 — 트랙 질감 (도트 없음, 더 희미하게) */
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(255, 179, 0, 0.07);
-  border-radius: 999px;
-}
-@supports (offset-path: inset(0 round 999px)) {
-  .track-orbit::after {
-    content: "";
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--color-amber);
-    box-shadow: 0 0 12px rgba(255, 179, 0, 0.55);
-    offset-path: inset(-1px round 999px);
-    /* 히어로 전폭 둘레 — 한 바퀴 16초 (좁은 궤도 시절 8초의 2배) */
-    animation: track-run 16s linear infinite;
-  }
-}
-@keyframes track-run {
+@keyframes mark-lap {
   from { offset-distance: 0%; }
   to { offset-distance: 100%; }
 }
 
-/* ── 모션 로고: brand-pill 도트가 트랙을 정확히 한 바퀴 ────────
-   브리프 스펙: 정적 위치(오른쪽 위)에서 출발 → 한 바퀴 → 제자리 정지.
-   offset-path 미지원 브라우저는 정적 도트(absolute top/right)로 폴백. */
-@supports (offset-path: inset(0 round 999px)) {
-  .pill-dot {
-    top: auto !important;
-    right: auto !important;
-    offset-path: inset(-1px round 999px);
-    offset-distance: 25%;
-    offset-rotate: 0deg;
-    animation: pill-lap 2.4s linear 0.7s 1;
-  }
-}
-@keyframes pill-lap {
-  0% { offset-distance: 25%; }
-  74.99% { offset-distance: 100%; }
-  75% { offset-distance: 0%; }
-  100% { offset-distance: 25%; }
-}
-
-/* ── FAQ 아코디언 (details/summary — JS 없음) ──────────────── */
 .faq-item summary {
   list-style: none;
   cursor: pointer;
 }
+
 .faq-item summary::-webkit-details-marker {
   display: none;
 }
+
 .faq-chevron {
   transition: transform 0.25s ease;
 }
+
 .faq-item[open] .faq-chevron {
   transform: rotate(45deg);
 }
 
-/* ── Reduce Motion: 모든 장식 모션 정지 (design.md 원칙) ──── */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .reveal {
     opacity: 1;
     transform: none;
@@ -207,12 +144,9 @@ body {
   }
   .hero-rise {
     opacity: 1;
-    animation: none;
   }
-  .float,
-  .track-orbit::after,
-  .pill-dot {
-    animation: none !important;
-    transition: none !important;
+  .hero-rise,
+  .mark-dot {
+    animation: none;
   }
 }
