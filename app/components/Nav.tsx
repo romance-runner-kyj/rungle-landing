@@ -1,8 +1,3 @@
-/**
- * app/components/Nav.tsx — 상단 내비게이션
- * ─────────────────────────────────────────────────────────
- * brand-pill 로고 + 언어 토글(Link, 풀 페이지 전환 — v2 검증 구조) + App Store CTA.
- */
 import Link from "next/link";
 import BrandPill from "./BrandPill";
 import type { Copy } from "../lib/copy";
@@ -18,7 +13,7 @@ export default function Nav({ lang, t }: Props) {
   const toggleHref = lang === "ko" ? "/en" : "/";
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline/60 bg-canvas/80 backdrop-blur-md">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-canvas/90 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href={homeHref} aria-label="rungle home">
           <BrandPill size="sm" />
@@ -27,13 +22,13 @@ export default function Nav({ lang, t }: Props) {
           <Link
             href={toggleHref}
             aria-label={t.langToggleAria}
-            className="rounded-full border border-hairline px-3.5 py-1.5 text-sm font-medium text-body transition hover:border-body hover:text-ink"
+            className="rounded-lg border border-control px-3.5 py-1.5 text-sm font-medium text-body hover:text-ink"
           >
             {t.langToggle}
           </Link>
           <a
             href={LOCALE_META[lang].appStoreUrl}
-            className="rounded-full bg-amber px-4 py-1.5 text-sm font-semibold text-on-primary transition active:bg-amber-pressed"
+            className="rounded-lg border border-control bg-action px-4 py-1.5 text-sm font-semibold text-on-action active:bg-action-pressed"
           >
             {t.cta}
           </a>
