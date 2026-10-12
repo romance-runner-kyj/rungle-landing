@@ -1,13 +1,10 @@
 /**
  * app/components/Landing.tsx — 랜딩 페이지 본문 (ko/en 공용)
- * ─────────────────────────────────────────────────────────
- * 섹션 흐름(토스식 '한 화면 한 메시지', 결정 2026-09-06 B안):
- * 히어로(3구 + 공유 화면) → 앱 화면 4장(만들기 → 추천 사진 → 편집 → 공유, 좌우 교차)
- * → 원칙 3개 → 트래커 호환 → FAQ → 최종 App Store CTA → 푸터
- *
- * CTA는 처음(히어로)과 끝(최종)에만 — 중앙 반복 없음.
- * 앱 화면은 전부 App Store 캡처 원본(PhoneMockup) — CSS 재현 없음.
- * 모션: 히어로 스태거 + Reveal + 폰 부유 + 모션 로고 + 트랙 궤도. 전부 reduced-motion 대응.
+ * 히어로(2줄 제목 + 공유 화면) → 홈·AI 베스트컷·사진 편집·릴스 템플릿
+ * → 알아 두기 3개 → 트래커 호환 → FAQ 4문항 → 최종 CTA → 푸터.
+ * Nav·히어로·최종 CTA의 App Store 링크 3개를 유지한다.
+ * 앱 화면은 v2.1.0 실캡처이며 시스템 외관은 PhoneMockup이 따른다.
+ * 모션은 hero-rise·Reveal·FAQ·로고 점만 쓴다. reduced-motion은 CSS에서 처리한다.
  */
 import Link from "next/link";
 import AppStoreButton from "./AppStoreButton";
@@ -24,7 +21,7 @@ type Props = {
   t: Copy;
 };
 
-/* 2줄 헤드라인 — 토스식: 마침표 없음, 줄바꿈 고정 */
+/* 스펙의 문장부호와 2줄 구성을 그대로 렌더한다. */
 function TwoLine({ lines }: { lines: [string, string] }) {
   return (
     <>
@@ -36,7 +33,7 @@ function TwoLine({ lines }: { lines: [string, string] }) {
 }
 
 const H2 =
-  "text-4xl font-extrabold leading-[1.2] tracking-[-0.03em] text-ink lg:text-5xl";
+  "text-[32px] font-semibold leading-[1.25] text-ink lg:text-[40px]";
 
 export default function Landing({ lang, t }: Props) {
   const toggleHref = lang === "ko" ? "/en" : "/";
@@ -46,32 +43,25 @@ export default function Landing({ lang, t }: Props) {
       <Nav lang={lang} t={t.nav} />
 
       <main>
-        {/* ── 1. 히어로 — 3구 헤드라인 × 공유 화면 ── */}
+        {/* ── 1. 히어로 — 2줄 헤드라인 × 공유 화면 ── */}
         <section className="relative mx-auto max-w-6xl overflow-x-clip px-4 pb-24 pt-32 md:pb-36 md:pt-44">
-          {/* 히어로 대부분을 덮는 400m 트랙 궤도 — 달리는 점이 콘텐츠 뒤를 돈다 */}
-          <div
-            aria-hidden="true"
-            className="track-orbit hero-rise hero-rise-5 -z-10 inset-x-0 top-24 bottom-8 hidden md:block"
-          />
           <div className="grid items-center gap-16 lg:grid-cols-[1.2fr_1fr]">
             <div className="flex flex-col items-start gap-7">
-              <span className="hero-rise hero-rise-1 rounded-full border border-hairline px-3.5 py-1 text-xs font-medium tracking-wide text-body">
-                {t.hero.badge}
+              <span className="hero-rise hero-rise-1 text-[13px] font-medium text-body">
+                {t.hero.label}
               </span>
-              <h1 className="hero-rise hero-rise-2 text-5xl font-extrabold leading-[1.12] tracking-[-0.03em] text-ink sm:text-6xl lg:text-7xl">
-                {t.hero.lines[0]}
-                <br />
-                {t.hero.lines[1]}
-                <br />
-                <span className="text-amber">{t.hero.lines[2]}</span>
+              <h1 className="hero-rise hero-rise-2 text-[44px] font-semibold leading-[1.15] text-ink lg:text-[60px]">
+                <TwoLine lines={t.hero.lines} />
               </h1>
-              <p className="hero-rise hero-rise-3 max-w-lg text-lg leading-relaxed text-body md:text-xl">
-                {t.hero.sub[0]}
-                <br className="hidden lg:block" /> {t.hero.sub[1]}
+              <p className="hero-rise hero-rise-3 max-w-lg text-[17px] leading-[26px] text-body">
+                {t.hero.sub}
               </p>
               <div className="hero-rise hero-rise-4 mt-1 flex flex-col items-start gap-3">
                 <AppStoreButton lang={lang} t={t.cta} />
               </div>
+              <p className="hero-rise hero-rise-4 font-display text-[22px] leading-none text-body">
+                {t.hero.tagline}
+              </p>
             </div>
 
             <div className="hero-rise hero-rise-5 relative">
@@ -86,7 +76,7 @@ export default function Landing({ lang, t }: Props) {
           return (
             <section
               key={s.key}
-              className={`border-t border-hairline ${flip ? "bg-media-well" : ""}`}
+              className={`border-t border-hairline ${flip ? "bg-surface" : ""}`}
             >
               <div
                 className={`mx-auto grid max-w-6xl items-center gap-14 px-4 py-28 md:py-36 lg:grid-cols-[1.15fr_1fr] ${
@@ -95,16 +85,19 @@ export default function Landing({ lang, t }: Props) {
               >
                 <Reveal>
                   <div className="flex max-w-lg flex-col gap-5">
-                    <span className="text-[15px] font-semibold tracking-wide text-amber">
+                    <span className="text-[13px] font-semibold uppercase tracking-[0.08em] text-accent">
                       {s.kicker}
                     </span>
                     <h2 className={H2}>
                       <TwoLine lines={s.headline} />
                     </h2>
-                    <p className="text-lg leading-relaxed text-body">
+                    <p className="text-[17px] leading-[26px] text-body">
                       {s.desc[0]}
                       <br className="hidden lg:block" /> {s.desc[1]}
                     </p>
+                    {s.caption && (
+                      <p className="text-[13px] leading-5 text-muted">{s.caption}</p>
+                    )}
                   </div>
                 </Reveal>
                 <Reveal delay={120}>
@@ -115,7 +108,7 @@ export default function Landing({ lang, t }: Props) {
           );
         })}
 
-        {/* ── 6. 원칙 — 하지 않는 것 (제품 원칙 고지) ── */}
+        {/* ── 6. 알아 두기 — 하지 않는 것과 필요한 조건 ── */}
         <section className="border-t border-hairline">
           <div className="mx-auto max-w-5xl px-4 py-28 md:py-36">
             <Reveal>
@@ -127,10 +120,10 @@ export default function Landing({ lang, t }: Props) {
               {t.principles.items.map((item, i) => (
                 <Reveal key={item.title} delay={i * 120}>
                   <div className="flex flex-col gap-2.5 border-t border-hairline pt-6">
-                    <span className="text-xl font-bold text-ink">
+                    <span className="text-xl font-semibold text-ink">
                       {item.title}
                     </span>
-                    <p className="text-base leading-relaxed text-body">
+                    <p className="text-[17px] leading-[26px] text-body">
                       {item.desc}
                     </p>
                   </div>
@@ -141,13 +134,13 @@ export default function Landing({ lang, t }: Props) {
         </section>
 
         {/* ── 7. 트래커 호환 — HealthKit 허브 ── */}
-        <section className="border-t border-hairline bg-media-well">
+        <section className="border-t border-hairline bg-surface">
           <div className="mx-auto max-w-3xl px-4 py-28 text-center md:py-36">
             <Reveal>
               <h2 className={H2}>
                 <TwoLine lines={t.trackers.headline} />
               </h2>
-              <p className="mt-6 text-lg leading-relaxed text-body">
+              <p className="mt-6 text-[17px] leading-[26px] text-body">
                 {t.trackers.desc[0]}
                 <br className="hidden lg:block" /> {t.trackers.desc[1]}
               </p>
@@ -155,7 +148,7 @@ export default function Landing({ lang, t }: Props) {
             <div className="mt-10 flex flex-wrap justify-center gap-3">
               {t.trackers.names.map((name, i) => (
                 <Reveal key={name} delay={i * 90}>
-                  <span className="inline-flex items-center gap-2.5 rounded-full border border-hairline px-5 py-2.5 text-base font-medium text-ink transition hover:border-body">
+                  <span className="inline-flex items-center gap-2.5 rounded-lg border border-hairline px-5 py-2.5 text-base font-medium text-ink transition hover:border-body">
                     <TrackerIcon name={name} className="h-5 w-5 shrink-0" />
                     {name}
                   </span>
@@ -172,7 +165,7 @@ export default function Landing({ lang, t }: Props) {
         <section className="border-t border-hairline">
           <div className="mx-auto max-w-3xl px-4 py-28 md:py-36">
             <Reveal>
-              <h2 className="text-3xl font-extrabold tracking-[-0.03em] text-ink md:text-4xl">
+              <h2 className={H2}>
                 {t.faq.title}
               </h2>
             </Reveal>
@@ -180,7 +173,7 @@ export default function Landing({ lang, t }: Props) {
               {t.faq.items.map((item, i) => (
                 <Reveal key={item.q} delay={i * 60}>
                   <details className="faq-item border-b border-hairline">
-                    <summary className="flex items-center justify-between gap-4 py-5 text-left text-base font-semibold text-ink transition hover:text-amber md:text-lg">
+                    <summary className="flex items-center justify-between gap-4 py-5 text-left text-base font-semibold text-ink transition hover:text-accent md:text-lg">
                       {item.q}
                       <span
                         aria-hidden="true"
@@ -189,7 +182,7 @@ export default function Landing({ lang, t }: Props) {
                         +
                       </span>
                     </summary>
-                    <p className="pb-6 pr-8 text-[15px] leading-relaxed text-body">
+                    <p className="pb-6 pr-8 text-[17px] leading-[26px] text-body">
                       {item.a}
                     </p>
                   </details>
@@ -206,10 +199,11 @@ export default function Landing({ lang, t }: Props) {
               <BrandPill size="lg" />
             </Reveal>
             <Reveal delay={100}>
-              <h2 className="mt-10 text-4xl font-extrabold leading-[1.18] tracking-[-0.03em] text-ink md:text-6xl">
+              <p className="mt-8 font-display text-[22px] text-body">{t.finalCta.tagline}</p>
+              <h2 className={`mt-10 ${H2}`}>
                 <TwoLine lines={t.finalCta.headline} />
               </h2>
-              <p className="mt-5 text-lg text-body md:text-xl">{t.finalCta.sub}</p>
+              <p className="mt-5 text-[17px] leading-[26px] text-body">{t.finalCta.sub}</p>
             </Reveal>
             <Reveal delay={200}>
               <div className="mt-9 flex flex-col items-center gap-3">

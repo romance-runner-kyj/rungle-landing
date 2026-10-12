@@ -114,7 +114,6 @@ export async function buildOgImage(lang: Locale) {
           }}
         >
           <span style={{ color: INK }}>{t.hero.lines[1]}</span>
-          <span style={{ color: AMBER }}>{t.hero.lines[2]}</span>
         </div>
 
         {/* 기록 칩 행 — 전광판의 목소리 (Barlow Condensed) */}
@@ -164,7 +163,7 @@ export async function buildOgImage(lang: Locale) {
               marginLeft: 8,
             }}
           >
-            {t.hero.badge}
+            {t.hero.label}
           </div>
         </div>
       </div>
