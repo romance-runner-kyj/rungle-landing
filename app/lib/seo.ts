@@ -1,7 +1,7 @@
 /**
  * app/lib/seo.ts — SEO/메타데이터 단일 진실원천 (v2 검증 구조 계승)
  * ─────────────────────────────────────────────────────────
- * - ko = "/", en = "/en" · hreflang 3종(ko-KR/en-US/x-default)
+ * - ko = "/", en = "/en" · hreflang 3종(ko-KR/en/x-default)
  * - SITE_URL은 NEXT_PUBLIC_SITE_URL로 override 가능 (빌드타임 인라인 —
  *   Vercel env 변경 시 재배포 필요)
  * - OG 이미지는 opengraph-image.tsx 파일 컨벤션으로 자동 주입
@@ -38,7 +38,7 @@ export function buildMetadata(lang: Locale): Metadata {
       canonical: path,
       languages: {
         "ko-KR": "/",
-        "en-US": "/en",
+        en: "/en",
         "x-default": "/",
       },
     },

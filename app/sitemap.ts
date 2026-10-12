@@ -7,7 +7,7 @@ import { SITE_URL } from "./lib/seo";
 export default function sitemap(): MetadataRoute.Sitemap {
   const languages = {
     "ko-KR": `${SITE_URL}/`,
-    "en-US": `${SITE_URL}/en`,
+    en: `${SITE_URL}/en`,
     "x-default": `${SITE_URL}/`,
   };
 
