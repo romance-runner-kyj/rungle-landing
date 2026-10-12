@@ -8,8 +8,9 @@
  *  - 출시된 제품 — 앱에 없는 기능을 주장하지 않는다. 화면은 App Store 판넬
  *    원본 캡처(public/media/app)만 쓰고 CSS로 앱을 재현하지 않는다.
  *  - 허위 소셜 프루프 금지 — 정성적 표현만. 가격·구독·무료 언급 금지(정책 미확정).
- *  - 프라이버시 표현은 스토어 설명 범위까지만 — 선별·편집은 기기 안 처리, 사진·영상
- *    원본 미전송(1.0 출시 빌드 기준). 얼굴 관련 카피는 "인식만, 만들지 않는다"까지만.
+ *  - 프라이버시 표현은 스토어 설명 범위까지만 — 사진에 기록을 얹는 편집은 기기 안 처리,
+ *    AI 베스트컷·AI 템플릿은 사진·영상을 서버로 보내고 처리 뒤 삭제, 로그인하고 백업을 켜면
+ *    서버 보관(v2.0.0 스토어 설명 기준). 얼굴 관련 카피는 "인식만, 만들지 않는다"까지만.
  *  - 각 screen 카피는 그 캡처에 실제 보이는 것(버튼·필터·트랙)과 맞춘다.
  */
 import type { Locale } from "./locales";
@@ -73,7 +74,7 @@ export const copy: Record<Locale, Copy> = {
     meta: {
       title: "rungle(런글) — 러닝 기록 오버레이 사진과 러닝 릴스, 뛰고 찍으면 바로",
       description:
-        "쓰던 러닝 앱의 기록을 애플 건강으로 불러와, 그때 찍은 사진에서 잘 나온 컷을 골라 거리·페이스·시간을 얹은 러닝 기록 오버레이 사진과 러닝 릴스 초안을 만들어요. 계정 없이, iOS App Store에서.",
+        "쓰던 러닝 앱의 기록을 애플 건강으로 불러와, 그때 찍은 사진에서 잘 나온 컷을 골라 거리·페이스·시간을 얹은 러닝 기록 오버레이 사진과 러닝 릴스 초안을 만들어요. 로그인 없이 시작, iOS App Store에서.",
       ogImageAlt: "rungle — 뛰고 찍기까지, 나머지는 런글이",
     },
     nav: {
@@ -91,7 +92,7 @@ export const copy: Record<Locale, Copy> = {
     },
     cta: {
       label: "App Store에서 받기",
-      microcopy: "iOS · 계정 없이 바로 시작해요",
+      microcopy: "iOS · 로그인 없이 시작해요",
     },
     screens: [
       {
@@ -108,7 +109,7 @@ export const copy: Record<Locale, Copy> = {
         kicker: "추천 사진 고르기",
         headline: ["백 장을 넘기던 일은", "이제 고르는 일로"],
         desc: [
-          "얼굴·흔들림·구도를 보고 잘 나온 순서로 보여드려요.",
+          "AI가 사진 속 장면을 보고 올릴 만한 컷을 추천해요.",
           "인물·배경으로 나눠 보고, 올릴 컷은 내가 골라요.",
         ],
       },
@@ -139,8 +140,8 @@ export const copy: Record<Locale, Copy> = {
           desc: "잘 나온 컷을 고르려고 인식할 뿐, 만들거나 바꾸거나 보정하지 않아요.",
         },
         {
-          title: "사진은 아이폰 안에",
-          desc: "선별과 편집은 전부 기기 안에서 끝나고, 사진·영상은 밖으로 나가지 않아요.",
+          title: "AI에 보낸 사진은 처리 뒤 지워요",
+          desc: "사진에 기록을 얹는 편집은 아이폰 안에서 해요. AI 베스트컷·AI 템플릿에 보낸 사진·영상은 작업이 끝나면 지워요. 로그인하고 프로젝트 백업을 켜면 편집 작업과 사진은 서버에 보관해요.",
         },
         {
           title: "마무리는 결제창·광고 없이",
@@ -166,15 +167,15 @@ export const copy: Record<Locale, Copy> = {
         },
         {
           q: "릴스 말고 사진 한 장만 올리고 싶어요.",
-          a: "만들기에서 '사진에 기록 넣기'를 고르면 돼요. 사진 한 장에 거리·페이스·시간만 얹어 저장하거나 공유해요.",
+          a: "홈 최근 러닝에서 [사진 편집하기]를 누르면 돼요. 사진 한 장에 거리·페이스·시간을 얹어 저장하거나 인스타그램으로 공유해요. 로그인 없이도 돼요.",
         },
         {
           q: "제 사진과 얼굴은 어떻게 다뤄지나요?",
-          a: "사진·영상 원본은 기기 밖으로 나가지 않고, 컷 고르기와 편집은 전부 아이폰 안에서 해요. 얼굴은 잘 나온 컷을 고르려고 알아볼 뿐, 만들거나 바꾸거나 보정하지 않아요. 건강 데이터는 기록을 보여 주는 데만 써요.",
+          a: "사진에 기록을 얹거나 직접 편집할 땐 아이폰 안에서 처리해요. AI 베스트컷과 AI 템플릿은 필요한 사진·영상을 서버로 보내고, 작업이 끝나면 지워요. 로그인하고 프로젝트 백업을 켜면 편집 작업과 관련 미디어가 서버에 보관돼요. 얼굴은 만들거나 바꾸거나 보정하지 않아요. 건강 데이터는 기록을 보여 주는 데 쓰고, 로그인하면 러닝 기록도 계정에 저장돼요.",
         },
         {
           q: "어떤 기기에서 쓸 수 있나요?",
-          a: "iOS 앱이에요. App Store에서 받아 계정 없이 바로 시작해요. 안드로이드 버전은 없어요.",
+          a: "iOS 앱이에요. 로그인 없이 시작해 사진에 기록을 얹을 수 있고, AI 베스트컷·AI 템플릿·프로젝트 저장과 백업·캡처로 기록 추가에는 로그인이 필요해요. 안드로이드 버전은 없어요.",
         },
       ],
     },
@@ -193,7 +194,7 @@ export const copy: Record<Locale, Copy> = {
     meta: {
       title: "rungle — Running stats overlays and run Reels, right after the run",
       description:
-        "Pulls your runs from Apple Health, picks the best shots from that day and drafts a running stats overlay photo or run Reel for Instagram. No account needed. iOS.",
+        "Pulls your runs from Apple Health, picks the best shots from that day and drafts a running stats overlay photo or run Reel for Instagram. Start without signing in. iOS.",
       ogImageAlt: "rungle — Run and shoot, leave the rest to rungle",
     },
     nav: {
@@ -211,7 +212,7 @@ export const copy: Record<Locale, Copy> = {
     },
     cta: {
       label: "Download on the App Store",
-      microcopy: "iOS · No account needed",
+      microcopy: "iOS · Start without signing in",
     },
     screens: [
       {
@@ -228,7 +229,7 @@ export const copy: Record<Locale, Copy> = {
         kicker: "Suggested photos",
         headline: ["From a hundred shots", "to the keepers"],
         desc: [
-          "Sorted by faces, blur and framing, best first.",
+          "AI looks at what's in each photo and suggests the ones worth posting.",
           "Filter by people or scenery. The final pick is yours.",
         ],
       },
@@ -259,8 +260,8 @@ export const copy: Record<Locale, Copy> = {
           desc: "Only to judge which shot is sharpest. Never generated, altered or retouched.",
         },
         {
-          title: "Photos stay on your iPhone",
-          desc: "Selection and editing happen on the device. Your photos and videos never leave it.",
+          title: "AI inputs are deleted after processing",
+          desc: "Stamping stats on a photo happens on your iPhone. Photos and videos sent for AI best cuts or AI templates are deleted when the job ends. With sign-in and project backup on, your edits and media are stored on the server.",
         },
         {
           title: "No paywall at the finish",
@@ -286,15 +287,15 @@ export const copy: Record<Locale, Copy> = {
         },
         {
           q: "I just want to post one photo, not a Reel.",
-          a: "Choose 'Stamp records on a photo' on the Create screen. It puts distance, pace and time on a single photo for you to save or share.",
+          a: "Tap [Edit a photo] on your latest run on Home. It puts distance, pace and time on a single photo for you to save or share to Instagram. No sign-in needed.",
         },
         {
           q: "How are my photos and my face handled?",
-          a: "Your photos and videos never leave your device. Selection and editing happen on your iPhone. Faces are only detected to judge how good a shot is, never generated, altered or retouched. Health data is used only to display your stats.",
+          a: "Stamping stats on a photo and editing it yourself happen on your iPhone. AI best cuts and AI templates send the photos and videos they need to our server and delete them when the job ends. With sign-in and project backup on, your edits and related media are stored on the server. Faces are never generated, altered or retouched. Health data is used to display your stats, and once you sign in your runs are also saved to your account.",
         },
         {
           q: "What devices does it run on?",
-          a: "rungle is an iOS app. Download it from the App Store and start right away, no account needed. There's no Android version.",
+          a: "rungle is an iOS app. You can start without signing in and stamp stats on your photos. AI best cuts, AI templates, saving and backing up projects, and adding runs from screenshots need sign-in. There's no Android version.",
         },
       ],
     },
