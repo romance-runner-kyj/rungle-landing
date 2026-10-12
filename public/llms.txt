@@ -109,7 +109,7 @@ sign-in. Pick an overlay style, then place and resize it.
 The eight reel templates are 자유 편집, 컷편집, km 분할, 런닝맨 프리즈,
 스파이더맨샷, 신발 아우라, 웹슈터 and 월말정산 (Korean in-app names).
 Pick a template, make a draft with your own running media, then edit it.
-Free editing starts with an empty timeline. Cut Edit, Spider Shot, Web Shooter
+The 자유 편집 template (manual editing) starts with an empty timeline. Cut Edit, Spider Shot, Web Shooter
 and Monthly Recap are AI templates and require sign-in. Monthly Recap stitches
 a month of runs into one reel. Photos taken during a run can also become reel cuts.
 
