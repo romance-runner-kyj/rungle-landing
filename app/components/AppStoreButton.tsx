@@ -1,10 +1,9 @@
 /**
- * app/components/AppStoreButton.tsx — App Store 이동 주 CTA
- * ─────────────────────────────────────────────────────────
- * 출시 후 waitlist 폼을 대체. 로케일별 스토어 링크는 LOCALE_META.appStoreUrl.
- * 같은 탭 이동 — iOS Safari는 apps.apple.com을 App Store 앱으로 바로 연다.
- * 부모 flex-col이 정렬(start/center)을 결정하므로 fragment로 반환.
- * Apple 로고·배지 아트워크는 쓰지 않는다(상표 라이선스) — 텍스트 CTA만.
+ * app/components/AppStoreButton.tsx — App Store CTA(텍스트 버튼 + 마이크로카피).
+ * 링크는 로케일별 스토어 URL(LOCALE_META.appStoreUrl)이다.
+ * 같은 탭에서 이동한다 — iOS Safari가 App Store 앱을 바로 연다.
+ * Apple 로고·배지 아트워크는 쓰지 않는다(상표 라이선스). 텍스트 CTA만 쓴다.
+ * 정렬은 부모 flex-col이 정하므로 fragment를 반환한다.
  */
 import { LOCALE_META, type Locale } from "../lib/locales";
 import type { Copy } from "../lib/copy";
@@ -19,7 +18,7 @@ export default function AppStoreButton({ lang, t }: Props) {
     <>
       <a
         href={LOCALE_META[lang].appStoreUrl}
-        className="amber-glow inline-flex items-center rounded-full bg-amber px-7 py-3.5 text-base font-semibold text-on-primary transition active:bg-amber-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+        className="inline-flex h-[52px] items-center rounded-lg border border-control bg-action px-7 text-[15px] font-semibold text-on-action transition active:bg-action-pressed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
       >
         {t.label}
       </a>

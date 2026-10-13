@@ -1,9 +1,8 @@
 /**
- * app/lib/og.tsx — OG 이미지 공용 빌더 (ko/en)
- * ─────────────────────────────────────────────────────────
- * brand-pill 기하 스펙(트랙 필 + 달리는 점)에서 파생. 크로노 앰버 다크.
- * 폰트: public/fonts/의 otf/ttf 로컬 로드 (satori는 woff2 미지원 — v2 M-3 교훈).
- * 폰트 로드 실패 시 시스템 폰트 폴백으로 OG 생성 자체는 보장.
+ * app/lib/og.tsx — ko/en 공용 OG. 링크 미리보기는 라이트 디자인을 쓴다.
+ * satori는 woff2를 못 읽어 public/fonts의 ttf 서브셋을 쓴다.
+ * Bodoni ttf는 자체가 이탤릭이라 style normal로 등록한다(합성 기울임 방지).
+ * 폰트 파일이 없으면 빌드가 실패한다 — 의도(조용히 깨진 OG 방지).
  */
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
@@ -13,190 +12,92 @@ import type { Locale } from "./locales";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-const AMBER = "#FFB300";
-const CANVAS = "#131313";
-const INK = "#FFFFFF";
-const BODY = "#A6A6A6";
-const ON_PRIMARY = "#1A1403";
-const HAIRLINE = "#2C2C2C";
-
 export async function buildOgImage(lang: Locale) {
   const t = copy[lang];
-
-  const [pretendard, barlow] = await Promise.all([
-    readFile(join(process.cwd(), "public/fonts/Pretendard-Bold.otf")).catch(
-      () => null
-    ),
-    readFile(
-      join(process.cwd(), "public/fonts/BarlowCondensed-SemiBold.ttf")
-    ).catch(() => null),
+  const [noto, bodoni, anton] = await Promise.all([
+    readFile(join(process.cwd(), "public/fonts/NotoSansKR-SemiBold.ttf")),
+    readFile(join(process.cwd(), "public/fonts/BodoniModa-MediumItalic.ttf")),
+    readFile(join(process.cwd(), "public/fonts/Anton-Regular.ttf")),
   ]);
-
-  const sans = pretendard ? "Pretendard" : "sans-serif";
-  const metric = barlow ? "Barlow Condensed" : "sans-serif";
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          padding: "72px 80px",
-          background: CANVAS,
-          fontFamily: sans,
-          position: "relative",
-          overflow: "hidden",
+          alignItems: "flex-start",
+          width: "100%",
+          height: "100%",
+          padding: "60px 72px",
+          background: "#FFFFFF",
+          color: "#111111",
+          fontFamily: "Noto Sans KR",
         }}
       >
-        {/* 앰버 글로우 — 우상단 */}
-        <div
-          style={{
-            position: "absolute",
-            top: -220,
-            right: -120,
-            width: 640,
-            height: 520,
-            background: "rgba(255,179,0,0.14)",
-            filter: "blur(110px)",
-            display: "flex",
-          }}
-        />
-
-        {/* brand-pill 로고 — 트랙 필 + 달리는 점 */}
-        <div style={{ display: "flex", position: "relative", marginBottom: 48 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              border: `4px solid ${AMBER}`,
-              borderRadius: 999,
-              padding: "12px 36px",
-              color: INK,
-              fontSize: 38,
-              fontWeight: 700,
-            }}
-          >
-            rungle
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: -7,
-              left: 150,
-              width: 16,
-              height: 16,
-              borderRadius: 999,
-              background: AMBER,
-              boxShadow: "0 0 18px rgba(255,179,0,0.6)",
-              display: "flex",
-            }}
-          />
-        </div>
-
-        {/* 헤드라인 — 히어로 3구, 마지막 구만 앰버 */}
         <div
           style={{
             display: "flex",
-            color: INK,
-            fontSize: 72,
-            lineHeight: 1.15,
-            fontWeight: 700,
+            fontFamily: "Anton",
+            fontSize: 40,
+            fontWeight: 400,
+            lineHeight: 1,
+            marginBottom: 32,
           }}
         >
-          {t.hero.lines[0]}
+          RUNGLE
         </div>
         <div
           style={{
             display: "flex",
-            gap: 20,
+            flexDirection: "column",
             fontSize: 72,
+            fontWeight: 600,
             lineHeight: 1.15,
-            fontWeight: 700,
-            marginBottom: 40,
           }}
         >
-          <span style={{ color: INK }}>{t.hero.lines[1]}</span>
-          <span style={{ color: AMBER }}>{t.hero.lines[2]}</span>
+          <div style={{ display: "flex" }}>{t.hero.lines[0]}</div>
+          <div style={{ display: "flex" }}>{t.hero.lines[1]}</div>
         </div>
-
-        {/* 기록 칩 행 — 전광판의 목소리 (Barlow Condensed) */}
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          {[
-            ["8.42", "KM"],
-            ["5'42\"", "PACE"],
-            ["48:12", "TIME"],
-          ].map(([num, unit]) => (
-            <div
-              key={unit}
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: 10,
-                border: `2px solid ${HAIRLINE}`,
-                borderRadius: 999,
-                padding: "12px 30px",
-              }}
-            >
-              <span
-                style={{ fontFamily: metric, fontSize: 40, color: INK }}
-              >
-                {num}
-              </span>
-              <span
-                style={{
-                  fontFamily: metric,
-                  fontSize: 20,
-                  color: BODY,
-                  letterSpacing: 2,
-                }}
-              >
-                {unit}
-              </span>
-            </div>
-          ))}
-          <div
-            style={{
-              display: "flex",
-              background: AMBER,
-              color: ON_PRIMARY,
-              borderRadius: 999,
-              padding: "14px 32px",
-              fontSize: 26,
-              fontWeight: 700,
-              marginLeft: 8,
-            }}
-          >
-            {t.hero.badge}
-          </div>
+        <div
+          style={{
+            display: "flex",
+            fontFamily: "Bodoni Moda",
+            fontSize: 36,
+            fontWeight: 500,
+            fontStyle: "normal",
+            lineHeight: 1.2,
+            color: "#666666",
+            marginTop: 24,
+          }}
+        >
+          {t.hero.tagline}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: 32,
+            padding: "12px 24px",
+            background: "#B9E0FD",
+            color: "#111111",
+            border: "1px solid #888888",
+            borderRadius: 8,
+            fontSize: 24,
+            fontWeight: 600,
+            lineHeight: 1.2,
+          }}
+        >
+          {t.hero.label}
         </div>
       </div>
     ),
     {
       ...OG_SIZE,
       fonts: [
-        ...(pretendard
-          ? [
-              {
-                name: "Pretendard",
-                data: pretendard,
-                style: "normal" as const,
-                weight: 700 as const,
-              },
-            ]
-          : []),
-        ...(barlow
-          ? [
-              {
-                name: "Barlow Condensed",
-                data: barlow,
-                style: "normal" as const,
-                weight: 600 as const,
-              },
-            ]
-          : []),
+        { name: "Noto Sans KR", data: noto, style: "normal" as const, weight: 600 as const },
+        { name: "Bodoni Moda", data: bodoni, style: "normal" as const, weight: 500 as const },
+        { name: "Anton", data: anton, style: "normal" as const, weight: 400 as const },
       ],
     }
   );
