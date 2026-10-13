@@ -5,6 +5,7 @@
 import "../globals.css";
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
+import JsonLd from "../components/JsonLd";
 import MetaPixel from "../components/MetaPixel";
 import ThemeScript from "../components/ThemeScript";
 import { buildMetadata } from "../lib/seo";
@@ -25,6 +26,7 @@ export default function KoRootLayout({ children }: { children: ReactNode }) {
     <html lang="ko" className={`h-full antialiased ${notoSans.variable} ${bodoni.variable} ${anton.variable}`}>
       <head>
         <ThemeScript />
+        <JsonLd lang="ko" />
       </head>
       <body className="flex min-h-full flex-col">{children}<MetaPixel /></body>
     </html>
