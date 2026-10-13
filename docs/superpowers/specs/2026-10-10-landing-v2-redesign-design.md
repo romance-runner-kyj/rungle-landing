@@ -105,7 +105,7 @@
 - **로고**: `BrandPill.tsx` 파일명·export·props(`size: "sm" | "lg"`)는 그대로 두고 내용만 바꾼다(Nav·Landing import 무변경).
   - `sm`(Nav): 트랙 없이 `RUNGLE` 텍스트만(Anton 28, `text-ink`) — 앱 홈 헤더와 같다.
   - `lg`(최종 CTA): 인라인 `<svg>` 트랙(viewBox 173×94: 점이 트랙 위로 7.8 튀어나오므로 위 여백 7.8 + 트랙 86) + 러너 점 + 20px 아래 `RUNGLE` Anton 52 자간 −1. 색은 `currentColor`(외부 svg 파일은 currentColor 상속이 안 돼 인라인으로 — `TrackerIcons.tsx`와 같은 이유).
-  - 모션: `lg` 러너 점이 로드 뒤 0.7초 대기 → 1.4초 한 바퀴(앱 orbitDuration) → 오른쪽 위 정지. 기존 `.pill-dot` offset-path 기법을 SVG 점에 `offset-path: path(스타디움)`으로 옮긴다. 트랙은 안 돈다. offset-path 미지원·Reduce Motion은 정적 점.
+  - 모션: `lg` 러너 점이 로고가 화면에 보인 뒤(Reveal is-visible) 0.7초 대기 → 1.4초 한 바퀴(앱 orbitDuration) → 오른쪽 위 정지. 점은 정적 원·달리는 원 2개로 두고 offset-path 지원 시에만 달리는 원을 보인다(Safari 안전). 기존 `.pill-dot` offset-path 기법을 SVG 점에 `offset-path: path(스타디움)`으로 옮긴다. 트랙은 안 돈다. offset-path 미지원·Reduce Motion은 정적 점.
 - **파비콘** `app/icon.svg`: 흰 타일 rx 14 + 검정 트랙(선 4) + 점. 앱 아이콘과 같은 모습.
 - **OG** `app/lib/og.tsx`(1200×630): 흰 바탕, 왼쪽 위 `RUNGLE` Anton 40, h1 2줄 Noto 600 검정, Bodoni 이탤릭 태그라인 #666, 아래 하늘색 칩(radius 8, 검정 글자) "iOS · App Store". 앰버 글로우·Barlow 기록 칩 3개(가짜 숫자)는 삭제. `meta.ogImageAlt`도 갱신.
 - 손대지 않는 것: `brand/` 영상 산출물(인스타 용도, 34MB), `scripts/logo-*.html`·`capture-logo.mjs`, `public/brand/logo-mark*.svg`(brand/README가 참조). 앰버 산출물이지만 랜딩 UI 범위 밖이라 그대로 둔다(2026-10-10 결정).
