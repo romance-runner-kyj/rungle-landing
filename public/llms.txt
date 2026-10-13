@@ -9,7 +9,7 @@ RUNGLE은 인스타그램에 러닝 인증을 올리는 러너를 위한 앱이�
 러닝 기록을 불러와 사진을 편집하거나, 템플릿을 선택해 릴스 초안을 만들고 다듬는다.
 자유 편집은 빈 타임라인에서 시작한다.
 
-최종 업데이트: 2026-10-10
+최종 업데이트: 2026-10-13
 
 ## 무엇을 하나
 
@@ -93,7 +93,7 @@ iOS App Store에 출시되어 있다. 출시 지역은 App Store에서 확인한
 
 RUNGLE is an iOS app available on the App Store for runners who post running
 photos and reels on Instagram. Check the App Store for availability in your region.
-Last updated: 2026-10-10.
+Last updated: 2026-10-13.
 
 It reads existing runs through Apple Health (HealthKit), including distance,
 pace, time and route, and displays cadence. It works with apps that write running

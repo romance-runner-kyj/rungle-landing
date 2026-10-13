@@ -83,6 +83,20 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
     window.scrollTo({ top: 0, behavior: "instant" });
   });
   await page.waitForTimeout(1600);
+
+  /* 스크롤 후 캡처가 실제로 디코딩됐는지 — 파일이 없으면 FAIL */
+  const shotsLoaded = await page.locator("img").evaluateAll(
+    (els, needle) => {
+      const mine = els.filter((img) => decodeURIComponent(img.getAttribute("src") ?? "").includes(needle));
+      return { total: mine.length, loaded: mine.filter((img) => img.complete && img.naturalWidth > 0).length };
+    },
+    `/media/app/${locale}/`
+  );
+  check(
+    `${locale}: 앱 캡처 로드 완료 5장`,
+    shotsLoaded.total === 5 && shotsLoaded.loaded === shotsLoaded.total,
+    `${shotsLoaded.loaded}/${shotsLoaded.total}`
+  );
   await page.screenshot({ path: `${OUT}/${locale}-full.png`, fullPage: true });
   await page.screenshot({ path: `${OUT}/${locale}-hero.png` });
   await page.close();
@@ -137,9 +151,12 @@ await dark.evaluate(async () => {
   window.scrollTo({ top: 0, behavior: "instant" });
 });
 await dark.waitForTimeout(1600);
-/* shortcut: URL 선택만 검사해 이미지 404도 통과한다, 배포 전 캡처 20장과 실렌더를 확인한다. */
+/* URL 선택과 실제 디코딩을 함께 본다 — 파일이 없으면 FAIL */
 const darkShots = await dark.locator("img").evaluateAll(
-  (els) => els.filter((i) => decodeURIComponent(i.currentSrc).includes("-dark.webp")).length
+  (els) =>
+    els.filter(
+      (i) => decodeURIComponent(i.currentSrc).includes("-dark.webp") && i.complete && i.naturalWidth > 0
+    ).length
 );
 check("ko: 다크 앱 캡처 5장", darkShots === 5, String(darkShots));
 await dark.screenshot({ path: `${OUT}/ko-dark-full.png`, fullPage: true });
