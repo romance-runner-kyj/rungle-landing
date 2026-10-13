@@ -1,3 +1,7 @@
+Anton: Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont.git)
+Bodoni Moda: Copyright 2020 The Bodoni Moda Project Authors (https://github.com/indestructible-type/Bodoni)
+Noto Sans KR: (c) 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.
+
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 -----------------------------------------------------------

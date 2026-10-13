@@ -2,7 +2,7 @@
  * app/globals.css — 랜딩 v2 디자인 토큰
  * 정본: ios/Rungle/DesignSystem/DS+V2Tokens.swift.
  * 랜딩 적용 범위: docs/superpowers/specs/2026-10-10-landing-v2-redesign-design.md.
- * 폰트는 Task 1의 next/font/local 변수에 연결한다.
+ * 폰트는 `app/lib/fonts.ts`의 next/font/local 변수(--font-noto·--font-bodoni·--font-anton)에 연결한다.
  */
 @import "tailwindcss";
 
@@ -100,21 +100,26 @@ body {
 .hero-rise-4 { animation-delay: 0.38s; }
 .hero-rise-5 { animation-delay: 0.5s; }
 
-/* 트랙 선 중심선(173×94 viewBox, 트랙은 y=7.8부터, 선 13 → 중심선 inset 6.5, r 36.5). 시작점 = 정적 점 위치 */
+/* 로고 러너 점 — 트랙 선 중심선(173×94 viewBox, 선 13 → inset 6.5, r 36.5)을 한 바퀴.
+   정적 점(.mark-dot-static)이 기본이고, offset-path를 지원하면 달리는 점(.mark-dot)으로 바꾼다.
+   .mark-dot은 cx/cy 속성이 없어 원점(0,0)에 있고 offset-path가 경로 시작점(=정적 점 위치)으로 옮긴다.
+   애니메이션은 로고가 담긴 Reveal이 보일 때(.reveal.is-visible) 시작한다 — 최종 CTA는 페이지 끝이라
+   로드 시점에 돌리면 아무도 못 본다.
+   @media (scripting: none)에서는 Reveal이 is-visible을 못 붙이므로 점은 시작점에 멈춘 채 보인다(의도). */
+.mark-dot { display: none; }
 @supports (offset-path: path("M0 0H1")) {
+  .mark-dot-static { display: none; }
   .mark-dot {
-    cx: 0;
-    cy: 0;
+    display: block;
     offset-path: path("M122.3 14.3 H130 A36.5 36.5 0 0 1 166.5 50.8 A36.5 36.5 0 0 1 130 87.3 H43 A36.5 36.5 0 0 1 6.5 50.8 A36.5 36.5 0 0 1 43 14.3 Z");
     offset-rotate: 0deg;
+    offset-distance: 0%;
+  }
+  .reveal.is-visible .mark-dot {
     animation: mark-lap 1.4s linear 0.7s 1;
   }
 }
-
-@keyframes mark-lap {
-  from { offset-distance: 0%; }
-  to { offset-distance: 100%; }
-}
+@keyframes mark-lap { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 
 .faq-item summary {
   list-style: none;
@@ -146,7 +151,7 @@ body {
     opacity: 1;
   }
   .hero-rise,
-  .mark-dot {
+  .reveal.is-visible .mark-dot {
     animation: none;
   }
 }

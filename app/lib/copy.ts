@@ -297,7 +297,7 @@ export const copy: Record<Locale, Copy> = {
       items: [
         {
           q: "Which running apps does it work with?",
-          a: "Any app that writes runs to Apple Health (HealthKit). Strava, Nike Run Club, Garmin and Apple Watch all sync through Apple Health. If there is no run, add a screenshot of your running app’s summary to read the distance, time and pace. Tap the values to correct them. Saving the screenshot as a run requires sign-in."
+          a: "Any app that writes runs to Apple Health (HealthKit). Strava, Nike Run Club, Garmin and Apple Watch all sync through Apple Health. If there is no run, add a screenshot of your running app's summary to read the distance, time and pace. Tap the values to correct them. Saving the screenshot as a run requires sign-in."
         },
         {
           q: "I just want to post one photo, not a Reel.",

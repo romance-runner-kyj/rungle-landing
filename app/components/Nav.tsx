@@ -1,3 +1,4 @@
+/** app/components/Nav.tsx — 고정 헤더: 홈 로고, 언어 토글(Link 풀 페이지 전환), App Store CTA. */
 import Link from "next/link";
 import BrandPill from "./BrandPill";
 import type { Copy } from "../lib/copy";

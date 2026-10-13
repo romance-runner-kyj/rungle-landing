@@ -1,6 +1,8 @@
 /**
  * app/lib/og.tsx — ko/en 공용 OG. 링크 미리보기는 라이트 디자인을 쓴다.
- * satori용 폰트는 public/fonts의 ttf를 읽는다.
+ * satori는 woff2를 못 읽어 public/fonts의 ttf 서브셋을 쓴다.
+ * Bodoni ttf는 자체가 이탤릭이라 style normal로 등록한다(합성 기울임 방지).
+ * 폰트 파일이 없으면 빌드가 실패한다 — 의도(조용히 깨진 OG 방지).
  */
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
@@ -13,11 +15,10 @@ export const OG_SIZE = { width: 1200, height: 630 };
 export async function buildOgImage(lang: Locale) {
   const t = copy[lang];
   const [noto, bodoni, anton] = await Promise.all([
-    readFile(join(process.cwd(), "public/fonts/NotoSansKR-SemiBold.ttf")).catch(() => null),
-    readFile(join(process.cwd(), "public/fonts/BodoniModa-MediumItalic.ttf")).catch(() => null),
-    readFile(join(process.cwd(), "public/fonts/Anton-Regular.ttf")).catch(() => null),
+    readFile(join(process.cwd(), "public/fonts/NotoSansKR-SemiBold.ttf")),
+    readFile(join(process.cwd(), "public/fonts/BodoniModa-MediumItalic.ttf")),
+    readFile(join(process.cwd(), "public/fonts/Anton-Regular.ttf")),
   ]);
-  const sans = noto ? "Noto Sans KR" : "sans-serif";
 
   return new ImageResponse(
     (
@@ -31,13 +32,13 @@ export async function buildOgImage(lang: Locale) {
           padding: "60px 72px",
           background: "#FFFFFF",
           color: "#111111",
-          fontFamily: sans,
+          fontFamily: "Noto Sans KR",
         }}
       >
         <div
           style={{
             display: "flex",
-            fontFamily: anton ? "Anton" : "sans-serif",
+            fontFamily: "Anton",
             fontSize: 40,
             fontWeight: 400,
             lineHeight: 1,
@@ -61,7 +62,7 @@ export async function buildOgImage(lang: Locale) {
         <div
           style={{
             display: "flex",
-            fontFamily: bodoni ? "Bodoni Moda" : "serif",
+            fontFamily: "Bodoni Moda",
             fontSize: 36,
             fontWeight: 500,
             fontStyle: "normal",
@@ -94,9 +95,9 @@ export async function buildOgImage(lang: Locale) {
     {
       ...OG_SIZE,
       fonts: [
-        ...(noto ? [{ name: "Noto Sans KR", data: noto, style: "normal" as const, weight: 600 as const }] : []),
-        ...(bodoni ? [{ name: "Bodoni Moda", data: bodoni, style: "normal" as const, weight: 500 as const }] : []),
-        ...(anton ? [{ name: "Anton", data: anton, style: "normal" as const, weight: 400 as const }] : []),
+        { name: "Noto Sans KR", data: noto, style: "normal" as const, weight: 600 as const },
+        { name: "Bodoni Moda", data: bodoni, style: "normal" as const, weight: 500 as const },
+        { name: "Anton", data: anton, style: "normal" as const, weight: 400 as const },
       ],
     }
   );
