@@ -21,7 +21,7 @@ import type { AppScreen } from "../components/PhoneMockup";
 type TwoLines = [string, string];
 export type Copy = {
   meta: { title: string; description: string; ogImageAlt: string };
-  nav: { cta: string; langToggle: string; langToggleAria: string };
+  nav: { cta: string; langToggle: string; langToggleAria: string; themeToDark: string; themeToLight: string };
   hero: { label: string; lines: TwoLines; sub: string; tagline: string };
   cta: { label: string; microcopy: string };
   screens: { key: AppScreen; kicker: string; headline: TwoLines; desc: TwoLines; caption?: string }[];
@@ -41,7 +41,9 @@ export const copy: Record<Locale, Copy> = {
     nav: {
       cta: "앱 받기",
       langToggle: "EN",
-      langToggleAria: "Switch to English"
+      langToggleAria: "Switch to English",
+      themeToDark: "다크 모드로 전환",
+      themeToLight: "라이트 모드로 전환"
     },
     hero: {
       label: "iOS · App Store",
@@ -188,7 +190,9 @@ export const copy: Record<Locale, Copy> = {
     nav: {
       cta: "Get the app",
       langToggle: "KO",
-      langToggleAria: "한국어로 전환"
+      langToggleAria: "한국어로 전환",
+      themeToDark: "Switch to dark mode",
+      themeToLight: "Switch to light mode"
     },
     hero: {
       label: "iOS · On the App Store",

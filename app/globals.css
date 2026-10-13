@@ -29,8 +29,10 @@
   color-scheme: light dark;
 }
 
+/* 다크 토큰 — 기본은 OS 외관을 따르고, Nav의 테마 토글이 <html data-theme>로 강제한다.
+   같은 11개 변수를 두 번 적는다(미디어 쿼리와 속성 선택자를 한 규칙으로 못 합침). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --color-canvas: #111111;
     --color-surface: #1C1C1C;
     --color-ink: #F5F5F5;
@@ -44,6 +46,21 @@
     --color-accent: #0EB4FC;
   }
 }
+:root[data-theme="dark"] {
+    --color-canvas: #111111;
+    --color-surface: #1C1C1C;
+    --color-ink: #F5F5F5;
+    --color-body: #B3B3B3;
+    --color-muted: #999999;
+    --color-hairline: #333333;
+    --color-control: #777777;
+    --color-action: #0EB4FC;
+    --color-action-pressed: #0795D4;
+    --color-on-action: #111111;
+    --color-accent: #0EB4FC;
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
 
 html {
   scroll-behavior: smooth;

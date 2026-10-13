@@ -1,6 +1,7 @@
-/** app/components/Nav.tsx — 고정 헤더: 홈 로고, 언어 토글(Link 풀 페이지 전환), App Store CTA. */
+/** app/components/Nav.tsx — 고정 헤더: 홈 로고, 테마 토글, 언어 토글(Link 풀 페이지 전환), App Store CTA. */
 import Link from "next/link";
 import BrandPill from "./BrandPill";
+import ThemeToggle from "./ThemeToggle";
 import type { Copy } from "../lib/copy";
 import { LOCALE_META, type Locale } from "../lib/locales";
 
@@ -20,10 +21,11 @@ export default function Nav({ lang, t }: Props) {
           <BrandPill size="sm" />
         </Link>
         <div className="flex items-center gap-3">
+          <ThemeToggle labelToDark={t.themeToDark} labelToLight={t.themeToLight} />
           <Link
             href={toggleHref}
             aria-label={t.langToggleAria}
-            className="rounded-lg border border-control px-3.5 py-1.5 text-sm font-medium text-body hover:text-ink"
+            className="inline-flex h-8 items-center rounded-lg border border-control px-3.5 text-sm font-medium text-body hover:text-ink"
           >
             {t.langToggle}
           </Link>
