@@ -16,8 +16,8 @@ function check(name, ok, detail = "") {
 const browser = await chromium.launch();
 
 for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
-  ["ko", "/", "ko", "달린 기록을", "https://apps.apple.com/app/apple-store/id6795858744?pt=129210758&ct=landing_ko&mt=8", ["출시 준비", "사전 등록", "출시하면", "베타", "계정 없이"]],
-  ["en", "/en", "en", "Run stats", "https://apps.apple.com/app/apple-store/id6795858744?pt=129210758&ct=landing_en&mt=8", ["launching soon", "early access", "waitlist", "beta", "no account"]],
+  ["ko", "/", "ko", "달린 기록을", "https://abr.ge/k025fx0", ["출시 준비", "사전 등록", "출시하면", "베타", "계정 없이"]],
+  ["en", "/en", "en", "Run stats", "https://abr.ge/7su3ij9", ["launching soon", "early access", "waitlist", "beta", "no account"]],
 ]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, colorScheme: "light" });
   const pixelRequests = [];
@@ -44,11 +44,11 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
   const h1 = await page.locator("h1").first().textContent();
   check(`${locale}: h1`, (h1 ?? "").includes(expectH1), (h1 ?? "").trim());
 
-  /* App Store CTA: Nav·히어로·최종 3개, 로케일에 맞는 캠페인 링크(ct=landing_ko/landing_en) — 중앙 반복 없음 */
+  /* App Store CTA: Nav·히어로·최종 3개, 로케일별 Airbridge 트래킹 링크 — 중앙 반복 없음 */
   const storeLinks = await page.locator(`a[href^="${storePrefix}"]`).count();
   check(`${locale}: App Store 링크 3개 (${storePrefix})`, storeLinks === 3, String(storeLinks));
   const otherStore = await page
-    .locator('a[href^="https://apps.apple.com/"]')
+    .locator('a[href^="https://abr.ge/"], a[href^="https://apps.apple.com/"]')
     .evaluateAll((els, prefix) => els.filter((a) => !a.href.startsWith(prefix)).length, storePrefix);
   check(`${locale}: 다른 로케일 스토어 링크 없음`, otherStore === 0, String(otherStore));
 
@@ -71,6 +71,28 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
   /* FAQ 4문항 — 연동·사진 한 장·사진/얼굴 처리·기기와 로그인 */
   const faqItems = await page.locator("details.faq-item").count();
   check(`${locale}: FAQ 4문항`, faqItems === 4, String(faqItems));
+
+  /* 테마 토글: 누르면 <html data-theme="dark">·body #111·히어로 캡처가 다크 소스로 바뀌고, 다시 누르면 라이트로 돌아온다 */
+  await page.locator("[data-theme-toggle]").click();
+  await page.waitForTimeout(400);
+  const toggled = await page.evaluate(() => ({
+    theme: document.documentElement.getAttribute("data-theme"),
+    bg: getComputedStyle(document.body).backgroundColor,
+    hero: decodeURIComponent(document.querySelector("img")?.currentSrc ?? ""),
+  }));
+  check(
+    `${locale}: 테마 토글 → 다크`,
+    toggled.theme === "dark" && toggled.bg === "rgb(17, 17, 17)" && toggled.hero.includes("-dark.webp"),
+    `${toggled.theme} ${toggled.bg} ${toggled.hero.split("/").pop()}`
+  );
+  await page.locator("[data-theme-toggle]").click();
+  await page.waitForTimeout(400);
+  const restored = await page.evaluate(() => ({
+    theme: document.documentElement.getAttribute("data-theme"),
+    bg: getComputedStyle(document.body).backgroundColor,
+  }));
+  check(`${locale}: 테마 토글 → 라이트 복귀`, restored.theme === "light" && restored.bg === "rgb(255, 255, 255)", `${restored.theme} ${restored.bg}`);
+  await page.evaluate(() => localStorage.removeItem("theme"));
 
   /* Reveal(IntersectionObserver)·lazy 이미지 발화를 위해 실제 스크롤 후 캡처 */
   await page.evaluate(async () => {
