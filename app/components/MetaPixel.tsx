@@ -26,7 +26,7 @@ fbq('track', 'PageView');`}
           width="1"
           style={{ display: "none" }}
           src="https://www.facebook.com/tr?id=2032805160704268&ev=PageView&noscript=1"
-          alt=""
+          alt="Meta Pixel"
         />
       </noscript>
     </>

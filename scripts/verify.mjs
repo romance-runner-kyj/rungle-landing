@@ -68,6 +68,12 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
     );
   check(`${locale}: 앱 캡처 5장 (${locale} 로케일)`, shots === 5, String(shots));
 
+  /* 이미지 alt — noscript 픽셀까지 보려면 렌더된 DOM이 아니라 서버 HTML을 검사한다 */
+  const rawHtml = await (await page.request.get(BASE + path)).text();
+  const imgTags = rawHtml.match(/<img\b[^>]*>/g) ?? [];
+  const noAlt = imgTags.filter((tag) => !/\balt="[^"]+"/.test(tag));
+  check(`${locale}: 모든 이미지에 alt 있음 (${imgTags.length}개)`, imgTags.length > 0 && noAlt.length === 0, noAlt.join(" "));
+
   /* FAQ 9문항 — 질문형 5개(페이스·베스트컷·Strava·NRC·애플워치)와 연동·사진 한 장·사진/얼굴 처리·기기와 로그인 */
   const faqItems = await page.locator("details.faq-item").count();
   check(`${locale}: FAQ 9문항`, faqItems === 9, String(faqItems));

@@ -27,6 +27,7 @@ export type Copy = {
   hero: { label: string; lines: TwoLines; sub: string; tagline: string };
   cta: { label: string; microcopy: string };
   screens: { key: AppScreen; kicker: string; headline: TwoLines; desc: TwoLines; caption?: string }[];
+  screenAlts: Record<AppScreen, string>;
   principles: { headline: TwoLines; items: { title: string; desc: string }[] };
   trackers: { headline: TwoLines; desc: TwoLines; names: string[]; note: string };
   faq: { title: string; items: { q: string; a: string }[] };
@@ -112,6 +113,13 @@ export const copy: Record<Locale, Copy> = {
         caption: "컷편집·스파이더맨샷·웹슈터·월말정산은 AI 템플릿이라 로그인이 필요해요."
       }
     ],
+    screenAlts: {
+      share: "러닝 사진에 거리와 페이스를 얹은 결과물을 인스타그램으로 공유하거나 저장하는 런글 공유 화면",
+      home: "최근 러닝의 사진과 거리, 페이스, 시간을 보여 주고 사진 편집과 릴스 만들기 버튼을 둔 런글 홈 화면",
+      bestcut: "AI가 추천한 러닝 사진을 전체, 인물, 배경으로 나눠 보여 주는 런글 추천 사진 화면",
+      photo: "벚꽃 풍경 사진에 거리와 페이스 오버레이를 얹은 런글 사진 편집 화면",
+      templates: "자유 편집, 컷편집, km 분할 같은 릴스 템플릿을 고르는 런글 템플릿 선택 화면"
+    },
     principles: {
       headline: [
         "하지 않는 것도,",
@@ -281,6 +289,13 @@ export const copy: Record<Locale, Copy> = {
         caption: "Cut Edit, Spider Shot, Web Shooter and Monthly Recap are AI templates and need sign-in."
       }
     ],
+    screenAlts: {
+      share: "rungle share screen for posting a running photo with distance and pace to Instagram or saving it",
+      home: "rungle Home screen showing the latest run's photo, distance, pace and time, with buttons to edit a photo or make a reel",
+      bestcut: "rungle Suggested photos screen showing AI-picked running photos, filtered by all, people or scenery",
+      photo: "rungle photo editor showing a distance and pace overlay on a cherry blossom scene",
+      templates: "rungle template screen for choosing a reel template such as manual editing, Cut Edit or km split"
+    },
     principles: {
       headline: [
         "What we don't do,",
