@@ -74,6 +74,12 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
   const noAlt = imgTags.filter((tag) => !/\balt="[^"]+"/.test(tag));
   check(`${locale}: 모든 이미지에 alt 있음 (${imgTags.length}개)`, imgTags.length > 0 && noAlt.length === 0, noAlt.join(" "));
 
+  /* 검색 결과용 메타 길이 — Bing Live URL 검사 기준(제목 70자, 설명 25~160자) */
+  const titleLength = (await page.title()).length;
+  check(`${locale}: 제목 70자 이하`, titleLength <= 70, String(titleLength));
+  const descLength = ((await page.locator('meta[name="description"]').getAttribute("content")) ?? "").length;
+  check(`${locale}: 메타 설명 25~160자`, descLength >= 25 && descLength <= 160, String(descLength));
+
   /* FAQ 9문항 — 질문형 5개(페이스·베스트컷·Strava·NRC·애플워치)와 연동·사진 한 장·사진/얼굴 처리·기기와 로그인 */
   const faqItems = await page.locator("details.faq-item").count();
   check(`${locale}: FAQ 9문항`, faqItems === 9, String(faqItems));
