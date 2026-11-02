@@ -4,14 +4,16 @@
  * 화면은 CSS로 재현하지 않는다. 캡처 20장이 모두 준비된 뒤 배포한다.
  */
 import { getImageProps } from "next/image";
+import { copy } from "../lib/copy";
 import type { Locale } from "../lib/locales";
 
 export type AppScreen = "share" | "home" | "bestcut" | "photo" | "templates";
 type Props = { lang: Locale; screen: AppScreen; priority?: boolean };
 
 export default function PhoneMockup({ lang, screen, priority }: Props) {
+  const alt = copy[lang].screenAlts[screen];
   const common = {
-    alt: "",
+    alt,
     fill: true,
     sizes: "300px",
     priority,
@@ -27,12 +29,12 @@ export default function PhoneMockup({ lang, screen, priority }: Props) {
   });
 
   return (
-    <div aria-hidden="true" className="relative mx-auto w-[270px] shrink-0 select-none sm:w-[300px]">
+    <div className="relative mx-auto w-[270px] shrink-0 select-none sm:w-[300px]">
       <div className="rounded-[44px] border border-hairline bg-stage p-2 shadow-card">
         <div className="relative aspect-[1320/2868] overflow-hidden rounded-[36px] bg-stage">
           <picture>
             <source media="(prefers-color-scheme: dark)" srcSet={dark.props.srcSet} sizes={dark.props.sizes} />
-            <img {...light.props} alt="" />
+            <img {...light.props} alt={alt} />
           </picture>
         </div>
       </div>
