@@ -68,9 +68,9 @@ for (const [locale, path, expectLang, expectH1, storePrefix, stale] of [
     );
   check(`${locale}: 앱 캡처 5장 (${locale} 로케일)`, shots === 5, String(shots));
 
-  /* FAQ 4문항 — 연동·사진 한 장·사진/얼굴 처리·기기와 로그인 */
+  /* FAQ 9문항 — 질문형 5개(페이스·베스트컷·Strava·NRC·애플워치)와 연동·사진 한 장·사진/얼굴 처리·기기와 로그인 */
   const faqItems = await page.locator("details.faq-item").count();
-  check(`${locale}: FAQ 4문항`, faqItems === 4, String(faqItems));
+  check(`${locale}: FAQ 9문항`, faqItems === 9, String(faqItems));
 
   /* 테마 토글: 누르면 <html data-theme="dark">·body #111·히어로 캡처가 다크 소스로 바뀌고, 다시 누르면 라이트로 돌아온다 */
   await page.locator("[data-theme-toggle]").click();

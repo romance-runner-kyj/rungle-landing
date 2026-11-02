@@ -1,7 +1,7 @@
 /**
  * app/components/Landing.tsx — 랜딩 페이지 본문 (ko/en 공용)
  * 히어로(2줄 제목 + 공유 화면) → 홈·AI 베스트컷·사진 편집·릴스 템플릿
- * → 알아 두기 3개 → 트래커 호환 → FAQ 4문항 → 최종 CTA → 푸터.
+ * → 알아 두기 3개 → 트래커 호환 → FAQ 9문항 → 최종 CTA → 푸터.
  * Nav·히어로·최종 CTA의 App Store 링크 3개를 유지한다.
  * 앱 화면은 v2.1.0 실캡처이며 시스템 외관은 PhoneMockup이 따른다.
  * 모션은 hero-rise·Reveal·FAQ·로고 점만 쓴다. reduced-motion은 CSS에서 처리한다.
