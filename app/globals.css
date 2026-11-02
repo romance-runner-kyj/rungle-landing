@@ -1,7 +1,6 @@
 /**
  * app/globals.css — 랜딩 v2 디자인 토큰
  * 정본: ios/Rungle/DesignSystem/DS+V2Tokens.swift.
- * 랜딩 적용 범위: docs/superpowers/specs/2026-10-10-landing-v2-redesign-design.md.
  * 폰트는 `app/lib/fonts.ts`의 next/font/local 변수(--font-noto·--font-bodoni·--font-anton)에 연결한다.
  */
 @import "tailwindcss";

@@ -1,6 +1,6 @@
 /**
  * app/lib/copy.ts — 카피 SSOT (ko 정본 → en 번역)
- * 스펙 §7.2·§7.3: 2줄 헤드라인, 해요체 설명, 영문 대문자 키커.
+ * 2줄 헤드라인, 해요체 설명, 영문 대문자 키커.
  * 히어로 설명은 한 줄. 화면마다 메시지 하나, 캡처는 v2.1.0 실화면만 쓴다.
  *
  * 진실성 가드 (iOS v2.1.0):
@@ -10,7 +10,9 @@
  *    AI 베스트컷·AI 템플릿은 필요한 사진·영상을 서버로 보내고 처리 뒤 입력을 삭제한다.
  *  - 로그인하고 프로젝트 백업을 켜면 편집 작업과 관련 미디어는 서버에 보관한다.
  *    로그인하면 러닝 기록도 계정에 저장한다.
- *  - 얼굴은 잘 나온 컷을 고르려고 알아볼 뿐, 만들거나 바꾸거나 보정하지 않는다.
+ *  - AI 베스트컷은 잘 나온 컷을 고르려고 얼굴을 평가할 뿐, 만들거나 바꾸거나 보정하지 않는다.
+ *    정지컷 AI 템플릿(스파이더맨샷)은 얼굴과 몸을 다시 그릴 수 있다(처리방침과 맞춘다).
+ *    누구인지 알아보는 처리는 하지 않는다.
  *  - 앱에 없는 기능·허위 소셜 프루프·속도 및 정확도 비교·가격·구독·무료는 쓰지 않는다.
  *    저장·공유 앞 결제창·광고가 없다는 문구는 Pro 결제가 열리면 즉시 수정한다.
  *  - 각 화면의 문장은 실캡처에 보이는 UI와 맞춘다. CSS로 앱 화면을 재현하지 않는다.
@@ -82,7 +84,7 @@ export const copy: Record<Locale, Copy> = {
           "AI가 사진 속 장면을 보고 올릴 만한 컷을 추천해요.",
           "전체·인물·배경으로 나눠 보고, 마지막 한 장은 내가 골라요."
         ],
-        caption: "로그인 뒤 쓸 수 있어요. 얼굴은 알아보기만 하고, 만들거나 바꾸지 않아요."
+        caption: "로그인 뒤 쓸 수 있어요. 얼굴은 평가만 하고, 누구인지 알아보거나 만들거나 바꾸지 않아요."
       },
       {
         key: "photo",
@@ -117,8 +119,8 @@ export const copy: Record<Locale, Copy> = {
       ],
       items: [
         {
-          title: "얼굴은 알아보기만",
-          desc: "잘 나온 컷을 고르려고 인식할 뿐, 만들거나 바꾸거나 보정하지 않아요."
+          title: "누구인지 알아보지 않아요",
+          desc: "AI 베스트컷은 잘 나온 컷을 고를 때 얼굴을 평가할 뿐, 만들거나 바꾸거나 보정하지 않아요. 스파이더맨샷처럼 정지컷을 만드는 AI 템플릿은 얼굴과 몸을 다시 그릴 수 있어요."
         },
         {
           title: "AI에 보낸 사진은 처리 뒤 지워요",
@@ -151,8 +153,28 @@ export const copy: Record<Locale, Copy> = {
       title: "자주 묻는 질문",
       items: [
         {
+          q: "러닝 기록 사진에 페이스 넣는 앱 있어요?",
+          a: "런글(rungle)이 러닝 사진에 페이스, 거리, 시간을 얹는 iOS 앱이에요. 홈 최근 러닝에서 [사진 편집하기]를 누르고 사진을 고른 뒤, 오버레이 스타일과 위치, 크기를 맞춰요. [지표 변경]으로 평균 심박수, 칼로리, 고도 상승도 켤 수 있어요. 로그인 없이도 돼요."
+        },
+        {
+          q: "러닝하면서 찍은 사진 중에 잘 나온 컷을 자동으로 골라 주는 앱 있어요?",
+          a: "런글의 AI 베스트컷(앱 화면 이름 '추천 사진')이 러닝 사진을 살펴보고 올릴 만한 컷을 추천해요. 전체, 인물, 배경으로 나눠 보고 마지막 한 장은 직접 골라요. 연달아 찍은 똑같은 사진은 한 장만 추천해요. 로그인이 필요하고, AI에 보낸 사진은 작업이 끝나면 지워요."
+        },
+        {
+          q: "스트라바(Strava) 기록을 인스타 스토리나 릴스로 올리는 방법 알려 주세요.",
+          a: "Strava 앱 설정의 Health 연결에서 애플 건강으로 보내기를 켜면, Strava 기록이 애플 건강을 거쳐 런글 홈에 모여요. 사진에 기록을 얹거나 템플릿으로 릴스를 만든 뒤, 저장하거나 인스타그램으로 공유해 스토리나 릴스로 올려요."
+        },
+        {
+          q: "나이키 런 클럽(NRC) 기록을 사진에 얹어서 공유하려면 어떤 앱을 써요?",
+          a: "런글을 쓰면 돼요. NRC 기록은 애플 건강을 거쳐 런글로 들어와요. 건강 앱 오른쪽 위 프로필에서 개인정보 보호의 '앱'을 누르고 Nike Run Club을 골라 '모두 켜기'를 눌러 주세요. 그다음 런글에서 [사진 편집하기]로 사진에 기록을 얹고 저장하거나 인스타그램으로 공유해요."
+        },
+        {
+          q: "애플워치 러닝 기록으로 인스타 릴스 만드는 법 알려 주세요.",
+          a: "애플워치 운동 앱으로 달린 기록은 애플 건강에 저장돼요. 런글에 건강 권한을 허용하면 기록이 홈에 모이고, 최근 러닝에서 [릴스 만들기]를 눌러 템플릿을 골라요. 내 사진과 영상으로 초안을 만들어 다듬은 뒤, 저장하거나 인스타그램으로 공유해요."
+        },
+        {
           q: "어떤 러닝 앱과 같이 쓸 수 있나요?",
-          a: "애플 건강(HealthKit)에 러닝 기록을 남기는 앱이면 돼요. Strava, Nike Run Club, Garmin, Apple Watch 모두 애플 건강을 거쳐 들어와요. 기록이 없으면 러닝 앱 기록 화면 캡처를 넣어 거리·시간·페이스를 읽어 오고, 읽은 값은 눌러서 고칠 수 있어요. 캡처를 기록으로 저장하려면 로그인이 필요해요."
+          a: "애플 건강(HealthKit)에 러닝 기록을 남기는 앱이면 돼요. Strava, Nike Run Club, Garmin, Apple Watch 모두 애플 건강을 거쳐 들어오고, 앱에 따라 애플 건강 연동을 먼저 켜야 해요. 기록이 없으면 러닝 앱 기록 화면 캡처를 넣어 거리·시간·페이스를 읽어 오고, 읽은 값은 눌러서 고칠 수 있어요. 캡처를 기록으로 저장하려면 로그인이 필요해요."
         },
         {
           q: "릴스 말고 사진 한 장만 올리고 싶어요.",
@@ -160,7 +182,7 @@ export const copy: Record<Locale, Copy> = {
         },
         {
           q: "제 사진과 얼굴은 어떻게 다뤄지나요?",
-          a: "사진에 기록을 얹거나 직접 편집할 땐 아이폰 안에서 처리해요. AI 베스트컷과 AI 템플릿은 필요한 사진·영상을 서버로 보내고, 작업이 끝나면 지워요. 로그인하고 프로젝트 백업을 켜면 편집 작업과 관련 미디어가 서버에 보관돼요. 얼굴은 만들거나 바꾸거나 보정하지 않아요. 건강 데이터는 기록을 보여 주는 데 쓰고, 로그인하면 러닝 기록도 계정에 저장돼요."
+          a: "사진에 기록을 얹거나 직접 편집할 땐 아이폰 안에서 처리해요. AI 베스트컷과 AI 템플릿은 필요한 사진·영상을 서버로 보내고, 작업이 끝나면 지워요. 로그인하고 프로젝트 백업을 켜면 편집 작업과 관련 미디어가 서버에 보관돼요. AI 베스트컷은 얼굴을 평가만 하고, 만들거나 바꾸거나 보정하지 않아요. 스파이더맨샷처럼 정지컷을 만드는 AI 템플릿은 얼굴과 몸을 다시 그릴 수 있어요. 누구인지 알아보는 처리는 하지 않아요. 건강 데이터는 기록을 보여 주는 데 쓰고, 로그인하면 러닝 기록도 계정에 저장돼요."
         },
         {
           q: "어떤 기기에서, 로그인은 꼭 해야 하나요?",
@@ -231,7 +253,7 @@ export const copy: Record<Locale, Copy> = {
           "AI looks at what's in each photo and suggests the ones worth posting.",
           "Browse all, people or scenery. The final pick is yours."
         ],
-        caption: "Requires sign-in. Faces are only detected, never generated or altered."
+        caption: "Requires sign-in. Faces are only scored, never identified, generated or altered."
       },
       {
         key: "photo",
@@ -266,8 +288,8 @@ export const copy: Record<Locale, Copy> = {
       ],
       items: [
         {
-          title: "Faces are only detected",
-          desc: "Only to pick your best shots. Never generated, altered or retouched."
+          title: "We never identify anyone",
+          desc: "AI best cuts only score faces to pick your best shots, and never generate, alter or retouch them. AI templates that create a freeze frame, such as Spider Shot, may redraw faces and bodies."
         },
         {
           title: "AI inputs are deleted after processing",
@@ -300,8 +322,28 @@ export const copy: Record<Locale, Copy> = {
       title: "Frequently asked questions",
       items: [
         {
+          q: "Is there an app that adds pace to running photos?",
+          a: "rungle is an iOS app that adds pace, distance and time to your running photos. Tap [Edit a photo] on your latest run on Home, pick a photo, then choose an overlay style and set its position and size. You can also turn on average heart rate, calories and elevation gain. You can do this without signing in."
+        },
+        {
+          q: "Is there an app that automatically picks the best shots from photos taken during a run?",
+          a: "rungle's AI best cut (the Suggested photos screen in the app) looks through your running photos and suggests the ones worth posting. Browse all, people or scenery, and make the final pick yourself. Identical photos taken back to back are suggested only once. It requires sign-in, and photos sent to AI are deleted when the job ends."
+        },
+        {
+          q: "How do I turn Strava activities into Instagram Stories or Reels?",
+          a: "In Strava settings, open Health under Manage Apps and Devices and turn on Send to Health. Your Strava activities then reach rungle's Home through Apple Health. Add the stats to a photo or make a reel from a template, then save it or share it to Instagram to post it as a Story or Reel."
+        },
+        {
+          q: "Which app can put Nike Run Club stats on a photo?",
+          a: "You can use rungle. NRC runs come to rungle through Apple Health. In the Health app, tap your profile at the top right, tap Apps under Privacy, choose Nike Run Club and tap Turn On All. Then tap [Edit a photo] in rungle to add the stats to a photo, and save it or share it to Instagram."
+        },
+        {
+          q: "How do I make an Instagram Reel from Apple Watch runs?",
+          a: "Runs recorded with the Apple Watch Workout app are saved to Apple Health. Allow Health access in rungle and they appear on Home. Tap [Make a reel] on your latest run, pick a template, make a draft with your own photos and videos, edit it, then save it or share it to Instagram."
+        },
+        {
           q: "Which running apps does it work with?",
-          a: "Any app that writes runs to Apple Health (HealthKit). Strava, Nike Run Club, Garmin and Apple Watch all sync through Apple Health. If there is no run, add a screenshot of your running app's summary to read the distance, time and pace. Tap the values to correct them. Saving the screenshot as a run requires sign-in."
+          a: "Any app that writes runs to Apple Health (HealthKit). Strava, Nike Run Club, Garmin and Apple Watch all sync through Apple Health, and some apps need Apple Health sharing turned on first. If there is no run, add a screenshot of your running app's summary to read the distance, time and pace. Tap the values to correct them. Saving the screenshot as a run requires sign-in."
         },
         {
           q: "I just want to post one photo, not a Reel.",
@@ -309,7 +351,7 @@ export const copy: Record<Locale, Copy> = {
         },
         {
           q: "How are my photos and my face handled?",
-          a: "Stamping stats on photos and editing them yourself happen on your iPhone. AI best cuts and AI templates send the photos and videos they need to the server and delete them when the job ends. With sign-in and project backup on, your edits and related media are stored on the server. Faces are never generated, altered or retouched. Health data is used to display your stats, and signing in also saves your runs to your account."
+          a: "Stamping stats on photos and editing them yourself happen on your iPhone. AI best cuts and AI templates send the photos and videos they need to the server and delete them when the job ends. With sign-in and project backup on, your edits and related media are stored on the server. AI best cuts only score faces, and never generate, alter or retouch them. AI templates that create a freeze frame, such as Spider Shot, may redraw faces and bodies. We never identify anyone. Health data is used to display your stats, and signing in also saves your runs to your account."
         },
         {
           q: "Which devices does it run on, and do I have to sign in?",
