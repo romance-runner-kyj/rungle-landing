@@ -213,8 +213,8 @@ export const copy: Record<Locale, Copy> = {
   },
   en: {
     meta: {
-      title: "rungle — Running stats overlays and run Reels. Run stats, made into photos and reels.",
-      description: "Bring runs from the app you already use into rungle through Apple Health, then add distance, pace and time to photos taken that day to make running stats overlay photos and template reels. Start without signing in. iOS App Store.",
+      title: "rungle — Running stats overlays and run Reels",
+      description: "Bring runs from your running app through Apple Health, add distance, pace and time to your photos, and make template reels. Start without signing in. iOS.",
       ogImageAlt: "rungle — Run stats, made into photos and reels"
     },
     nav: {
